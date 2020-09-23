@@ -6,25 +6,25 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://example.com">
-  <title>Redis持久化 | Hexo</title>
+  <title>Redis持久化 | 扎西德勒</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="Redis 是内存数据库，数据都是存储在内存中，为了避免进程退出导致数据的永久丢失，需要定期将 Redis 中的数据以某种形式从内存保存到硬盘。当下次 Redis 重启时，利用持久化文件实现数据恢复。除此之外，为了进行灾难备份，可以将持久化文件拷贝到一个远程位置。 Redis 持久化分为 RDB 持久化和 AOF 持久化：前者将当前数据保存到硬盘，后者则是将每次执行的写命令保存到硬盘。由于 AOF">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Redis持久化">
 <meta property="og:url" content="http://example.com/2019/07/30/Redis%E6%8C%81%E4%B9%85%E5%8C%96/index.html">
-<meta property="og:site_name" content="Hexo">
+<meta property="og:site_name" content="扎西德勒">
 <meta property="og:description" content="Redis 是内存数据库，数据都是存储在内存中，为了避免进程退出导致数据的永久丢失，需要定期将 Redis 中的数据以某种形式从内存保存到硬盘。当下次 Redis 重启时，利用持久化文件实现数据恢复。除此之外，为了进行灾难备份，可以将持久化文件拷贝到一个远程位置。 Redis 持久化分为 RDB 持久化和 AOF 持久化：前者将当前数据保存到硬盘，后者则是将每次执行的写命令保存到硬盘。由于 AOF">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://example.com/img/redis_RDB.png">
 <meta property="og:image" content="http://example.com/img/redis_reAOF.png">
 <meta property="article:published_time" content="2019-07-30T06:23:37.000Z">
 <meta property="article:modified_time" content="2020-09-23T09:48:35.097Z">
-<meta property="article:author" content="John Doe">
+<meta property="article:author" content="debugxw">
 <meta property="article:tag" content="缓存">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://example.com/img/redis_RDB.png">
   
-    <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
+    <link rel="alternative" href="/atom.xml" title="扎西德勒" type="application/atom+xml">
   
   
     <link rel="icon" href="/img/favicon.png">
@@ -377,7 +377,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2020 John Doe
+    		&copy; 2020 debugxw
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
