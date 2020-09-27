@@ -144,6 +144,82 @@
             
 
   
+    <article id="post-Guava之Joiner、Splitter" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/09/27/Guava%E4%B9%8BJoiner%E3%80%81Splitter/">Guava之Joiner、Splitter</a>
+    </h1>
+  
+
+        
+        <a href="/2020/09/27/Guava%E4%B9%8BJoiner%E3%80%81Splitter/" class="archive-article-date">
+  	<time datetime="2020-09-27T09:19:01.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-09-27</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一、Joiner—继承典型应用"><a href="#一、Joiner—继承典型应用" class="headerlink" title="一、Joiner—继承典型应用"></a>一、Joiner—继承典型应用</h2><h3 id="1、基本用法"><a href="#1、基本用法" class="headerlink" title="1、基本用法"></a>1、基本用法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Integer&gt; integers = Lists.newArrayList(<span class="number">1</span>, <span class="number">2</span>, <span class="keyword">null</span>, <span class="number">3</span>);</span><br><span class="line">String res = Joiner.on(<span class="string">&quot;-&quot;</span>).skipNulls().join(integers);</span><br><span class="line"><span class="comment">// 输出 1-2-3</span></span><br></pre></td></tr></table></figure>
+        
+          <a class="article-more-a" href="/2020/09/27/Guava%E4%B9%8BJoiner%E3%80%81Splitter/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">guava</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/09/27/Guava%E4%B9%8BJoiner%E3%80%81Splitter/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-用JAVA实现三个线程顺序打印ABC" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -837,82 +913,6 @@
 
 
   
-    <article id="post-AQS之ConditionObject" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/07/10/AQS%E4%B9%8BConditionObject/">AQS之ConditionObject</a>
-    </h1>
-  
-
-        
-        <a href="/2019/07/10/AQS%E4%B9%8BConditionObject/" class="archive-article-date">
-  	<time datetime="2019-07-10T02:45:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-10</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>我们知道任何一个 java 对象，都拥有一组监视器方法，主要包括 wait()、notify()、notifyAll()方法，这些方法与 synchronized 关键字配合使用可以实现等待 / 通知机制。同样，java 中的 Condition 与 Lock 配合使用也可以实现类似的等待 / 通知机制。</p>
-        
-          <a class="article-more-a" href="/2019/07/10/AQS%E4%B9%8BConditionObject/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">并发</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/07/10/AQS%E4%B9%8BConditionObject/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/">Next »</a>
@@ -1047,6 +1047,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">servlet</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">guava</a>
               </li>
             
             <div class="clearfix"></div>
