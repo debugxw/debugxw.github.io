@@ -164,7 +164,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>ListenableFuture顾名思义就是可以监听的Future，它是对JAVA原生Future的扩展增强。Future表示一个异步计算任务，当任务完成时可以通过调用Future.get()得到计算结果。如果我们希望一旦计算完成就拿到结果展示给用户或者做另外的计算，就必须使用另一个线程不断的查询计算状态。这样就白白的浪费了CPU资源，而如果使用Guava Futures就可以避免这样的情况发生，那么Guava是如何做到的呢？</p>
+        <p>ListenableFuture顾名思义就是可以监听的Future，它是对JAVA原生Future的扩展增强。Future表示一个异步计算任务，当任务完成时可以通过调用Future.get()得到计算结果。如果我们希望一旦计算完成就拿到结果展示给用户或者做另外的计算，就必须使用另一个线程不断的轮询计算状态。这样就白白的浪费了CPU资源，而如果使用Guava Futures就可以避免这样的情况发生，那么Guava是如何做到的呢？</p>
         
           <a class="article-more-a" href="/2020/09/30/Guava-Futures%E5%BC%82%E6%AD%A5%E5%9B%9E%E8%B0%83%E6%9C%BA%E5%88%B6/#more">more >></a>
         
