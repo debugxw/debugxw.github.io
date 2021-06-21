@@ -144,6 +144,346 @@
             
 
   
+    <article id="post-synchronized实现原理" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/06/03/synchronized%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/">synchronized实现原理</a>
+    </h1>
+  
+
+        
+        <a href="/2021/06/03/synchronized%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" class="archive-article-date">
+  	<time datetime="2021-06-03T06:56:30.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-06-03</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h2><p>在JDK1.6之前</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">并发</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/06/03/synchronized%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Http持久连接和HttpClient连接池" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/05/21/Http%E6%8C%81%E4%B9%85%E8%BF%9E%E6%8E%A5%E5%92%8CHttpClient%E8%BF%9E%E6%8E%A5%E6%B1%A0/">Http持久连接和HttpClient连接池</a>
+    </h1>
+  
+
+        
+        <a href="/2021/05/21/Http%E6%8C%81%E4%B9%85%E8%BF%9E%E6%8E%A5%E5%92%8CHttpClient%E8%BF%9E%E6%8E%A5%E6%B1%A0/" class="archive-article-date">
+  	<time datetime="2021-05-21T06:47:14.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-21</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h2><p>HTTP协议是无状态的协议，即每一次请求都是互相独立的。因此它的最初实现是，每一个http请求都会打开一个tcp socket连接，当交互完毕后会关闭这个连接。<br>HTTP协议是全双工的协议，所以建立连接与断开连接是要经过三次握手与四次挥手的。显然在这种设计中，每次发送Http请求都会消耗很多的额外资源，即连接的建立与销毁。<br>于是，HTTP协议的也进行了发展，通过持久连接的方法来进行socket连接复用。</p>
+<p>如下图可以看到，在串行连接中，每次交互都要打开关闭连接。在持久连接中，第一次交互会打开连接，交互结束后连接并不关闭，下次交互就省去了建立连接的过程。<br>持久连接的实现有两种：HTTP/1.0的keep-alive与HTTP/1.1的持久连接。</p>
+<div align=center><img src="../../../../img/http_1.png" width="40%"/></div>
+
+<div align=center><img src="../../../../img/http_2.png" width="40%"/></div>
+
+
+<h2 id="二、HTTP-1-0的keep-alive"><a href="#二、HTTP-1-0的keep-alive" class="headerlink" title="二、HTTP/1.0的keep-alive"></a>二、HTTP/1.0的keep-alive</h2><p>从1996年开始，很多HTTP/1.0浏览器与服务器都对协议进行了扩展，那就是“keep-alive”扩展协议。<br>注意，这个扩展协议是作为1.0的补充的“实验型持久连接”出现的。最新的HTTP/1.1规范中也没有对它进行说明，只是很多应用延续了下来。</p>
+<p>使用HTTP/1.0的客户端在首部中加上”Connection:Keep-Alive”，请求服务端将一条连接保持在打开状态。服务端如果愿意将这条连接保持在打开状态，就会在响应中包含同样的首部。如果响应中没有包含”Connection:Keep-Alive”首部，则客户端会认为服务端不支持keep-alive，会在发送完响应报文之后关闭掉当前连接。</p>
+<p>通过keep-alive补充协议，客户端与服务器之间完成了持久连接，然而仍然存在着一些问题：</p>
+<ul>
+<li>在HTTP/1.0中keep-alive并不是标准协议，客户端必须发送Connection:Keep-Alive来激活keep-alive连接。</li>
+<li>代理服务器可能无法支持keep-alive，因为一些代理是”盲中继”，无法理解首部的含义，只是将首部逐跳转发。所以可能造成客户端与服务端都保持了连接，但是代理不接受该连接上的数据。</li>
+</ul>
+<h3 id="keep-alive和盲中继"><a href="#keep-alive和盲中继" class="headerlink" title="keep-alive和盲中继"></a>keep-alive和盲中继</h3><p>对于一些代理服务器，它并不能理解http首部中Collection字段，只是将它当做一个扩展首部来处理，然后将报文发送给服务端，服务端处理完请求之后，将Collection字段写入响应头，并发送给代理服务器，代理服务器原封不动的将报文发送给客户端。此时客户端和服务器都建立了Keep-Alive连接，而代理服务器却毫不知情。<strong>它一直在等待客户端给它发送断开连接的字段，因为一个事务已经完成，已经没有必要保持连接了</strong>。这时建立了Keep-Alive连接的客户端继续发送数据，而代理服务器收到的不是Connection:close字段，所以对此就会视而不见，就像‘盲’了一样。</p>
+<p><strong>解决方案</strong><br>目前浏览器解决哑代理问题的一个解决方案是扩展首部字段Proxy-Connection。大致的实现原理是，客户端服务器会向代理服务器发送Proxy-Connection字段，如果代理能够理解，它就会用Connection代替Proxy-Connection字段，发送给服务端，服务端接受到Connection字段之后就知道是要建立持久连接，这样客户端，代理，服务端三者都会明白需要建立一个持久连接。而如果对方是一个盲中继，它就会直接把Proxy-Connection当做扩展首部直接转发给服务端，服务端接收到后发现是Proxy-Connection字段，会自动忽略，也就是说不会建立持久连接，通常接下来事务完成之后就是直接关闭连接了。</p>
+<p><strong>以上解决方案并不完美</strong><br>如果客户端和服务器之间存在多个代理，那么盲中继的问题还是会存在。例如client先请求代理服务器A，代理服务器A请求代理服务器B，代理服务器B再请求server，如果A能够理解Proxy—Connection字段，A在收到请求后将Proxy-Connection字段变换为Connection字段，发送给代理服务器B，这时B是不能够理解Connection字段的，那么B就变成了一个盲中继。。。</p>
+<h2 id="三、HTTP-1-1的持久连接"><a href="#三、HTTP-1-1的持久连接" class="headerlink" title="三、HTTP/1.1的持久连接"></a>三、HTTP/1.1的持久连接</h2><p>HTTP/1.1采取持久连接的方式替代了Keep-Alive。<br>HTTP/1.1的连接默认情况下都是持久连接。如果要显式关闭，需要在报文中加上Connection:Close首部。即在HTTP/1.1中，所有的连接都进行了复用。<br>然而如同Keep-Alive一样，空闲的持久连接也可以随时被客户端与服务端关闭。不发送Connection:Close不意味着服务器承诺连接永远保持打开。</p>
+<h2 id="四、HttpClient如何生成持久连接"><a href="#四、HttpClient如何生成持久连接" class="headerlink" title="四、HttpClient如何生成持久连接"></a>四、HttpClient如何生成持久连接</h2><p>HttpClien中使用了连接池来管理持有连接，同一条TCP链路上，连接是可以复用的。HttpClient通过连接池的方式进行连接持久化。其实池技术是一种通用的设计，其设计思想并不复杂：</p>
+<ul>
+<li>当有连接第一次使用的时候建立连接</li>
+<li>结束时对应连接不关闭，归还到池中</li>
+<li>下次同个目的的连接可从池中获取一个可用连接</li>
+<li>定期清理过期连接</li>
+</ul>
+<p>所有的连接池都是这个思路，不过我们看HttpClient源码主要关注两点：</p>
+<ul>
+<li>连接池的具体设计方案，以供以后自定义连接池参考</li>
+<li>如何与HTTP协议对应上，即理论抽象转为代码的实现</li>
+</ul>
+<h3 id="4-1、HttpClient连接池的实现"><a href="#4-1、HttpClient连接池的实现" class="headerlink" title="4.1、HttpClient连接池的实现"></a>4.1、HttpClient连接池的实现</h3><p>HttpClient关于持久连接的处理在下面的代码中可以集中体现，下面从MainClientExec摘取了和连接池相关的部分，去掉了其他部分：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainClientExec</span> <span class="keyword">implements</span> <span class="title">ClientExecChain</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> CloseableHttpResponse <span class="title">execute</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="keyword">final</span> HttpRoute route,</span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="keyword">final</span> HttpRequestWrapper request,</span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="keyword">final</span> HttpClientContext context,</span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="keyword">final</span> HttpExecutionAware execAware)</span> <span class="keyword">throws</span> IOException, HttpException </span>&#123;</span><br><span class="line">        <span class="comment">// 从连接管理器HttpClientConnectionManager中获取一个连接请求ConnectionRequest</span></span><br><span class="line">        <span class="keyword">final</span> ConnectionRequest connRequest = connManager.requestConnection(route, userToken);</span><br><span class="line">        <span class="keyword">final</span> HttpClientConnection managedConn;</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> timeout = config.getConnectionRequestTimeout();</span><br><span class="line">        <span class="comment">// 从连接请求ConnectionRequest中获取一个被管理的连接HttpClientConnection</span></span><br><span class="line">        managedConn = connRequest.get(timeout &gt; <span class="number">0</span> ? timeout : <span class="number">0</span>, TimeUnit.MILLISECONDS);</span><br><span class="line">        <span class="comment">// 将连接管理器HttpClientConnectionManager与被管理的连接HttpClientConnection交给一个ConnectionHolder持有</span></span><br><span class="line">        <span class="keyword">final</span> ConnectionHolder connHolder = <span class="keyword">new</span> ConnectionHolder(<span class="keyword">this</span>.log, <span class="keyword">this</span>.connManager, managedConn);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            HttpResponse response;</span><br><span class="line">            <span class="keyword">if</span> (!managedConn.isOpen()) &#123;</span><br><span class="line">                <span class="comment">//如果当前被管理的连接不是出于打开状态，需要重新建立连接</span></span><br><span class="line">                establishRoute(proxyAuthState, managedConn, route, request, context);</span><br><span class="line">            &#125;</span><br><span class="line">　　　　　　　<span class="comment">//通过连接HttpClientConnection发送请求</span></span><br><span class="line">            response = requestExecutor.execute(request, managedConn, context);</span><br><span class="line">　　　　　　　<span class="comment">//通过连接重用策略判断是否连接可重用         </span></span><br><span class="line">            <span class="keyword">if</span> (reuseStrategy.keepAlive(response, context)) &#123;</span><br><span class="line">                <span class="comment">//获得连接有效期</span></span><br><span class="line">                <span class="keyword">final</span> <span class="keyword">long</span> duration = keepAliveStrategy.getKeepAliveDuration(response, context);</span><br><span class="line">                <span class="comment">//设置连接有效期</span></span><br><span class="line">                connHolder.setValidFor(duration, TimeUnit.MILLISECONDS);</span><br><span class="line">                <span class="comment">//将当前连接标记为可重用状态</span></span><br><span class="line">                connHolder.markReusable();</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                connHolder.markNonReusable();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">final</span> HttpEntity entity = response.getEntity();</span><br><span class="line">        <span class="keyword">if</span> (entity == <span class="keyword">null</span> || !entity.isStreaming()) &#123;</span><br><span class="line">            <span class="comment">//将当前连接释放到池中，供下次调用</span></span><br><span class="line">            connHolder.releaseConnection();</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> HttpResponseProxy(response, <span class="keyword">null</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> HttpResponseProxy(response, connHolder);</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里看到了在Http请求过程中对连接的处理是和协议规范是一致的，这里要展开讲一下具体实现。<br>PoolingHttpClientConnectionManager是HttpClient默认的连接管理器，首先通过requestConnection()获得一个连接的请求，注意这里不是连接。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> ConnectionRequest <span class="title">requestConnection</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">final</span> HttpRoute route,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">final</span> Object state)</span> </span>&#123;</span><br><span class="line">    Args.notNull(route, <span class="string">&quot;HTTP route&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.log.isDebugEnabled()) &#123;</span><br><span class="line">        <span class="keyword">this</span>.log.debug(<span class="string">&quot;Connection request: &quot;</span> + format(route, state) + formatStats(route));</span><br><span class="line">    &#125;</span><br><span class="line">    Asserts.check(!<span class="keyword">this</span>.isShutDown.get(), <span class="string">&quot;Connection pool shut down&quot;</span>);</span><br><span class="line">    <span class="comment">// 从连接池CPool中获得一个异步的连接，Future&lt;CPoolEntry&gt;</span></span><br><span class="line">    <span class="keyword">final</span> Future&lt;CPoolEntry&gt; future = <span class="keyword">this</span>.pool.lease(route, state, <span class="keyword">null</span>);</span><br><span class="line">    <span class="comment">// 可以看到返回的ConnectionRequest对象实际持有了一个Future&lt;CPoolEntry&gt;，CPoolEntry是被连接池管理的真正连接实例</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> ConnectionRequest() &#123;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">cancel</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> future.cancel(<span class="keyword">true</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> HttpClientConnection <span class="title">get</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">                <span class="keyword">final</span> <span class="keyword">long</span> timeout,</span></span></span><br><span class="line"><span class="function"><span class="params">                <span class="keyword">final</span> TimeUnit timeUnit)</span> <span class="keyword">throws</span> InterruptedException, ExecutionException, ConnectionPoolTimeoutException </span>&#123;</span><br><span class="line">            <span class="comment">// 通过异步连接Future&lt;CPoolEntry&gt;获得一个真正的连接HttpClientConnection</span></span><br><span class="line">            <span class="keyword">final</span> HttpClientConnection conn = leaseConnection(future, timeout, timeUnit);</span><br><span class="line">            <span class="keyword">if</span> (conn.isOpen()) &#123;</span><br><span class="line">                <span class="keyword">final</span> HttpHost host;</span><br><span class="line">                <span class="keyword">if</span> (route.getProxyHost() != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    host = route.getProxyHost();</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    host = route.getTargetHost();</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">final</span> SocketConfig socketConfig = resolveSocketConfig(host);</span><br><span class="line">                conn.setSocketTimeout(socketConfig.getSoTimeout());</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> conn;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-2、Future"><a href="#4-2、Future" class="headerlink" title="4.2、Future"></a>4.2、Future<CPoolEntry></h3><p>看一下CPool是如何释放一个Future<CPoolEntry>的，AbstractConnPool核心代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<blockquote>
+<p>参考<br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/kingszelda/p/8988505.html">Http持久连接与HttpClient连接池</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/thomson-fred/p/10197456.html">HTTP长连接–Keep-Alive</a></p>
+</blockquote>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">计算机网络</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/05/21/Http%E6%8C%81%E4%B9%85%E8%BF%9E%E6%8E%A5%E5%92%8CHttpClient%E8%BF%9E%E6%8E%A5%E6%B1%A0/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-泛型介绍" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/04/19/%E6%B3%9B%E5%9E%8B%E4%BB%8B%E7%BB%8D/">泛型介绍</a>
+    </h1>
+  
+
+        
+        <a href="/2021/04/19/%E6%B3%9B%E5%9E%8B%E4%BB%8B%E7%BB%8D/" class="archive-article-date">
+  	<time datetime="2021-04-19T03:42:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-19</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一、泛型擦除"><a href="#一、泛型擦除" class="headerlink" title="一、泛型擦除"></a>一、泛型擦除</h2>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">JAVA基础</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/04/19/%E6%B3%9B%E5%9E%8B%E4%BB%8B%E7%BB%8D/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-分布式锁之Redis篇" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/04/08/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E4%B9%8BRedis%E7%AF%87/">分布式锁之Redis篇</a>
+    </h1>
+  
+
+        
+        <a href="/2021/04/08/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E4%B9%8BRedis%E7%AF%87/" class="archive-article-date">
+  	<time datetime="2021-04-08T01:31:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-08</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一、引言"><a href="#一、引言" class="headerlink" title="一、引言"></a>一、引言</h2><p>我们在系统中修改已有数据时，需要先读取，然后进行修改保存，此时很容易遇到并发问题。由于修改和保存不是原子操作，在并发场景下，部分对数据的操作可能会丢失。在单服务器系统我们常用本地锁来避免并发带来的问题，然而，当服务采用集群方式部署时，本地锁无法在多个服务器之间生效，这时候保证数据的一致性就需要分布式锁来实现。</p>
+        
+          <a class="article-more-a" href="/2021/04/08/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E4%B9%8BRedis%E7%AF%87/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">分布式</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/04/08/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E4%B9%8BRedis%E7%AF%87/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Guava-Futures异步回调机制" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -609,310 +949,6 @@
 
 
   
-    <article id="post-JVM类加载机制" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/07/24/JVM%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6/">JVM类加载机制</a>
-    </h1>
-  
-
-        
-        <a href="/2019/07/24/JVM%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6/" class="archive-article-date">
-  	<time datetime="2019-07-24T06:06:08.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-24</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>JVM 把描述类的数据从 Class 文件加载到内存，并对数据进行校验、转换解析和初始化，最终形成可以被虚拟机直接使用的 Java 类型，这就是虚拟机的类加载机制。<br>与那些在编译时需要进行连接工作的语言不同，<strong>在 Java 语言里，类型的加载、连接和初始化过程都是在程序运行期间完成的</strong>，这种策略虽然会令类加载时稍微增加一些性能开销，但是会为 Java 应用程序提供高度的灵活性，Java 里天生可以动态扩展的语言特性就是依赖运行期动态加载和动态链接这个特点实现的。例如，如果编写一个面向接口的应用程序，可以等到运行时再指定其实际的实现类；用户可以通过 Java 预定义的和自定义类加载器，让一个本地的应用程序可以在运行时从网络或者其他的地方加载一个二进制流作为程序代码的一部分，这种组装应用程序的方式目前已广泛应用于 Java 程序中。</p>
-        
-          <a class="article-more-a" href="/2019/07/24/JVM%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">JVM</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/07/24/JVM%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-I-don-t-know-what-to-call-the-servlet" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/07/20/I-don-t-know-what-to-call-the-servlet/">I don&#39;t know what to call the servlet</a>
-    </h1>
-  
-
-        
-        <a href="/2019/07/20/I-don-t-know-what-to-call-the-servlet/" class="archive-article-date">
-  	<time datetime="2019-07-20T04:19:56.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-20</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="一、servlet-生命周期"><a href="#一、servlet-生命周期" class="headerlink" title="一、servlet 生命周期"></a>一、servlet 生命周期</h3><p><strong>1、加载 servlet 类并创建实例</strong><br>web 容器负责加载 servlet，当 web 容器启动时或者是在第一次使用这个 servlet 时，容器会负责创建 servlet 实例，但是用户必须通过部署描述符（web.xml）指定 servlet 的位置，也就是 servlet 所在的类名称，成功加载后，web 容器会通过反射的方式对 servlet 进行实例化。</p>
-        
-          <a class="article-more-a" href="/2019/07/20/I-don-t-know-what-to-call-the-servlet/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">servlet</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/07/20/I-don-t-know-what-to-call-the-servlet/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-浅析ThreadLocal" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/07/16/%E6%B5%85%E6%9E%90ThreadLocal/">浅析ThreadLocal</a>
-    </h1>
-  
-
-        
-        <a href="/2019/07/16/%E6%B5%85%E6%9E%90ThreadLocal/" class="archive-article-date">
-  	<time datetime="2019-07-16T03:57:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-16</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>ThreadLocal 的作用是提供线程内的局部变量，说白了，就是在各线程内部创建一个变量的副本，相比于使用各种锁机制访问变量，ThreadLocal 的思想就是用空间换时间，使各线程都能访问属于自己这一份的变量副本，线程之间的变量值互不干扰，减少同一个线程内的多个函数或者组件之间一些公共变量传递的复杂度。</p>
-        
-          <a class="article-more-a" href="/2019/07/16/%E6%B5%85%E6%9E%90ThreadLocal/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">并发</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/07/16/%E6%B5%85%E6%9E%90ThreadLocal/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-JAVA中的四种引用" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/07/14/JAVA%E4%B8%AD%E7%9A%84%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8/">JAVA中的四种引用</a>
-    </h1>
-  
-
-        
-        <a href="/2019/07/14/JAVA%E4%B8%AD%E7%9A%84%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8/" class="archive-article-date">
-  	<time datetime="2019-07-14T03:38:12.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-14</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在 JDK1.2 之前，java 中的引用定义很传统：如果 reference 类型的数据中存储的数值代表的是另外一块内存的起始地址，就称这块内存代表着引用。这种定义很纯粹，但对于描述一些 “弃之可惜，食之无味” 的对象就显得无能为力。我们希望描述这样一类对象：当内存空间足够时，则能保留在内存之中；如果内存空间在进行完垃圾回收之后还是很紧张，则可以抛弃这些对象。于是在 JDK1.2 之后，java 对引用的概念进行了扩充，将引用分为强引用 (Strong Reference)、软引用 (Soft Reference)、弱引用 (Weak Reference)、虚引用 (Phantom Reference) 4 种，这 4 种引用强度依次逐渐减弱。</p>
-        
-          <a class="article-more-a" href="/2019/07/14/JAVA%E4%B8%AD%E7%9A%84%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">JAVA基础</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/07/14/JAVA%E4%B8%AD%E7%9A%84%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/">Next »</a>
@@ -1051,6 +1087,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">servlet</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">分布式</a>
               </li>
             
             <div class="clearfix"></div>
