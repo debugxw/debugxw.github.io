@@ -6,19 +6,19 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title> - Hexo</title>
+  <title>RocketMQ之消息存储 - Hexo</title>
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="google" content="notranslate" />
   
   <meta name="description" content="一、消息存储整体架构RocketMQ作为现代消息队列中...">
   <meta name="author" content="John Doe">
-  <link rel="icon" href="/images/icons/favicon-16x16.png" type="image/png" sizes="16x16">
-  <link rel="icon" href="/images/icons/favicon-32x32.png" type="image/png" sizes="32x32">
-  <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png" sizes="180x180">
-  <meta rel="mask-icon" href="/images/icons/stun-logo.svg" color="#333333">
+  <link rel="icon" href="/images/icons/favicon-32x32.png" type="image/png" sizes="16x16">
+  <link rel="icon" href="/images/icons/favicon-64x64.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/images/icons/favicon-128x128.png" sizes="180x180">
+  <meta rel="mask-icon" href="/images/icons/favicon-128x128.png" color="#333333">
   
-    <meta rel="msapplication-TileImage" content="/images/icons/favicon-144x144.png">
+    <meta rel="msapplication-TileImage" content="/images/icons/favicon-128x128.png">
     <meta rel="msapplication-TileColor" content="#000000">
   
 
@@ -61,7 +61,7 @@
       fancybox: true,
       pjax: false,
       loading: {
-        gif: '/images/theme/loading.gif',
+        gif: '/images/theme/my_loading.gif',
         lottie: ''
       },
       lazyload: {
@@ -139,6 +139,28 @@
     
 
 
+  <nav class="navbar">
+    <div class="left">
+      
+        <i class="iconfont iconhome j-navbar-back-home"></i>
+      
+      
+        <i class="iconfont iconqrcode j-navbar-qrcode"></i>
+      
+      
+        <i class="iconfont iconmoono" id="color-toggle" color-toggle="light"></i>
+      
+      
+    </div>
+    <div class="center">RocketMQ之消息存储</div>
+    <div class="right">
+      <i class="iconfont iconmenu j-navbar-menu"></i>
+    </div>
+    
+      <div id="qrcode-navbar"></div>
+    
+  </nav>
+
   
   
 
@@ -172,21 +194,24 @@
       <div class="col-xl-6"><article class="article">
   <div class="wrap">
     <section class="head">
-  <img   class="lazyload" data-original="/images/theme/post-image.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  draggable="false">
+  <img   class="lazyload" data-original="/images/theme/001.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  draggable="false">
   <div class="head-mask">
-    <h1 class="head-title"></h1>
+    <h1 class="head-title">RocketMQ之消息存储</h1>
     <div class="head-info">
       <span class="post-info-item"><i class="iconfont iconcalendar"></i>May 14, 2023</span>
       
-      <span class="post-info-item"><i class="iconfont iconfont-size"></i>4811</span>
+      <span class="post-info-item"><i class="iconfont iconfont-size"></i>4805</span>
     </div>
   </div>
 </section>
     <section class="main">
       <section class="content">
         
+          <p>基于CommitLog的存储机制，支持多种故障转移机制，保证高效、可靠的消息传输</p>
+        
         <h2 id="一、消息存储整体架构"><a href="#一、消息存储整体架构" class="headerlink" title="一、消息存储整体架构"></a>一、消息存储整体架构</h2><p>RocketMQ作为现代消息队列中的佼佼者，其本质上还是一个分布式的存储系统，而决定一个存储系统性能的好坏，最主要的就是它的存储结构。先来看一下RocketMQ消息存储的整体架构：</p>
-<p><img    class="lazyload" data-original="/../img/rocket_mq/RocketMQ%E6%B6%88%E6%81%AF%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84%E5%9B%BE.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="   ><span class="image-caption">消息存储架构图</span></p>
+<center><img   class="lazyload" data-original="../../../../images/rocket_mq/store_design.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  width="100%" height="100%" /></center>
+
 <p>消息存储架构图中主要有下面三个跟消息存储相关的文件</p>
 <h4 id="1-1、CommitLog"><a href="#1-1、CommitLog" class="headerlink" title="1.1、CommitLog"></a>1.1、CommitLog</h4><p>CommitLog文件存储了Broker收到的所有消息，消息以顺序写入的方式追加到该文件末尾，如果文件写满了，就写入下一个文件。单个文件大小默认1G，文件名长度为20位，左边补零，剩余为文件起始偏移量，例如第一个文件名为00000000000000000000，第二个文件名为00000000001073741824（1G&#x3D;1073741824）。为什么要将文件名设置为起始偏移量呢？这就涉及到了后文要介绍的ConsumeQueue</p>
 <h4 id="1-2、ConsumeQueue"><a href="#1-2、ConsumeQueue" class="headerlink" title="1.2、ConsumeQueue"></a>1.2、ConsumeQueue</h4><p>ConsumeQueue文件其本质上是一个索引文件，引入的目的主要是提高消息消费和查询的性能。既然是索引文件，那么自然而然ConsumeQueue中存放的就是消息在CommitLog中的偏移量，这也就解释了为什么CommitLog文件的文件名要设置为起始偏移量了</p>
@@ -229,10 +254,12 @@
 </section>
         
         
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" rel="tag">消息队列</a></li></ul> 
+
         
   <nav class="nav">
     <a></a>
-    <a href="/2023/05/14/%E7%94%A8Java%E5%AE%9E%E7%8E%B0%E4%B8%89%E4%B8%AA%E7%BA%BF%E7%A8%8B%E9%A1%BA%E5%BA%8F%E6%89%93%E5%8D%B0ABC/">三个线程顺序打印ABC<i class="iconfont iconright"></i></a>
+    <a href="/2020/09/19/%E7%94%A8Java%E5%AE%9E%E7%8E%B0%E4%B8%89%E4%B8%AA%E7%BA%BF%E7%A8%8B%E9%A1%BA%E5%BA%8F%E6%89%93%E5%8D%B0ABC/">三个线程顺序打印ABC<i class="iconfont iconright"></i></a>
   </nav>
 
       </section>
@@ -245,7 +272,7 @@
           
   <aside class="toc-wrap">
     <h3 class="toc-title">文章目录：</h3>
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E6%B6%88%E6%81%AF%E5%AD%98%E5%82%A8%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84"><span class="toc-text">一、消息存储整体架构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E9%A1%B5%E7%BC%93%E5%AD%98%E5%92%8C%E5%86%85%E5%AD%98%E6%98%A0%E5%B0%84"><span class="toc-text">二、页缓存和内存映射</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81Q-amp-A"><span class="toc-text">三、Q&amp;A</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1%E3%80%81ConsumeQueue%E5%BC%82%E6%AD%A5%E5%86%99%E5%85%A5%E5%A4%B1%E8%B4%A5%E6%80%8E%E4%B9%88%E5%8A%9E%EF%BC%9F"><span class="toc-text">3.1、ConsumeQueue异步写入失败怎么办？</span></a></li></ol></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E6%B6%88%E6%81%AF%E5%AD%98%E5%82%A8%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84"><span class="toc-text">一、消息存储整体架构</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-1%E3%80%81CommitLog"><span class="toc-text">1.1、CommitLog</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2%E3%80%81ConsumeQueue"><span class="toc-text">1.2、ConsumeQueue</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-3%E3%80%81IndexFile"><span class="toc-text">1.3、IndexFile</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E9%A1%B5%E7%BC%93%E5%AD%98%E5%92%8C%E5%86%85%E5%AD%98%E6%98%A0%E5%B0%84"><span class="toc-text">二、页缓存和内存映射</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1%E3%80%81%E9%A1%B5%E7%BC%93%E5%AD%98"><span class="toc-text">2.1、页缓存</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2%E3%80%81%E5%86%85%E5%AD%98%E6%98%A0%E5%B0%84"><span class="toc-text">2.2、内存映射</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81Q-amp-A"><span class="toc-text">三、Q&amp;A</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1%E3%80%81ConsumeQueue%E5%BC%82%E6%AD%A5%E5%86%99%E5%85%A5%E5%A4%B1%E8%B4%A5%E6%80%8E%E4%B9%88%E5%8A%9E%EF%BC%9F"><span class="toc-text">3.1、ConsumeQueue异步写入失败怎么办？</span></a></li></ol></li></ol>
   </aside>
 
         

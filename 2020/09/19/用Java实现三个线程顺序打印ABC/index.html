@@ -13,12 +13,12 @@
   
   <meta name="description" content="用Java实现三个线程顺序打印ABC这是一道典型的面试...">
   <meta name="author" content="John Doe">
-  <link rel="icon" href="/images/icons/favicon-16x16.png" type="image/png" sizes="16x16">
-  <link rel="icon" href="/images/icons/favicon-32x32.png" type="image/png" sizes="32x32">
-  <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png" sizes="180x180">
-  <meta rel="mask-icon" href="/images/icons/stun-logo.svg" color="#333333">
+  <link rel="icon" href="/images/icons/favicon-32x32.png" type="image/png" sizes="16x16">
+  <link rel="icon" href="/images/icons/favicon-64x64.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/images/icons/favicon-128x128.png" sizes="180x180">
+  <meta rel="mask-icon" href="/images/icons/favicon-128x128.png" color="#333333">
   
-    <meta rel="msapplication-TileImage" content="/images/icons/favicon-144x144.png">
+    <meta rel="msapplication-TileImage" content="/images/icons/favicon-128x128.png">
     <meta rel="msapplication-TileColor" content="#000000">
   
 
@@ -61,7 +61,7 @@
       fancybox: true,
       pjax: false,
       loading: {
-        gif: '/images/theme/loading.gif',
+        gif: '/images/theme/my_loading.gif',
         lottie: ''
       },
       lazyload: {
@@ -194,11 +194,11 @@
       <div class="col-xl-6"><article class="article">
   <div class="wrap">
     <section class="head">
-  <img   class="lazyload" data-original="/images/theme/post-image.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  draggable="false">
+  <img   class="lazyload" data-original="/images/theme/002.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  draggable="false">
   <div class="head-mask">
     <h1 class="head-title">三个线程顺序打印ABC</h1>
     <div class="head-info">
-      <span class="post-info-item"><i class="iconfont iconcalendar"></i>May 14, 2023</span>
+      <span class="post-info-item"><i class="iconfont iconcalendar"></i>September 19, 2020</span>
       
       <span class="post-info-item"><i class="iconfont iconfont-size"></i>5006</span>
     </div>
@@ -206,6 +206,8 @@
 </section>
     <section class="main">
       <section class="content">
+        
+          <p>volatile关键字的巧妙运用</p>
         
         <h2 id="用Java实现三个线程顺序打印ABC"><a href="#用Java实现三个线程顺序打印ABC" class="headerlink" title="用Java实现三个线程顺序打印ABC"></a>用Java实现三个线程顺序打印ABC</h2><p>这是一道典型的面试题，之前在面试的时候就被问到过，但当时的实现方式很low，记得面试官的评价是“嗯。。。也行”。前两天QFC作业题又遇到了，第一反应是用Reentrantlock和Condition来实现，如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">PrintInOrder</span> &#123;<br> <br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-type">Lock</span> <span class="hljs-variable">lock</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ReentrantLock</span>();<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-type">Condition</span> <span class="hljs-variable">waitA</span> <span class="hljs-operator">=</span> lock.newCondition();<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-type">Condition</span> <span class="hljs-variable">waitB</span> <span class="hljs-operator">=</span> lock.newCondition();<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-type">Condition</span> <span class="hljs-variable">waitC</span> <span class="hljs-operator">=</span> lock.newCondition();<br> <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> InterruptedException &#123;<br> <br>        <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Task</span>(<span class="hljs-string">&#x27;A&#x27;</span>, lock, waitC, waitA)).start();<br>        <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Task</span>(<span class="hljs-string">&#x27;B&#x27;</span>, lock, waitA, waitB)).start();<br>        <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Task</span>(<span class="hljs-string">&#x27;C&#x27;</span>, lock, waitB, waitC)).start();<br>        <span class="hljs-comment">// 控制哪一个线程最先开始执行，Condition.await()和notify()有先后顺序</span><br>        <span class="hljs-comment">// 保证主线程在Thread-A调用waitC.await()之后执行waitC.signal()</span><br>        Thread.sleep(<span class="hljs-number">10</span>);<br>        lock.lock();<br>        <span class="hljs-keyword">try</span> &#123;<br>            waitC.signal();<br>        &#125; <span class="hljs-keyword">finally</span> &#123;<br>            lock.unlock();<br>        &#125;<br>    &#125;<br> <br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Task</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Runnable</span> &#123;<br> <br>        <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">PRINT_TIMES</span> <span class="hljs-operator">=</span> <span class="hljs-number">6</span>;<br> <br>        <span class="hljs-keyword">private</span> <span class="hljs-type">char</span> printChar;<br> <br>        <span class="hljs-keyword">private</span> Lock lock;<br> <br>        <span class="hljs-keyword">private</span> Condition conditionAwait;<br> <br>        <span class="hljs-keyword">private</span> Condition conditionNotify;<br> <br>        <span class="hljs-meta">@Override</span><br>        <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> &#123;<br>            <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">printTimes</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; printTimes &lt; PRINT_TIMES; printTimes++) &#123;<br>                lock.lock();<br>                <span class="hljs-keyword">try</span> &#123;<br>                    <span class="hljs-keyword">try</span> &#123;<br>                        conditionAwait.await();<br>                    &#125; <span class="hljs-keyword">catch</span> (InterruptedException e) &#123;<br>                        e.printStackTrace();<br>                    &#125;<br>                    System.out.print(printChar);<br>                    conditionNotify.signal();<br>                &#125; <span class="hljs-keyword">finally</span> &#123;<br>                    lock.unlock();<br>                &#125;<br>            &#125;<br>        &#125;<br> <br>        Task(<span class="hljs-type">char</span> printChar, Lock lock, Condition conditionAwait, Condition conditionNotify) &#123;<br>            <span class="hljs-built_in">this</span>.printChar = printChar;<br>            <span class="hljs-built_in">this</span>.lock = lock;<br>            <span class="hljs-built_in">this</span>.conditionAwait = conditionAwait;<br>            <span class="hljs-built_in">this</span>.conditionNotify = conditionNotify;<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
@@ -235,8 +237,8 @@
 
         
   <nav class="nav">
-    <a href="/2023/05/14/RocketMQ%E4%B9%8B%E6%B6%88%E6%81%AF%E5%AD%98%E5%82%A8/"><i class="iconfont iconleft"></i></a>
-    <a href="/2023/05/13/hello-world/">Hello World<i class="iconfont iconright"></i></a>
+    <a href="/2023/05/14/RocketMQ%E4%B9%8B%E6%B6%88%E6%81%AF%E5%AD%98%E5%82%A8/"><i class="iconfont iconleft"></i>RocketMQ之消息存储</a>
+    <a href="/2019/08/26/%E4%B8%80%E8%87%B4%E6%80%A7%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95/">一致性哈希算法<i class="iconfont iconright"></i></a>
   </nav>
 
       </section>
