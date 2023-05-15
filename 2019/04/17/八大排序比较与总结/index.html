@@ -63,14 +63,14 @@
       fancybox: true,
       pjax: false,
       loading: {
-        gif: '/images/theme/loading.gif',
+        gif: '/img/theme/loading.gif',
         lottie: ''
       },
       lazyload: {
         enable: true,
         only_post: 'false',
         loading: {
-          gif: '/images/theme/loading.gif',
+          gif: '/img/theme/loading.gif',
           lottie: ''
         }
       },
@@ -196,7 +196,7 @@
       <div class="col-xl-6"><article class="article">
   <div class="wrap">
     <section class="head">
-  <img   class="lazyload" data-original="/images/theme/005.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  draggable="false">
+  <img   class="lazyload" data-original="/img/theme/005.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  draggable="false">
   <div class="head-mask">
     <h1 class="head-title">八大排序比较与总结</h1>
     <div class="head-info">
@@ -211,7 +211,7 @@
         
           <p>高效处理、组织、搜索数据</p>
         
-        <center><img   class="lazyload" data-original="../../../../images/sort.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  width="80%" height="80%" /></center>
+        <center><img   class="lazyload" data-original="../../../../img/sort.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  width="80%" height="80%" /></center>
 
 <h2 id="归并排序"><a href="#归并排序" class="headerlink" title="归并排序"></a>归并排序</h2><p>归并排序是建立在归并操作上的一种有效的排序算法，该算法是采用分治法的一个非常典型的应用。其核心思想是将已有序的子序列合并，得到完全有序的序列：即先使每个子序列有序，再使子序列段间有序。算法实现如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MergeSort</span> &#123;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">sort</span><span class="hljs-params">(<span class="hljs-type">int</span>[] a, <span class="hljs-type">int</span> left, <span class="hljs-type">int</span> right)</span> &#123;<br>        <span class="hljs-keyword">if</span> (left &lt; right) &#123;<br>            <span class="hljs-type">int</span> <span class="hljs-variable">mid</span> <span class="hljs-operator">=</span> left + ((right - left) &gt;&gt; <span class="hljs-number">1</span>);<br>            sort(a, left, mid);<br>            sort(a, mid + <span class="hljs-number">1</span>, right);<br>            mergeSort(a, left, mid, right);<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">mergeSort</span><span class="hljs-params">(<span class="hljs-type">int</span>[] a, <span class="hljs-type">int</span> left, <span class="hljs-type">int</span> mid, <span class="hljs-type">int</span> right)</span> &#123;<br>        <span class="hljs-type">int</span>[] tem = <span class="hljs-keyword">new</span> <span class="hljs-title class_">int</span>[right - left + <span class="hljs-number">1</span>];<br>        <span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> left, j = mid + <span class="hljs-number">1</span>, k = <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">while</span> (i &lt;= mid || j &lt;= right) &#123;<br>            <span class="hljs-keyword">if</span> (j &gt; right || (i &lt;= mid &amp;&amp; a[i] &lt; a[j]))<br>                tem[k++] = a[i++];<br>            <span class="hljs-keyword">else</span><br>                tem[k++] = a[j++];<br>        &#125;<br><br>        <span class="hljs-keyword">for</span> (i = left, j = <span class="hljs-number">0</span>; j &lt; k; i++, j++)<br>            a[i] = tem[j];<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>

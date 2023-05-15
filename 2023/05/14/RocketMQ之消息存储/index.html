@@ -61,14 +61,14 @@
       fancybox: true,
       pjax: false,
       loading: {
-        gif: '/images/theme/loading.gif',
+        gif: '/img/theme/loading.gif',
         lottie: ''
       },
       lazyload: {
         enable: true,
         only_post: 'false',
         loading: {
-          gif: '/images/theme/loading.gif',
+          gif: '/img/theme/loading.gif',
           lottie: ''
         }
       },
@@ -194,7 +194,7 @@
       <div class="col-xl-6"><article class="article">
   <div class="wrap">
     <section class="head">
-  <img   class="lazyload" data-original="/images/theme/001.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  draggable="false">
+  <img   class="lazyload" data-original="/img/theme/001.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  draggable="false">
   <div class="head-mask">
     <h1 class="head-title">RocketMQ之消息存储</h1>
     <div class="head-info">
@@ -210,7 +210,7 @@
           <p>基于CommitLog的存储机制，支持多种故障转移机制，保证高效、可靠的消息传输</p>
         
         <h2 id="一、消息存储整体架构"><a href="#一、消息存储整体架构" class="headerlink" title="一、消息存储整体架构"></a>一、消息存储整体架构</h2><p>RocketMQ作为现代消息队列中的佼佼者，其本质上还是一个分布式的存储系统，而决定一个存储系统性能的好坏，最主要的就是它的存储结构。先来看一下RocketMQ消息存储的整体架构：</p>
-<center><img   class="lazyload" data-original="../../../../images/rocket_mq/store_design.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  width="100%" height="100%" /></center>
+<center><img   class="lazyload" data-original="../../../../img/rocket_mq/store_design.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  width="100%" height="100%" /></center>
 
 <p>消息存储架构图中主要有下面三个跟消息存储相关的文件</p>
 <h3 id="1-1、CommitLog"><a href="#1-1、CommitLog" class="headerlink" title="1.1、CommitLog"></a>1.1、CommitLog</h3><p>CommitLog文件存储了Broker收到的所有消息，消息以顺序写入的方式追加到该文件末尾，如果文件写满了，就写入下一个文件。单个文件大小默认1G，文件名长度为20位，左边补零，剩余为文件起始偏移量，例如第一个文件名为00000000000000000000，第二个文件名为00000000001073741824（1G&#x3D;1073741824）。为什么要将文件名设置为起始偏移量呢？这就涉及到了后文要介绍的ConsumeQueue</p>
