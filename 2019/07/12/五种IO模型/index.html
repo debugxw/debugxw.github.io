@@ -200,7 +200,7 @@
     <div class="head-info">
       <span class="post-info-item"><i class="iconfont iconcalendar"></i>July 12, 2019</span>
       
-      <span class="post-info-item"><i class="iconfont iconfont-size"></i>5555</span>
+      <span class="post-info-item"><i class="iconfont iconfont-size"></i>5836</span>
     </div>
   </div>
 </section>
@@ -249,8 +249,17 @@
 
 <p>从这里可以看出，<strong>Reactor 的核心思想就是 I&#x2F;O 多路复用</strong>。注意，上面的图中展示的是顺序处理每个事件，当然为了提高事件处理速度，可以通过多线程或者线程池的方式来处理事件。</p>
 <p>而在 Proactor 模式中，当检测到有事件发生时，会新起一个异步操作，然后交由内核线程去处理，当内核线程完成 I&#x2F;O 操作之后，发送一个通知告知操作已完成。可以得知，<strong>Proactor 的使用的是异步 I&#x2F;O 模型</strong></p>
-<h3 id="四、应用"><a href="#四、应用" class="headerlink" title="四、应用"></a>四、应用</h3><blockquote>
-<p>参考：<br>    <a target="_blank" rel="noopener" href="https://www.cnblogs.com/dolphin0520/p/3916526.html">Java NIO：浅析 I&#x2F;O 模型</a><br>    <a target="_blank" rel="noopener" href="http://www.tianshouzhi.com/api/tutorials/netty/221">Unix 五种 I&#x2F;O 模型</a><br>    <a target="_blank" rel="noopener" href="https://www.xncoding.com/2018/04/02/java/io.html">聊聊 Java 中的几种 I&#x2F;O 模型</a></p>
+<h3 id="四、应用"><a href="#四、应用" class="headerlink" title="四、应用"></a>四、应用</h3><h4 id="Redis-IO-模型"><a href="#Redis-IO-模型" class="headerlink" title="Redis IO 模型"></a>Redis IO 模型</h4><p>Redis作为一个高性能键值存储系统，在硬件设备较好的情况下，单机QPS甚至能达到10W+。我们知道，Redis是使用单线程来处理客户端的读写请求的，但是为什么单线程能达到如此高的性能呢？主要有如下几个原因：</p>
+<ol>
+<li>所有的读写操作均基于内存</li>
+<li>单线程避免了资源竞争和线程切换带来的开销</li>
+<li>高效的数据结构</li>
+<li><font color="red">非阻塞IO+多路复用</font></li>
+</ol>
+<p><strong>为什么Redis不使用异步IO，而是IO多路复用？</strong></p>
+<p>异步IO在Linux系统目前为止还不成熟，多路复用是同步IO和异步IO之间的一种折衷方案，并且多路复用模型已经能很大程度上解决并发编程问题</p>
+<h4 id=""><a href="#" class="headerlink" title=""></a></h4><blockquote>
+<p>参考：<br>    <a target="_blank" rel="noopener" href="https://www.cnblogs.com/dolphin0520/p/3916526.html">Java NIO：浅析 I&#x2F;O 模型</a><br>    <a target="_blank" rel="noopener" href="http://www.tianshouzhi.com/api/tutorials/netty/221">Unix 五种 I&#x2F;O 模型</a><br>    <a target="_blank" rel="noopener" href="https://www.xncoding.com/2018/04/02/java/io.html">聊聊 Java 中的几种 I&#x2F;O 模型</a><br>    <a target="_blank" rel="noopener" href="https://tech.meituan.com/2016/11/04/nio.html">Java NIO浅析</a></p>
 </blockquote>
 
       </section>
@@ -286,7 +295,7 @@
           
   <aside class="toc-wrap">
     <h3 class="toc-title">文章目录：</h3>
-    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-text">一、基本概念</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%E3%80%81%E5%90%8C%E6%AD%A5%E3%80%81%E5%BC%82%E6%AD%A5"><span class="toc-text">1、同步、异步</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%E3%80%81%E9%98%BB%E5%A1%9E%E3%80%81%E9%9D%9E%E9%98%BB%E5%A1%9E"><span class="toc-text">2、阻塞、非阻塞</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%E3%80%81%E9%98%BB%E5%A1%9EIO%E3%80%81%E9%9D%9E%E9%98%BB%E5%A1%9EIO"><span class="toc-text">3、阻塞IO、非阻塞IO</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4%E3%80%81%E5%90%8C%E6%AD%A5IO%E3%80%81%E5%BC%82%E6%AD%A5IO"><span class="toc-text">4、同步IO、异步IO</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81Linux%E4%B8%8B%E7%9A%84%E4%BA%94%E7%A7%8DIO%E6%A8%A1%E5%9E%8B"><span class="toc-text">二、Linux下的五种IO模型</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%E3%80%81%E9%98%BB%E5%A1%9EIO"><span class="toc-text">1、阻塞IO</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%E3%80%81%E9%9D%9E%E9%98%BB%E5%A1%9E%E5%BC%8FIO"><span class="toc-text">2、非阻塞式IO</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%E3%80%81IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8"><span class="toc-text">3、IO多路复用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4%E3%80%81%E4%BF%A1%E5%8F%B7%E9%A9%B1%E5%8A%A8IO"><span class="toc-text">4、信号驱动IO</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5%E3%80%81%E5%BC%82%E6%AD%A5IO"><span class="toc-text">5、异步IO</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E4%B8%A4%E7%A7%8D%E9%AB%98%E6%80%A7%E8%83%BDIO%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F"><span class="toc-text">三、两种高性能IO设计模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E5%BA%94%E7%94%A8"><span class="toc-text">四、应用</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-text">一、基本概念</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%E3%80%81%E5%90%8C%E6%AD%A5%E3%80%81%E5%BC%82%E6%AD%A5"><span class="toc-text">1、同步、异步</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%E3%80%81%E9%98%BB%E5%A1%9E%E3%80%81%E9%9D%9E%E9%98%BB%E5%A1%9E"><span class="toc-text">2、阻塞、非阻塞</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%E3%80%81%E9%98%BB%E5%A1%9EIO%E3%80%81%E9%9D%9E%E9%98%BB%E5%A1%9EIO"><span class="toc-text">3、阻塞IO、非阻塞IO</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4%E3%80%81%E5%90%8C%E6%AD%A5IO%E3%80%81%E5%BC%82%E6%AD%A5IO"><span class="toc-text">4、同步IO、异步IO</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81Linux%E4%B8%8B%E7%9A%84%E4%BA%94%E7%A7%8DIO%E6%A8%A1%E5%9E%8B"><span class="toc-text">二、Linux下的五种IO模型</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%E3%80%81%E9%98%BB%E5%A1%9EIO"><span class="toc-text">1、阻塞IO</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%E3%80%81%E9%9D%9E%E9%98%BB%E5%A1%9E%E5%BC%8FIO"><span class="toc-text">2、非阻塞式IO</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%E3%80%81IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8"><span class="toc-text">3、IO多路复用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4%E3%80%81%E4%BF%A1%E5%8F%B7%E9%A9%B1%E5%8A%A8IO"><span class="toc-text">4、信号驱动IO</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5%E3%80%81%E5%BC%82%E6%AD%A5IO"><span class="toc-text">5、异步IO</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E4%B8%A4%E7%A7%8D%E9%AB%98%E6%80%A7%E8%83%BDIO%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F"><span class="toc-text">三、两种高性能IO设计模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E5%BA%94%E7%94%A8"><span class="toc-text">四、应用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Redis-IO-%E6%A8%A1%E5%9E%8B"><span class="toc-text">Redis IO 模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link"><span class="toc-text"></span></a></li></ol></li></ol>
   </aside>
 
         
