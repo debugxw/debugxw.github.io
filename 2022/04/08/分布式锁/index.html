@@ -267,7 +267,7 @@
 </ol>
 <center><image src="../../../../img/distributed/redis_red_lock_time.png" width="60%" height="60%"/></center>
 
-<p>Martin认为，GC可能发生在程序的任意时刻，而且执行时间也是不可控的。<br>仔细想想，这个问题其实和上文提到的<a href=""><strong>锁过期时间问题</strong></a>有点类似，<strong>锁过期时间问题</strong>我们可以使用<strong>续期</strong>操作来避免，但是RedLock却没有类似的机制</p>
+<p>Martin认为，GC可能发生在程序的任意时刻，而且执行时间也是不可控的。<br>仔细想想，这个问题其实和上文提到的<a target="_blank" rel="noopener" href="https://debugxw.github.io/2022/04/08/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/#%E9%94%81%E8%BF%87%E6%9C%9F%E6%97%B6%E9%97%B4%E9%97%AE%E9%A2%98"><strong>锁过期时间问题</strong></a>有点类似，<strong>锁过期时间问题</strong>我们可以使用<strong>续期</strong>操作来避免，但是RedLock却没有类似的机制</p>
 <h4 id="3、假设时钟正确是不合理的"><a href="#3、假设时钟正确是不合理的" class="headerlink" title="3、假设时钟正确是不合理的"></a>3、假设时钟正确是不合理的</h4><p>又或者，当多个Redis节点<strong>时钟</strong>发生问题时，也会导致Redlock锁失效，例如：</p>
 <center><image src="../../../../img/distributed/redis_red_lock_process_pause.png" width="60%" height="60%"/></center>
 
