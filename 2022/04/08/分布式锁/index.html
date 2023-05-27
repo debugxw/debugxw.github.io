@@ -192,7 +192,7 @@
     <div class="head-info">
       <span class="post-info-item"><i class="iconfont iconcalendar"></i>April 08, 2022</span>
       
-      <span class="post-info-item"><i class="iconfont iconfont-size"></i>7765</span>
+      <span class="post-info-item"><i class="iconfont iconfont-size"></i>8996</span>
     </div>
   </div>
 </section>
@@ -220,10 +220,10 @@
 <p>如何解决这个问题呢？<br>既然无法准确评估过期时间该设置为多少，那么我们就定时去检测。一种解决方案是先给锁设置一个较短过期时间，在拿到锁之后，启动一个定时任务去检测锁的过期时间，如果锁快要过期了，但是业务还没有执行完成，那么就重新设置锁的过期时间，相当于是给锁执行一个<strong>续期</strong>操作。一些三方工具已经帮助我们实现了这些功能，比如Redisson</p>
 <h3 id="错误释放锁"><a href="#错误释放锁" class="headerlink" title="错误释放锁"></a>错误释放锁</h3><p>上面的加锁解锁操作其实还有一点小问题，如下所示：</p>
 <p><img   class="lazyload" data-original="/../../../../img/distributed/redis_lock_%E8%AF%AF%E9%87%8A%E6%94%BE.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ></p>
-<p>假设当前clientA占有锁，在t1时刻，clientA执行完业务操作，但还未释放锁。假设这个时候锁过期，恰巧clientB这个时候尝试去获取锁，因为clientA占用的锁已过期，所以clientB能够获取到锁。接下来clientA执行到释放锁这个操作，但是clientA并不知道此时锁已经被clientB占用，所以clientB占用的锁会被错误的释放。接下来如果有其他的客户端再来尝试获取锁（例如t2时刻clientC来获取锁），显然也是可以成功的，那么就同时存在两个客户端持有锁，显然是不安全的！</p>
+<p>假设当前clientA占有锁，在t1时刻，clientA执行完业务操作，但还未释放锁，并且锁刚好过期。在 t2 时刻 clientB 尝试去获取锁，因为clientA占用的锁已过期，所以clientB能够获取到锁。接下来clientA执行到释放锁这个操作，但是clientA并不知道此时锁已经被clientB占用，所以clientB占用的锁会被错误的释放。接下来如果有其他的客户端再来尝试获取锁（例如t3时刻clientC来获取锁），也是可以成功的，那么就同时存在两个客户端持有锁，显然是不安全的！</p>
 <p>解决方案：<strong>客户端在设置锁时，添加一个唯一标识</strong>，如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">set</span> <span class="hljs-string">&#x27;lock&#x27;</span> <span class="hljs-string">&#x27;clientA_timestamp&#x27;</span> nx ex 10 <br><span class="hljs-keyword">do</span> something<br>Lua start<br>    <span class="hljs-keyword">if</span> get(<span class="hljs-string">&#x27;lock&#x27;</span>) == <span class="hljs-string">&#x27;clientA_timestamp&#x27;</span><br>        del <span class="hljs-string">&#x27;lock&#x27;</span><br>Lua end<br></code></pre></td></tr></table></figure>
-<p>在释放锁的时候，先判断锁是不是自己加的，如果是，再释放，这样就可以避免锁被错误释放的问题<br>这里的Lua是一种脚本语言，它可以确保最后的<code>if</code>和<code>del</code>成为一个原子操作（如果没有lua，最后的<code>if</code>和<code>del</code>就不是一个原子操作，在极端的情况下，还是会出现上面的问题，比如clientB可以在<code>if</code>和<code>del</code>之间进行加锁操作，而clientA的<code>del</code>操作也会错误的释放clientB的锁）</p>
+<p>在释放锁的时候，先判断锁是不是自己加的，如果是，再释放，这样就可以避免锁被错误释放的问题<br>这里的Lua是一种脚本语言，它可以确保最后的<code>if</code>和<code>del</code>成为一个原子操作（如果没有lua，最后的<code>if</code>和<code>del</code>就不是一个原子操作，在极端的情况下，还是会出现上面的问题，比如锁在<code>if</code>操作之后、<code>del</code>操作之前过期，那么 clientB 就可以在<code>if</code>和<code>del</code>之间进行加锁操作，后面 clientA 的<code>del</code>操作也会错误的释放 clientB 的锁）</p>
 <h3 id="集群带来的安全性问题"><a href="#集群带来的安全性问题" class="headerlink" title="集群带来的安全性问题"></a>集群带来的安全性问题</h3><p>我们在使用Redis时，一般都会采用<strong>集群+哨兵</strong>的部署方式，这种部署方式的好处是可用性高、扩展性好，但这也同时提高了系统的复杂度。这时如果主节点挂掉，那么就有可能出现两个客户端同时持有锁的情况，如下：</p>
 <p><img   class="lazyload" data-original="/../../../../img/distributed/redis_lock_cluster_problem.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ></p>
 <ul>
@@ -231,8 +231,8 @@
 <li>t2：master宕机，发生主从切换（<strong>此时clientA获取的锁数据还未复制至从节点，主从切换就会导致锁数据丢失</strong>）</li>
 <li>t3：clientB尝试从new_master节点获取锁成功（因为之前的锁数据丢失了，所以clientB能成功拿到锁）</li>
 </ul>
-<p>可以看到，在主从模式下，用Redis实现分布式锁是不安全的。这里的主要原因在于<strong>Redis主从复制是异步的</strong>，如果把它改为同步的方式也就可以避免上面的问题，但是Redis并没有提供同步的主从复制方式，而如果我们直接去改源码，代价又太大。那有没有一种更好的解决方案呢？<br>好在Redis的作者提出了一种名为<strong>RedLock</strong>的方案，但它真的可以保证绝对的安全吗？</p>
-<h3 id="RedLock"><a href="#RedLock" class="headerlink" title="RedLock"></a>RedLock</h3><p>再试用RedLock时，我们需要部署多个实例（它们之间是没有任何关系的，都是一个个孤立的的实例），官方推荐5个，具体加锁步骤为：</p>
+<p>可以看到，在主从模式下，用Redis实现分布式锁是不安全的。这里的主要原因在于<strong>Redis主从复制是异步的</strong>，如果把它改为同步的方式也就可以避免上面的问题，但是Redis并没有提供同步的主从复制方式，而如果我们直接去改源码，代价又太大，最重要的是同步的主从复制方式还会降低 Redis 的响应时间。那有没有一种更好的解决方案呢？<br>好在Redis的作者提出了一种名为<strong>RedLock</strong>的方案，但它真的可以保证绝对的安全吗？</p>
+<h3 id="RedLock"><a href="#RedLock" class="headerlink" title="RedLock"></a>RedLock</h3><p>在使用RedLock时，我们需要部署多个实例（它们之间是没有任何关系的，都是一个个孤立的实例），官方推荐5个，具体加锁步骤为：</p>
 <center><image src="../../../../img/distributed/redis_red_lock.png" width="60%" height="60%"/></center>
 
 <ol>
@@ -243,14 +243,14 @@
 <li>加锁失败，则向<strong>全部节点</strong>发起释放锁请求（前面讲到的Lua脚本先判断再释放锁）</li>
 </ol>
 <p>RedLock的关键点在于<strong>当加锁成功实例数量超过多数时，那么就可以认为加锁成功</strong>。<br>为什么大多数实例加锁成功就可以认为是加锁成功了呢？因为多个Redis实例一起来用，其实就组成了一个<strong>分布式系统</strong>。在分布式系统中，总会出现<strong>异常节点</strong>，所以，在谈论分布式系统问题时，需要考虑异常节点达到多少个，也依旧不会影响整个系统的<strong>正确性</strong>。这是一个分布式系统<strong>容错</strong>问题，这个问题的结论是：<strong>如果只存在</strong>故障<strong>节点，只要大多数节点正常，那么整个系统依旧是可以提供正确服务的</strong>。例如像Zookeeper的ZAB协议其实就是使用的类似的设计思想，这个问题的模型，就是我们常听到的<strong>拜占庭将军</strong>问题。</p>
-<h3 id="Martin对于RedLock的质疑"><a href="#Martin对于RedLock的质疑" class="headerlink" title="Martin对于RedLock的质疑"></a>Martin对于RedLock的质疑</h3><p>Redis作者的这个方案已经提出，就受到了分布式领域专家Martin的质疑，主要阐述了以下几点：</p>
+<h3 id="Martin对于RedLock的质疑"><a href="#Martin对于RedLock的质疑" class="headerlink" title="Martin对于RedLock的质疑"></a>Martin对于RedLock的质疑</h3><p>Redis作者的这个方案一经提出，就受到了分布式领域专家Martin的质疑，主要阐述了以下几点：</p>
 <h4 id="1、分布式锁的目的是什么"><a href="#1、分布式锁的目的是什么" class="headerlink" title="1、分布式锁的目的是什么"></a>1、分布式锁的目的是什么</h4><p>Martin表示，首先你要清楚使用分布式锁的目的是什么，他认为有两点：</p>
 <ol>
 <li><strong>效率</strong>：使用分布式锁的互斥能力，是避免不必要地做同样的两次工作（例如一些昂贵的计算任务）。即使锁失效，也并不会带来恶性的后果，无非就是多做了一次计算而已，例如统计了两次月数据、发了两次邮件等，无伤大雅</li>
 <li><strong>正确性</strong>：使用锁用来防止并发进程互相干扰。如果锁失效，会造成多个进程同时操作同一条数据，产生的后果是数据严重错误、永久性不一致、数据丢失等恶性问题，就像给患者服用了重复剂量的药物，后果很严重</li>
 </ol>
 <p>他认为，如果你是为了效率，那么直接使用单实例的Redis就够了，即使偶尔发生的锁失效问题，也不会产生严重的后果。而使用RedLock太重，完全没有必要。<br>如果你是为了正确性，Martin认为Redlock根本达不到安全性的要求，也依旧存在锁失效的问题！</p>
-<h4 id="2、锁在分布式系统中会遇到的问题"><a href="#2、锁在分布式系统中会遇到的问题" class="headerlink" title="2、锁在分布式系统中会遇到的问题"></a>2、锁在分布式系统中会遇到的问题</h4><p>Martin表示，一个分布式系统，更像一个复杂的野兽，存在着你想不到的各种异常情况。这些异常场景主要包括三大块，这也是分布式系统会遇到的三座大山：NPC</p>
+<h4 id="2、锁在分布式系统中会遇到的问题"><a href="#2、锁在分布式系统中会遇到的问题" class="headerlink" title="2、锁在分布式系统中会遇到的问题"></a>2、锁在分布式系统中会遇到的问题</h4><p>Martin表示，一个分布式系统，更像是一个复杂的野兽，存在着你想不到的各种异常情况。这些异常场景主要包括三大块，这也是分布式系统会遇到的三座大山：NPC</p>
 <ul>
 <li>N：Network Delay，网络延迟</li>
 <li>P：Process Pause，进程暂停（例如GC）</li>
@@ -361,9 +361,47 @@
 <li>成功则执行业务逻辑</li>
 <li>释放锁（删除临时节点）</li>
 </ol>
-<p>临时数据节点还有一个好处就是可以在客户端断开连接的时候自动释放，避免了死锁的发生。而且 Zookeeper 可以保证数据的强一致性，也就是说其中一两个节点挂掉并不会影响到 Zookeeper 集群，这也是上文提到的分布式专家Martin所推荐的分布式锁方案。但是基于 Zookeeper 的分布式锁就一定安全吗？</p>
-<h2 id="三、MySQL实现"><a href="#三、MySQL实现" class="headerlink" title="三、MySQL实现"></a>三、MySQL实现</h2><blockquote>
-<p>参考<br>  <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzIyOTYxNDI5OA==&mid=2247485739&idx=1&sn=1401aba7c5816cf9c5230a28e2e7f2a3&chksm=e8bebe9edfc93788a330364c416f2f07840f4a1e9a2d3c6c788e1283f7fe5bd7aa703d4fa5af&scene=178&cur_album_id=1904080860136390658#rd">深度剖析：Redis分布式锁到底安全吗？看完这篇文章彻底懂了！</a></p>
+<p>临时数据节点除了会被客户端主动删除之外，也会在客户端断开连接的时候自动删除，客户端断开连接大概可以分为两种情况：</p>
+<ul>
+<li>客户端主动断开连接</li>
+<li>由于网络、GC 等原因导致客户端无法上报心跳，Zookeeper 认为客户端挂掉</li>
+</ul>
+<p>临时数据节点在客户端断开连接的时候自动释放，可以有效的避免死锁的发生，但这个机制同时也带来了如下问题：</p>
+<center><img   class="lazyload" data-original="../../../../img/distributed/zookeeper_lock_process_pause.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  width="60%" height="60%" /></center>
+
+<ol>
+<li>clientA 创建 &#x2F;lock 临时数据节点，占有锁</li>
+<li>因为网络、GC 等原因导致 clientA 与 Zookeeper 断开连接，Zookeeper 删除 &#x2F;lock 节点</li>
+<li>clientB 创建 &#x2F;lock 临时数据节点，占有锁</li>
+</ol>
+<p>可以看到当客户端和 Zookeeper 异常断开连接的时候，有可能存在多个客户端同时占有锁的情况，这也就是上面 Redis 作者反驳 Martin 时提到的：<strong>客户端在拿到锁之后，发生NPC，那 RedLock、Zookeeper 都无能为力</strong></p>
+<h2 id="三、数据库实现"><a href="#三、数据库实现" class="headerlink" title="三、数据库实现"></a>三、数据库实现</h2><p>基于数据库实现分布式锁，其核心思想是利用数据库的<strong>唯一索引</strong>来实现互斥的效果。例如：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 表结构定义</span><br><span class="hljs-keyword">create</span> <span class="hljs-keyword">table</span> `distributed_lock` (<br>  id <span class="hljs-type">int</span> auto_increment <span class="hljs-keyword">primary</span> key,<br>  lock_val <span class="hljs-type">int</span> <span class="hljs-keyword">not</span> <span class="hljs-keyword">null</span> <span class="hljs-keyword">default</span> <span class="hljs-number">0</span>,<br>  <span class="hljs-keyword">unique</span> index uidx(lock_val)<br>) engine<span class="hljs-operator">=</span>InnoDB;<br><br><span class="hljs-comment">-- 加锁语句</span><br><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> `distributed_lock`(lock_val) <span class="hljs-keyword">values</span>(<span class="hljs-number">4</span>);<br><br><span class="hljs-comment">-- 解锁语句</span><br><span class="hljs-keyword">delete</span> <span class="hljs-keyword">from</span> `distributed_lock` <span class="hljs-keyword">where</span> lock_val <span class="hljs-operator">=</span> <span class="hljs-number">4</span>;<br></code></pre></td></tr></table></figure>
+
+<p>因为我们对 lock_val 做了唯一性约束，所以当有多个客户端同时提交加锁语句至数据库的话，数据库会保证只有一个请求能够成功。</p>
+<p>但是在我们的日常使用中，基本上不会用数据库来实现分布式锁，主要有以下几点原因：</p>
+<ul>
+<li>性能：相对于 Redis、Zookeeper 来说，数据库实现的分布式锁性能较低</li>
+<li>数据库资源相对来说比较珍贵，不应该把它用在这些地方</li>
+<li>分布式锁的一些基本要求实现起来更加复杂，例如：<ul>
+<li>锁失效机制</li>
+<li>阻塞特性</li>
+<li>可重入</li>
+</ul>
+</li>
+</ul>
+<h2 id="四、总结"><a href="#四、总结" class="headerlink" title="四、总结"></a>四、总结</h2><h3 id="到底要不要用Redlock"><a href="#到底要不要用Redlock" class="headerlink" title="到底要不要用Redlock"></a>到底要不要用Redlock</h3><p>前面也分析了，Redlock 只有建立在<strong>时钟正确</strong>的前提下，才能正常工作，如果你可以保证这个前提，那么可以拿来使用。但是保证时钟正确却不是那么简单：</p>
+<ul>
+<li>首先从硬件角度来说，时钟偏移时有发生，无法避免，例如 CPU 温度、机器负载、芯片材料等影响</li>
+<li>其次，人为暴力修改时钟，也时有发生</li>
+</ul>
+<p>所以个人的看法是尽量不要使用，而且 Redlock 的性能也不及单机版 Redis，部署成本也高。</p>
+<h3 id="正确使用分布式锁"><a href="#正确使用分布式锁" class="headerlink" title="正确使用分布式锁"></a>正确使用分布式锁</h3><ul>
+<li><strong>使用分布式锁，在上层完成</strong>互斥<strong>目的，虽然极端情况下锁会失效，但它可以最大程度把并发请求阻挡在最上层，减轻操作资源层的压力</strong></li>
+<li><strong>但对于要求数据绝对正确的业务，在资源层一定要做好「兜底」，设计思路可以借鉴 fecing token 的方案来做</strong></li>
+</ul>
+<blockquote>
+<p>参考<br>  <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzIyOTYxNDI5OA==&mid=2247485739&idx=1&sn=1401aba7c5816cf9c5230a28e2e7f2a3&chksm=e8bebe9edfc93788a330364c416f2f07840f4a1e9a2d3c6c788e1283f7fe5bd7aa703d4fa5af&scene=178&cur_album_id=1904080860136390658#rd">深度剖析：Redis分布式锁到底安全吗？看完这篇文章彻底懂了！</a><br>  推荐阅读：<br>  <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzIyOTYxNDI5OA==&mid=2247485900&idx=1&sn=a22ccc1754909845aeb74374b89a795a&chksm=e8bebe79dfc9376f646f92a730027e0b2fb80fa65aa24a565ee416671908b1798e90ac67a805&scene=178&cur_album_id=1580920500392869888#rd">计算机时间到底是怎么来的？程序员必看的时间知识！</a></p>
 </blockquote>
 
       </section>
@@ -432,7 +470,7 @@
           
   <aside class="toc-wrap">
     <h3 class="toc-title">文章目录：</h3>
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81Redis%E5%AE%9E%E7%8E%B0"><span class="toc-text">一、Redis实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%94%81%E8%BF%87%E6%9C%9F%E6%97%B6%E9%97%B4%E9%97%AE%E9%A2%98"><span class="toc-text">锁过期时间问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%94%99%E8%AF%AF%E9%87%8A%E6%94%BE%E9%94%81"><span class="toc-text">错误释放锁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9B%86%E7%BE%A4%E5%B8%A6%E6%9D%A5%E7%9A%84%E5%AE%89%E5%85%A8%E6%80%A7%E9%97%AE%E9%A2%98"><span class="toc-text">集群带来的安全性问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RedLock"><span class="toc-text">RedLock</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Martin%E5%AF%B9%E4%BA%8ERedLock%E7%9A%84%E8%B4%A8%E7%96%91"><span class="toc-text">Martin对于RedLock的质疑</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%E3%80%81%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E7%9A%84%E7%9B%AE%E7%9A%84%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-text">1、分布式锁的目的是什么</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%E3%80%81%E9%94%81%E5%9C%A8%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E4%B8%AD%E4%BC%9A%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">2、锁在分布式系统中会遇到的问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%E3%80%81%E5%81%87%E8%AE%BE%E6%97%B6%E9%92%9F%E6%AD%A3%E7%A1%AE%E6%98%AF%E4%B8%8D%E5%90%88%E7%90%86%E7%9A%84"><span class="toc-text">3、假设时钟正确是不合理的</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4%E3%80%81fecing-token%E6%96%B9%E6%A1%88%EF%BC%8C%E4%BF%9D%E8%AF%81%E6%AD%A3%E7%A1%AE%E6%80%A7"><span class="toc-text">4、fecing token方案，保证正确性</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Redis%E4%BD%9C%E8%80%85Antirez%E7%9A%84%E5%8F%8D%E9%A9%B3"><span class="toc-text">Redis作者Antirez的反驳</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%E3%80%81%E8%A7%A3%E9%87%8A%E6%97%B6%E9%92%9F%E9%97%AE%E9%A2%98"><span class="toc-text">1、解释时钟问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%E3%80%81%E8%A7%A3%E9%87%8A%E7%BD%91%E7%BB%9C%E5%BB%B6%E8%BF%9F%E3%80%81GC%E9%97%AE%E9%A2%98"><span class="toc-text">2、解释网络延迟、GC问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%E3%80%81%E8%B4%A8%E7%96%91fencing-token%E6%9C%BA%E5%88%B6"><span class="toc-text">3、质疑fencing token机制</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81Zookeeper%E5%AE%9E%E7%8E%B0"><span class="toc-text">二、Zookeeper实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81MySQL%E5%AE%9E%E7%8E%B0"><span class="toc-text">三、MySQL实现</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81Redis%E5%AE%9E%E7%8E%B0"><span class="toc-text">一、Redis实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%94%81%E8%BF%87%E6%9C%9F%E6%97%B6%E9%97%B4%E9%97%AE%E9%A2%98"><span class="toc-text">锁过期时间问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%94%99%E8%AF%AF%E9%87%8A%E6%94%BE%E9%94%81"><span class="toc-text">错误释放锁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9B%86%E7%BE%A4%E5%B8%A6%E6%9D%A5%E7%9A%84%E5%AE%89%E5%85%A8%E6%80%A7%E9%97%AE%E9%A2%98"><span class="toc-text">集群带来的安全性问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RedLock"><span class="toc-text">RedLock</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Martin%E5%AF%B9%E4%BA%8ERedLock%E7%9A%84%E8%B4%A8%E7%96%91"><span class="toc-text">Martin对于RedLock的质疑</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%E3%80%81%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E7%9A%84%E7%9B%AE%E7%9A%84%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-text">1、分布式锁的目的是什么</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%E3%80%81%E9%94%81%E5%9C%A8%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E4%B8%AD%E4%BC%9A%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">2、锁在分布式系统中会遇到的问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%E3%80%81%E5%81%87%E8%AE%BE%E6%97%B6%E9%92%9F%E6%AD%A3%E7%A1%AE%E6%98%AF%E4%B8%8D%E5%90%88%E7%90%86%E7%9A%84"><span class="toc-text">3、假设时钟正确是不合理的</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4%E3%80%81fecing-token%E6%96%B9%E6%A1%88%EF%BC%8C%E4%BF%9D%E8%AF%81%E6%AD%A3%E7%A1%AE%E6%80%A7"><span class="toc-text">4、fecing token方案，保证正确性</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Redis%E4%BD%9C%E8%80%85Antirez%E7%9A%84%E5%8F%8D%E9%A9%B3"><span class="toc-text">Redis作者Antirez的反驳</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%E3%80%81%E8%A7%A3%E9%87%8A%E6%97%B6%E9%92%9F%E9%97%AE%E9%A2%98"><span class="toc-text">1、解释时钟问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%E3%80%81%E8%A7%A3%E9%87%8A%E7%BD%91%E7%BB%9C%E5%BB%B6%E8%BF%9F%E3%80%81GC%E9%97%AE%E9%A2%98"><span class="toc-text">2、解释网络延迟、GC问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%E3%80%81%E8%B4%A8%E7%96%91fencing-token%E6%9C%BA%E5%88%B6"><span class="toc-text">3、质疑fencing token机制</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81Zookeeper%E5%AE%9E%E7%8E%B0"><span class="toc-text">二、Zookeeper实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%9E%E7%8E%B0"><span class="toc-text">三、数据库实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E6%80%BB%E7%BB%93"><span class="toc-text">四、总结</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%B0%E5%BA%95%E8%A6%81%E4%B8%8D%E8%A6%81%E7%94%A8Redlock"><span class="toc-text">到底要不要用Redlock</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A3%E7%A1%AE%E4%BD%BF%E7%94%A8%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="toc-text">正确使用分布式锁</span></a></li></ol></li></ol>
   </aside>
 
         
