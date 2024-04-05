@@ -192,7 +192,7 @@
     <div class="head-info">
       <span class="post-info-item"><i class="iconfont iconcalendar"></i>March 01, 2024</span>
       
-      <span class="post-info-item"><i class="iconfont iconfont-size"></i>1601</span>
+      <span class="post-info-item"><i class="iconfont iconfont-size"></i>1807</span>
     </div>
   </div>
 </section>
@@ -226,6 +226,7 @@
 <blockquote>
 <p>实际上pprof就是将采样过程中的程序运行情况生成一个profile文件，然后我们就可以通过graphviz这样的图形化分析工具，查看程序的运行情况</p>
 </blockquote>
+<p><strong>还有一个问题，困扰了我许久，CPU为什么也会飙得这么高呢？</strong><br>从数据库查询两百万的数据，基本上是属于I&#x2F;O操作，内存高可以理解，CPU为什么也会这么高呢？<br>原来是因为：上面截图里面的<strong>CPU使用量（m）</strong>，这里的单位是m，简单来说1核&#x3D;1000m，那么16m也就才0.016核，完全可以理解<br>（主要是一刚开始看到内存和CPU一起飙高，潜意识认为CPU的使用量单位是百分比，就以为CPU100%了。。。）</p>
 
       </section>
       <section class="extra">
