@@ -1,0 +1,430 @@
+
+
+<!DOCTYPE html>
+<html lang="en" color-mode=light>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>DNS解析 - 读万卷书，行万里路</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="google" content="notranslate" />
+  
+  <meta name="description" content="最近写了一个新的服务，需要将其部署在公司的ranche...">
+  <meta name="author" content="John Doe">
+  <link rel="icon" href="/img/icons/favicon-32x32.png" type="image/png" sizes="16x16">
+  <link rel="icon" href="/img/icons/favicon-64x64.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/img/icons/favicon-128x128.png" sizes="180x180">
+  <meta rel="mask-icon" href="/img/icons/favicon-128x128.png" color="#333333">
+  
+    <meta rel="msapplication-TileImage" content="/img/icons/favicon-128x128.png">
+    <meta rel="msapplication-TileColor" content="#000000">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+    
+<link rel="stylesheet" href="https://at.alicdn.com/t/font_1445822_p6ry5n7lrr.css">
+
+  
+
+  
+    
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css">
+
+  
+
+  
+    
+      
+        
+        
+<link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.18.1/styles/github.min.css" name="highlight-style" mode="light">
+
+      
+        
+        
+<link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.18.1/styles/github-dark.min.css" name="highlight-style" mode="dark">
+
+      
+  
+
+  <script>
+    var CONFIG = window.CONFIG || {};
+    var ZHAOO = window.ZHAOO || {};
+    CONFIG = {
+      isHome: false,
+      fancybox: true,
+      pjax: false,
+      loading: {
+        gif: '/img/theme/loading.gif',
+        lottie: ''
+      },
+      lazyload: {
+        enable: true,
+        only_post: 'false',
+        loading: {
+          gif: '/img/theme/loading.gif',
+          lottie: ''
+        }
+      },
+      donate: {
+        enable: true,
+        alipay: 'https://pic.izhaoo.com/alipay.jpg',
+        wechat: 'https://pic.izhaoo.com/wechat.jpg'
+      },
+      galleries: {
+        enable: true
+      },
+      fab: {
+        enable: true,
+        always_show: false
+      },
+      carrier: {
+        enable: true
+      },
+      daovoice: {
+        enable: false
+      },
+      preview: {
+        background: {
+          default: '',
+          api: ''
+        },
+        motto: {
+          default: '我在开了灯的床头下，想问问自己的心啊。',
+          typing: true,
+          api: 'https://v2.jinrishici.com/one.json',
+          data_contents: '["data","content"]'
+        },
+      },
+      qrcode: {
+        enable: false,
+        type: 'url',
+        image: 'https://pic.izhaoo.com/weapp-code.jpg',
+      },
+      toc: {
+        enable: true
+      },
+      scrollbar: {
+        type: 'default'
+      },
+      notification: {
+        enable: false,
+        delay: 4500,
+        list: '',
+        page_white_list: '',
+        page_black_list: ''
+      },
+      search: {
+        enable: false,
+        path: ''
+      }
+    }
+  </script>
+
+  
+
+  
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="lock-screen">
+  <div class="loading" id="loading"></div>
+  
+    
+
+
+  <nav class="navbar">
+    <div class="left">
+      
+        <i class="iconfont iconhome j-navbar-back-home"></i>
+      
+      
+      
+        <i class="iconfont iconmoono" id="color-toggle" color-toggle="light"></i>
+      
+      
+    </div>
+    <div class="center">DNS解析</div>
+    <div class="right">
+      <i class="iconfont iconmenu j-navbar-menu"></i>
+    </div>
+    
+  </nav>
+
+  
+  
+
+<nav class="menu">
+  <div class="menu-container">
+    <div class="menu-close">
+      <i class="iconfont iconbaseline-close-px"></i>
+    </div>
+    <ul class="menu-content"><li class="menu-item">
+        <a href="/ " class="underline "> 首页</a>
+      </li><li class="menu-item">
+        <a href="/archives/ " class="underline "> 归档</a>
+      </li><li class="menu-item">
+        <a href="/tags/ " class="underline "> 标签</a>
+      </li><li class="menu-item">
+        <a href="/about/ " class="underline "> 关于</a>
+      </li></ul>
+    
+      <div class="menu-copyright"><p>Powered by <a target="_blank" href="https://hexo.io">Hexo</a>  |  Theme - <a target="_blank" href="https://github.com/izhaoo/hexo-theme-zhaoo">zhaoo</a></p></div>
+    
+  </div>
+</nav>
+  <main id="main">
+  <div class="article-wrap">
+    <div class="row container">
+      <div class="col-xl-3"></div>
+      <div class="col-xl-6"><article class="article">
+  <div class="wrap">
+    <section class="head">
+  <img   class="lazyload" data-original="/img/theme/030.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  draggable="false">
+  <div class="head-mask">
+    <h1 class="head-title">DNS解析</h1>
+    <div class="head-info">
+      <span class="post-info-item"><i class="iconfont iconcalendar"></i>December 01, 2021</span>
+      
+      <span class="post-info-item"><i class="iconfont iconfont-size"></i>1707</span>
+    </div>
+  </div>
+</section>
+    <section class="main">
+      <section class="content">
+        
+          <p>域名和IP地址之间的一种转换机制</p>
+        
+        <p>最近写了一个新的服务，需要将其部署在公司的rancher上面，同时提供公网域名。于是依葫芦画瓢，按照rancher已有域名的配置，配置上我自己的服务。公司已有二级域名：<code>company.com</code>，之前能够访问的域名地址为：<code>https://old.company.com/old/path</code>。我新增加了域名<code>new.company.com</code>，并将<code>/new/path</code>打到了我的新服务上面。但是配置完了之后，死活无法正常访问，问题如下：</p>
+<p><code>https://new.company.com/new/path</code>无法访问，但是如果将域名配置成<code>old.company.com</code>，也就是<code>https://old.company.com/new/path</code>则能正常访问</p>
+<p>经过一番努力，最终发现是DNS相关的问题。正好来整理下DNS</p>
+<h2 id="域名服务器"><a href="#域名服务器" class="headerlink" title="域名服务器"></a>域名服务器</h2><p>因为互联网是全球资源，单一的域名服务器肯定不足以支撑全部的地址转换操作，同时由于域名是层级结构，所以域名服务器也是对应的层级结构，不同的域名服务器之间相互协作，共同完成全球互联网的地址转换工作</p>
+<p><img    class="lazyload" data-original="/../../../../img/net/DNS_%E5%9F%9F%E5%90%8D%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%88%86%E7%BA%A7.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="   ><span class="image-caption">域名服务器分级</span></p>
+<p>上图展示了DNS服务器的部分层级结构，从上到下依次为根域名服务器、顶级域名服务器、权限域名服务器</p>
+<ul>
+<li><strong>根域名服务器</strong>：根域名服务器是最高层次的域名服务器，它知道所有顶级域名服务器的地址</li>
+<li><strong>顶级域名服务器</strong>：顶级域名服务器负责管理该服务器下的所有二级域名</li>
+<li><strong>权限域名服务器</strong>：负责某一个区域的域名服务器，也就是管理该二级域名下的所有三级域名</li>
+<li><strong>本地域名服务器</strong>：每一个互联网服务提供者ISP都可以是一个本地域名服务器</li>
+</ul>
+<p><strong>8.8.8.8、114.114.114.114这些域名服务器属于是哪一类域名服务器？</strong></p>
+<ul>
+<li>8.8.8.8是谷歌向全球用户提供的一个免费域名服务器，并且其响应速度快、安全、可靠</li>
+<li>114.114.114.114是中国电信提供的免费域名服务器，也是移动、电信、联通三大运营商通用的域名服务器</li>
+</ul>
+<p>从本质上来说，上面的这两个都是本地域名服务器，只不过他们都开放给了互联网上的所有用户<br>但是也有另一种说法，上面这两个不属于上述任意一个域名服务器，而应该称为<strong>公共域名服务器</strong>。但这感觉也是在抠字眼、概念，而从概念上来说，很多公司都搭建有自己的域名服务器，而这种才称之为真正的本地域名服务器，如果公司不想要在你上班的时候摸鱼，那么它就可以在这个本地域名服务器上边做一层拦截，比如禁用bilibili，而如果你使用的刚好是公司的域名服务器，那么这个时候你就没办法访问类似于bilibili这样的娱乐性网站</p>
+<h2 id="DNS解析过程"><a href="#DNS解析过程" class="headerlink" title="DNS解析过程"></a>DNS解析过程</h2><p>查询域名对应的IP地址一般分为两种方式：递归查询和迭代查询</p>
+<ul>
+<li>递归查询：客户端向服务器发出查询请求，如果服务器需要再向其他服务器查询才能得知结果，那么服务器直接向其他服务器发送请求，处理之后将最终结果发送给客户端</li>
+<li>迭代查询：客户端向服务器发出查询请求，如果服务器需要再向其他服务器查询才能得知结果，那么服务器直接告诉客户端其他服务器的地址，并由客户端再次向其他服务器发出查询请求</li>
+</ul>
+<p>综合考虑，DNS解析从主机到本地域名服务器的查询为递归查询，从本地域名服务器到其他域名服务器的查询为迭代查询，查询过程如下所示</p>
+<p><img    class="lazyload" data-original="/../../../../img/net/DNS%E8%A7%A3%E6%9E%90%E8%BF%87%E7%A8%8B.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="   ><span class="image-caption">DNS解析过程</span></p>
+<ol start="0">
+<li>依次查询浏览器缓存、本地HOST（有些路由器也会有域名缓存），命中缓存则结束</li>
+<li>主机向本地域名服务器发起查询请求，如果本地域名服务器命中缓存，则直接返回</li>
+<li>本地域名服务器向某一个根域名服务器发起查询请求</li>
+<li>根域名服务器告诉本地域名服务器接下来该去哪一个顶级域名服务器查询</li>
+<li>本地域名服务器向顶级域名服务器发起查询请求</li>
+<li>顶级域名服务器告诉本地域名服务器接下来该去哪一个权限域名服务器查询</li>
+<li>本地域名服务器向权限域名服务器发起查询请求</li>
+<li>权限域名服务器告诉本地域名服务器查询结果</li>
+<li>本地域名服务器告诉主机查询结果</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>对于文章开头遇到的问题，那么也就明了了，对于域名<code>old.company.com</code>，本地域名服务器是能够解析的，但是对于<code>new.company.com</code>，只有根域名服务器、顶级域名服务器能够解析，但是到了权限域名服务器这里，就没有办法解析了，因为<code>new</code>这个三级域名是没有配置的</p>
+
+      </section>
+      <section class="extra">
+        
+        
+          <section class="donate">
+  <div id="qrcode-donate">
+    <img   class="lazyload" data-original="https://pic.izhaoo.com/alipay.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" >
+  </div>
+  <div class="icon">
+    <a href="javascript:;" id="alipay"><i class="iconfont iconalipay"></i></a>
+    <a href="javascript:;" id="wechat"><i class="iconfont iconwechat-fill"></i></a>
+  </div>
+</section>
+        
+        
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag">网络</a></li></ul> 
+
+        
+  <nav class="nav">
+    <a href="/2022/04/08/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/"><i class="iconfont iconleft"></i>分布式锁</a>
+    <a href="/2020/09/27/Guava%E4%B9%8BJoiner%E3%80%81Splitter/">Guava之Joiner、Splitter<i class="iconfont iconright"></i></a>
+  </nav>
+
+      </section>
+      
+        <section class="comments">
+  
+    <div class="btn" id="comments-btn">查看评论</div>
+  
+  
+<div id="valine"></div>
+<script defer src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<script>
+  window.onload = function () {
+    var loadValine = function () {
+      new Valine({
+        el: '#valine',
+        app_id: "cJOoEEu3sAMF6OftYqgFknB0-gzGzoHsz",
+        app_key: "vJR5GGKTPoLqB5pwiWlNqsP5",
+        placeholder: "雁过留痕",
+        avatar: "mp",
+        pageSize: "10",
+        lang: "zh-CN",
+      });
+    }
+    if ( true ) {
+      $("#comments-btn").on("click", function () {
+        $(this).hide();
+        loadValine();
+      });
+    } else {
+      loadValine();
+    }
+  };
+</script>
+
+</section>
+      
+    </section>
+  </div>
+</article></div>
+      <div class="col-xl-3">
+        
+          
+        
+      </div>
+    </div>
+  </div>
+</main>
+  
+
+<footer class="footer">
+  <div class="footer-social"><a 
+        href="tencent://message/?Menu=yes&uin=894519210 "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#12B7F5'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconQQ "></i>
+      </a><a 
+        href="javascript:; "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#09BB07'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconwechat-fill "></i>
+      </a><a 
+        href="https://www.instagram.com/izhaoo/ "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#DA2E76'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconinstagram "></i>
+      </a><a 
+        href="https://github.com/zhaoo "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#9f7be1'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  icongithub-fill "></i>
+      </a><a 
+        href="mailto:izhaoo@163.com "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color=#FF3B00" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconmail"></i>
+      </a></div>
+  
+    <div class="footer-copyright"><p>Powered by <a target="_blank" href="https://hexo.io">Hexo</a>  |  Theme - <a target="_blank" href="https://github.com/izhaoo/hexo-theme-zhaoo">zhaoo</a></p></div>
+  
+</footer>
+  
+      <div class="fab fab-plus">
+    <i class="iconfont iconplus"></i>
+  </div>
+  
+  
+  
+  <div class="fab fab-up">
+    <i class="iconfont iconcaret-up"></i>
+  </div>
+  
+  
+  
+    
+<script src="/js/color-mode.js"></script>
+
+  
+  
+</body>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+
+
+
+  
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
+
+
+
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
+
+
+
+
+
+
+
+<script src="/js/utils.js"></script>
+<script src="/js/script.js"></script>
+
+
+
+
+
+
+
+  <script>
+    (function () {
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      } else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+</html>
