@@ -1,0 +1,427 @@
+
+
+<!DOCTYPE html>
+<html lang="en" color-mode=light>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>RocketMQ之消息存储 - Hexo</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="google" content="notranslate" />
+  
+  <meta name="description" content="一、消息存储整体架构RocketMQ作为现代消息队列中...">
+  <meta name="author" content="John Doe">
+  <link rel="icon" href="/img/icons/favicon-32x32.png" type="image/png" sizes="16x16">
+  <link rel="icon" href="/img/icons/favicon-64x64.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/img/icons/favicon-128x128.png" sizes="180x180">
+  <meta rel="mask-icon" href="/img/icons/favicon-128x128.png" color="#333333">
+  
+    <meta rel="msapplication-TileImage" content="/img/icons/favicon-128x128.png">
+    <meta rel="msapplication-TileColor" content="#000000">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+    
+<link rel="stylesheet" href="https://at.alicdn.com/t/font_1445822_p6ry5n7lrr.css">
+
+  
+
+  
+    
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css">
+
+  
+
+  
+    
+      
+        
+        
+<link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.18.1/styles/github.min.css" name="highlight-style" mode="light">
+
+      
+        
+        
+<link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.18.1/styles/github-dark.min.css" name="highlight-style" mode="dark">
+
+      
+  
+
+  <script>
+    var CONFIG = window.CONFIG || {};
+    var ZHAOO = window.ZHAOO || {};
+    CONFIG = {
+      isHome: false,
+      fancybox: true,
+      pjax: false,
+      loading: {
+        gif: '/img/theme/loading.gif',
+        lottie: ''
+      },
+      lazyload: {
+        enable: true,
+        only_post: 'false',
+        loading: {
+          gif: '/img/theme/loading.gif',
+          lottie: ''
+        }
+      },
+      donate: {
+        enable: true,
+        alipay: 'https://pic.izhaoo.com/alipay.jpg',
+        wechat: 'https://pic.izhaoo.com/wechat.jpg'
+      },
+      galleries: {
+        enable: true
+      },
+      fab: {
+        enable: true,
+        always_show: false
+      },
+      carrier: {
+        enable: true
+      },
+      daovoice: {
+        enable: false
+      },
+      preview: {
+        background: {
+          default: '',
+          api: ''
+        },
+        motto: {
+          default: '我在开了灯的床头下，想问问自己的心啊。',
+          typing: true,
+          api: 'https://v2.jinrishici.com/one.json',
+          data_contents: '["data","content"]'
+        },
+      },
+      qrcode: {
+        enable: false,
+        type: 'url',
+        image: 'https://pic.izhaoo.com/weapp-code.jpg',
+      },
+      toc: {
+        enable: true
+      },
+      scrollbar: {
+        type: 'default'
+      },
+      notification: {
+        enable: false,
+        delay: 4500,
+        list: '',
+        page_white_list: '',
+        page_black_list: ''
+      },
+      search: {
+        enable: false,
+        path: ''
+      }
+    }
+  </script>
+
+  
+
+  
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="lock-screen">
+  <div class="loading" id="loading"></div>
+  
+    
+
+
+  <nav class="navbar">
+    <div class="left">
+      
+        <i class="iconfont iconhome j-navbar-back-home"></i>
+      
+      
+      
+        <i class="iconfont iconmoono" id="color-toggle" color-toggle="light"></i>
+      
+      
+    </div>
+    <div class="center">RocketMQ之消息存储</div>
+    <div class="right">
+      <i class="iconfont iconmenu j-navbar-menu"></i>
+    </div>
+    
+  </nav>
+
+  
+  
+
+<nav class="menu">
+  <div class="menu-container">
+    <div class="menu-close">
+      <i class="iconfont iconbaseline-close-px"></i>
+    </div>
+    <ul class="menu-content"><li class="menu-item">
+        <a href="/ " class="underline "> 首页</a>
+      </li><li class="menu-item">
+        <a href="/archives/ " class="underline "> 归档</a>
+      </li><li class="menu-item">
+        <a href="/tags/ " class="underline "> 标签</a>
+      </li><li class="menu-item">
+        <a href="/about/ " class="underline "> 关于</a>
+      </li></ul>
+    
+      <div class="menu-copyright"><p>Powered by <a target="_blank" href="https://hexo.io">Hexo</a>  |  Theme - <a target="_blank" href="https://github.com/izhaoo/hexo-theme-zhaoo">zhaoo</a></p></div>
+    
+  </div>
+</nav>
+  <main id="main">
+  <div class="article-wrap">
+    <div class="row container">
+      <div class="col-xl-3"></div>
+      <div class="col-xl-6"><article class="article">
+  <div class="wrap">
+    <section class="head">
+  <img   class="lazyload" data-original="/img/theme/001.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  draggable="false">
+  <div class="head-mask">
+    <h1 class="head-title">RocketMQ之消息存储</h1>
+    <div class="head-info">
+      <span class="post-info-item"><i class="iconfont iconcalendar"></i>May 14, 2023</span>
+      
+      <span class="post-info-item"><i class="iconfont iconfont-size"></i>4802</span>
+    </div>
+  </div>
+</section>
+    <section class="main">
+      <section class="content">
+        
+          <p>基于CommitLog的存储机制，支持多种故障转移机制，保证高效、可靠的消息传输</p>
+        
+        <h2 id="一、消息存储整体架构"><a href="#一、消息存储整体架构" class="headerlink" title="一、消息存储整体架构"></a>一、消息存储整体架构</h2><p>RocketMQ作为现代消息队列中的佼佼者，其本质上还是一个分布式的存储系统，而决定一个存储系统性能的好坏，最主要的就是它的存储结构。先来看一下RocketMQ消息存储的整体架构：</p>
+<center><img   class="lazyload" data-original="../../../../img/rocket_mq/store_design.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  width="100%" height="100%" /></center>
+
+<p>消息存储架构图中主要有下面三个跟消息存储相关的文件</p>
+<h3 id="1-1、CommitLog"><a href="#1-1、CommitLog" class="headerlink" title="1.1、CommitLog"></a>1.1、CommitLog</h3><p>CommitLog文件存储了Broker收到的所有消息，消息以顺序写入的方式追加到该文件末尾，如果文件写满了，就写入下一个文件。单个文件大小默认1G，文件名长度为20位，左边补零，剩余为文件起始偏移量，例如第一个文件名为00000000000000000000，第二个文件名为00000000001073741824（1G&#x3D;1073741824）。为什么要将文件名设置为起始偏移量呢？这就涉及到了后文要介绍的ConsumeQueue</p>
+<h3 id="1-2、ConsumeQueue"><a href="#1-2、ConsumeQueue" class="headerlink" title="1.2、ConsumeQueue"></a>1.2、ConsumeQueue</h3><p>ConsumeQueue文件其本质上是一个索引文件，引入的目的主要是提高消息消费和查询的性能。既然是索引文件，那么自然而然ConsumeQueue中存放的就是消息在CommitLog中的偏移量，这也就解释了为什么CommitLog文件的文件名要设置为起始偏移量了</p>
+<p>ConsumeQueue中每个索引条目的大小都是固定的，由三个部分组成：</p>
+<ul>
+<li>消息在CommitLog中的偏移位置，占用8个字节</li>
+<li>消息的大小，占用4个字节</li>
+<li>消息tag的哈希值（用于过滤消息），占用8个字节</li>
+</ul>
+<p>单个ConsumeQueue文件由30W个条目组成，可以像数组一样随机访问每一个条目，每个ConsumeQueue文件大小约为5.72M。其存储路径为<code>$HOME/store/consumequeue/&#123;topic&#125;/&#123;queueId&#125;/&#123;fileName&#125;</code></p>
+<h3 id="1-3、IndexFile"><a href="#1-3、IndexFile" class="headerlink" title="1.3、IndexFile"></a>1.3、IndexFile</h3><p>IndexFile本质上也是一个索引文件，它提供了一种可以通过key或时间区间来查询消息的方法。其存储路径为<code>$HOME/store/index/&#123;fileName&#125;</code>，文件名fileName是以创建时的时间戳命名的，固定的单个IndexFile文件大小约为400M，一个IndexFile可以保存2000W个索引，IndexFile的底层存储设计为在文件系统中实现HashMap结构，故RocketMQ的索引文件其底层实现为hash索引</p>
+<p>以上就是RocketMQ的整体存储结构，其主要以文件的形式来存储数据，并通过索引文件来提升消息消费和查询的效率。但是文件始终是保存在磁盘上面的，我们知道，磁盘的I&#x2F;O是特别慢的，大多数系统的性能瓶颈也都是在磁盘I&#x2F;O上面。那为什么RocketMQ将数据存储在磁盘上面，还能实现单机10W+的吞吐量呢？这就涉及到了<strong>页缓存</strong>和<strong>内存映射</strong></p>
+<h2 id="二、页缓存和内存映射"><a href="#二、页缓存和内存映射" class="headerlink" title="二、页缓存和内存映射"></a>二、页缓存和内存映射</h2><h3 id="2-1、页缓存"><a href="#2-1、页缓存" class="headerlink" title="2.1、页缓存"></a>2.1、页缓存</h3><p>页缓存（PageCache）是OS对文件的缓存，用于加速对文件的读写。操作系统会将一部分的内存用作PageCache。对于数据的写入，OS会先写入至PageCache内，随后通过异步的方式由pdflush内核线程将PageCache内的数据刷盘至物理磁盘上。对于数据的读取，如果读取文件时出现未命中PageCache的情况，OS将会从物理磁盘上将文件读取至PageCache，同时还会顺序对其它相邻块的数据文件进行预读取</p>
+<p>在RocketMQ中，ConsumeQueue逻辑消费队列存储的数据较少，并且是顺序读取，在PageCache机制的预读取作用下，ConsumeQueue文件的读性能几乎接近读内存，即使在有消息堆积情况下也不会影响性能</p>
+<h3 id="2-2、内存映射"><a href="#2-2、内存映射" class="headerlink" title="2.2、内存映射"></a>2.2、内存映射</h3><p>简单来说，内存映射就是将磁盘文件直接映射到用户应用程序内存空间，这样就<strong>减少了传统I&#x2F;O中数据在操作系统内核地址空间的缓冲区和用户应用程序地址空间的缓冲区之间来回进行拷贝的性能开销</strong></p>
+<p>RocketMQ主要通过MappedByteBuffer对文件进行读写操作。其中，利用了<a target="_blank" rel="noopener" href="https://www.cnblogs.com/robothy/p/14235598.html">NIO中的FileChannel</a>模型将磁盘上的物理文件直接映射到用户态的内存地址中，将对文件的操作转化为直接对内存地址进行操作，从而极大地提高了文件的读写效率</p>
+<p><strong>正因为需要使用内存映射机制，故RocketMQ的文件存储都使用定长结构来存储，方便一次将整个文件映射至内存</strong></p>
+<h2 id="三、Q-A"><a href="#三、Q-A" class="headerlink" title="三、Q&amp;A"></a>三、Q&amp;A</h2><h3 id="3-1、ConsumeQueue异步写入失败怎么办？"><a href="#3-1、ConsumeQueue异步写入失败怎么办？" class="headerlink" title="3.1、ConsumeQueue异步写入失败怎么办？"></a>3.1、ConsumeQueue异步写入失败怎么办？</h3><p>在读源码的过程中发现，ConsumeQueue是通过异步的方式构建的，也就是说只要主流程写CommitLog成功，就会给Producer返回写入消息成功。那如果程序异常宕机，ConsumeQueue异步构建失败，这条消息还怎么被消费者消费呢？</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// org.apache.rocketmq.store.DefaultMessageStore.ReputMessageService#run</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">while</span> (!<span class="built_in">this</span>.isStopped()) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Thread.sleep(<span class="number">1</span>);</span><br><span class="line">            <span class="built_in">this</span>.doReput();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            DefaultMessageStore.log.warn(<span class="built_in">this</span>.getServiceName() + <span class="string">&quot; service has exception. &quot;</span>, e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// org.apache.rocketmq.store.DefaultMessageStore.ReputMessageService#doReput</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">doReput</span><span class="params">()</span> &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">// 获取CommitLog中存储的新消息</span></span><br><span class="line">    <span class="type">DispatchRequest</span> <span class="variable">dispatchRequest</span> <span class="operator">=</span></span><br><span class="line">            DefaultMessageStore.<span class="built_in">this</span>.commitLog.checkMessageAndReturnSize(result.getByteBuffer(), <span class="literal">false</span>, <span class="literal">false</span>);</span><br><span class="line">    <span class="type">int</span> <span class="variable">size</span> <span class="operator">=</span> dispatchRequest.getBufferSize() == -<span class="number">1</span> ? dispatchRequest.getMsgSize() : dispatchRequest.getBufferSize();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (dispatchRequest.isSuccess()) &#123;</span><br><span class="line">        <span class="keyword">if</span> (size &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="comment">// 如果有新消息，则分别调用 CommitLogDispatcherBuildConsumeQueue、CommitLogDispatcherBuildIndex</span></span><br><span class="line">            <span class="comment">// 进行构建 ConsumeQueue 和 IndexFile</span></span><br><span class="line">            DefaultMessageStore.<span class="built_in">this</span>.doDispatch(dispatchRequest);</span><br><span class="line">            ...</span><br><span class="line">        &#125;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>原来，在Broker启动的时候，会判断上次进程结束是否异常，然后加载CommitLog、ConsumeQueue等数据文件，如果文件加载成功，就调用recover方法，做数据修正，保证数据的一致性</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// org.apache.rocketmq.store.DefaultMessageStore#load</span></span><br><span class="line"><span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">load</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">boolean</span> <span class="variable">result</span> <span class="operator">=</span> <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// 判断上次程序退出是否异常</span></span><br><span class="line">        <span class="type">boolean</span> <span class="variable">lastExitOK</span> <span class="operator">=</span> !<span class="built_in">this</span>.isTempFileExist();</span><br><span class="line">        </span><br><span class="line">        ...</span><br><span class="line"></span><br><span class="line">        <span class="comment">// load Commit Log</span></span><br><span class="line">        result = result &amp;&amp; <span class="built_in">this</span>.commitLog.load();</span><br><span class="line">        <span class="comment">// load Consume Queue</span></span><br><span class="line">        result = result &amp;&amp; <span class="built_in">this</span>.loadConsumeQueue();</span><br><span class="line">        <span class="keyword">if</span> (result) &#123;</span><br><span class="line">            <span class="built_in">this</span>.storeCheckpoint =</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">StoreCheckpoint</span>(StorePathConfigHelper.getStoreCheckpoint(<span class="built_in">this</span>.messageStoreConfig.getStorePathRootDir()));</span><br><span class="line">            <span class="built_in">this</span>.indexService.load(lastExitOK);</span><br><span class="line">            <span class="comment">// 数据恢复</span></span><br><span class="line">            <span class="built_in">this</span>.recover(lastExitOK);</span><br><span class="line">            log.info(<span class="string">&quot;load over, and the max phy offset = &#123;&#125;&quot;</span>, <span class="built_in">this</span>.getMaxPhyOffset());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        log.error(<span class="string">&quot;load exception&quot;</span>, e);</span><br><span class="line">        result = <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// org.apache.rocketmq.store.DefaultMessageStore#recover</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">recover</span><span class="params">(<span class="keyword">final</span> <span class="type">boolean</span> lastExitOK)</span> &#123;</span><br><span class="line">    <span class="type">long</span> <span class="variable">maxPhyOffsetOfConsumeQueue</span> <span class="operator">=</span> <span class="built_in">this</span>.recoverConsumeQueue();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (lastExitOK) &#123;</span><br><span class="line">        <span class="built_in">this</span>.commitLog.recoverNormally(maxPhyOffsetOfConsumeQueue);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.commitLog.recoverAbnormally(maxPhyOffsetOfConsumeQueue);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">this</span>.recoverTopicQueueTable();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>参考：<br>    <a target="_blank" rel="noopener" href="https://github.com/apache/rocketmq/blob/develop/docs/cn/design.md">RocketMQ官方文档</a><br>    <a target="_blank" rel="noopener" href="https://www.cnblogs.com/robothy/p/14235598.html">Java NIO文件通道FileChannel</a><br>    <a target="_blank" rel="noopener" href="http://antzuhl.cn/archives/rocketmqstore1">RocketMQ源码分析-深入消息存储（1）</a><br>    <a target="_blank" rel="noopener" href="https://my.oschina.net/u/5480812/blog/8761857">rocketmq之ConsumeQueue学习笔记</a></p>
+</blockquote>
+
+      </section>
+      <section class="extra">
+        
+        
+          <section class="donate">
+  <div id="qrcode-donate">
+    <img   class="lazyload" data-original="https://pic.izhaoo.com/alipay.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" >
+  </div>
+  <div class="icon">
+    <a href="javascript:;" id="alipay"><i class="iconfont iconalipay"></i></a>
+    <a href="javascript:;" id="wechat"><i class="iconfont iconwechat-fill"></i></a>
+  </div>
+</section>
+        
+        
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" rel="tag">消息队列</a></li></ul> 
+
+        
+  <nav class="nav">
+    <a href="/2023/05/25/%E6%B1%82%E8%81%8C%E6%84%9F%E6%82%9F/"><i class="iconfont iconleft"></i>求职感悟</a>
+    <a href="/2022/04/08/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/">分布式锁<i class="iconfont iconright"></i></a>
+  </nav>
+
+      </section>
+      
+        <section class="comments">
+  
+    <div class="btn" id="comments-btn">查看评论</div>
+  
+  
+<div id="valine"></div>
+<script defer src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<script>
+  window.onload = function () {
+    var loadValine = function () {
+      new Valine({
+        el: '#valine',
+        app_id: "cJOoEEu3sAMF6OftYqgFknB0-gzGzoHsz",
+        app_key: "vJR5GGKTPoLqB5pwiWlNqsP5",
+        placeholder: "雁过留痕",
+        avatar: "mp",
+        pageSize: "10",
+        lang: "zh-CN",
+      });
+    }
+    if ( true ) {
+      $("#comments-btn").on("click", function () {
+        $(this).hide();
+        loadValine();
+      });
+    } else {
+      loadValine();
+    }
+  };
+</script>
+
+</section>
+      
+    </section>
+  </div>
+</article></div>
+      <div class="col-xl-3">
+        
+          
+  <aside class="toc-wrap">
+    <h3 class="toc-title">文章目录：</h3>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E6%B6%88%E6%81%AF%E5%AD%98%E5%82%A8%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84"><span class="toc-text">一、消息存储整体架构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1%E3%80%81CommitLog"><span class="toc-text">1.1、CommitLog</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2%E3%80%81ConsumeQueue"><span class="toc-text">1.2、ConsumeQueue</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3%E3%80%81IndexFile"><span class="toc-text">1.3、IndexFile</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E9%A1%B5%E7%BC%93%E5%AD%98%E5%92%8C%E5%86%85%E5%AD%98%E6%98%A0%E5%B0%84"><span class="toc-text">二、页缓存和内存映射</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1%E3%80%81%E9%A1%B5%E7%BC%93%E5%AD%98"><span class="toc-text">2.1、页缓存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2%E3%80%81%E5%86%85%E5%AD%98%E6%98%A0%E5%B0%84"><span class="toc-text">2.2、内存映射</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81Q-A"><span class="toc-text">三、Q&amp;A</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1%E3%80%81ConsumeQueue%E5%BC%82%E6%AD%A5%E5%86%99%E5%85%A5%E5%A4%B1%E8%B4%A5%E6%80%8E%E4%B9%88%E5%8A%9E%EF%BC%9F"><span class="toc-text">3.1、ConsumeQueue异步写入失败怎么办？</span></a></li></ol></li></ol>
+  </aside>
+
+        
+      </div>
+    </div>
+  </div>
+</main>
+  
+
+<footer class="footer">
+  <div class="footer-social"><a 
+        href="tencent://message/?Menu=yes&uin=894519210 "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#12B7F5'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconQQ "></i>
+      </a><a 
+        href="javascript:; "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#09BB07'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconwechat-fill "></i>
+      </a><a 
+        href="https://www.instagram.com/izhaoo/ "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#DA2E76'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconinstagram "></i>
+      </a><a 
+        href="https://github.com/zhaoo "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#9f7be1'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  icongithub-fill "></i>
+      </a><a 
+        href="mailto:izhaoo@163.com "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color=#FF3B00" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconmail"></i>
+      </a></div>
+  
+    <div class="footer-copyright"><p>Powered by <a target="_blank" href="https://hexo.io">Hexo</a>  |  Theme - <a target="_blank" href="https://github.com/izhaoo/hexo-theme-zhaoo">zhaoo</a></p></div>
+  
+</footer>
+  
+      <div class="fab fab-plus">
+    <i class="iconfont iconplus"></i>
+  </div>
+  
+  
+  
+  <div class="fab fab-up">
+    <i class="iconfont iconcaret-up"></i>
+  </div>
+  
+  
+  
+    
+<script src="/js/color-mode.js"></script>
+
+  
+  
+</body>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+
+
+
+  
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
+
+
+
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
+
+
+
+
+
+
+
+<script src="/js/utils.js"></script>
+<script src="/js/script.js"></script>
+
+
+
+
+
+
+
+  <script>
+    (function () {
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      } else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+</html>

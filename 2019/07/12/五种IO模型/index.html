@@ -1,0 +1,450 @@
+
+
+<!DOCTYPE html>
+<html lang="en" color-mode=light>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>五种 I/O 模型 - Hexo</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="google" content="notranslate" />
+  
+  <meta name="description" content="一、基本概念1、同步、异步同步和异步关注的是消息通信机...">
+  <meta name="author" content="John Doe">
+  <link rel="icon" href="/img/icons/favicon-32x32.png" type="image/png" sizes="16x16">
+  <link rel="icon" href="/img/icons/favicon-64x64.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/img/icons/favicon-128x128.png" sizes="180x180">
+  <meta rel="mask-icon" href="/img/icons/favicon-128x128.png" color="#333333">
+  
+    <meta rel="msapplication-TileImage" content="/img/icons/favicon-128x128.png">
+    <meta rel="msapplication-TileColor" content="#000000">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+    
+<link rel="stylesheet" href="https://at.alicdn.com/t/font_1445822_p6ry5n7lrr.css">
+
+  
+
+  
+    
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css">
+
+  
+
+  
+    
+      
+        
+        
+<link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.18.1/styles/github.min.css" name="highlight-style" mode="light">
+
+      
+        
+        
+<link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.18.1/styles/github-dark.min.css" name="highlight-style" mode="dark">
+
+      
+  
+
+  <script>
+    var CONFIG = window.CONFIG || {};
+    var ZHAOO = window.ZHAOO || {};
+    CONFIG = {
+      isHome: false,
+      fancybox: true,
+      pjax: false,
+      loading: {
+        gif: '/img/theme/loading.gif',
+        lottie: ''
+      },
+      lazyload: {
+        enable: true,
+        only_post: 'false',
+        loading: {
+          gif: '/img/theme/loading.gif',
+          lottie: ''
+        }
+      },
+      donate: {
+        enable: true,
+        alipay: 'https://pic.izhaoo.com/alipay.jpg',
+        wechat: 'https://pic.izhaoo.com/wechat.jpg'
+      },
+      galleries: {
+        enable: true
+      },
+      fab: {
+        enable: true,
+        always_show: false
+      },
+      carrier: {
+        enable: true
+      },
+      daovoice: {
+        enable: false
+      },
+      preview: {
+        background: {
+          default: '',
+          api: ''
+        },
+        motto: {
+          default: '我在开了灯的床头下，想问问自己的心啊。',
+          typing: true,
+          api: 'https://v2.jinrishici.com/one.json',
+          data_contents: '["data","content"]'
+        },
+      },
+      qrcode: {
+        enable: false,
+        type: 'url',
+        image: 'https://pic.izhaoo.com/weapp-code.jpg',
+      },
+      toc: {
+        enable: true
+      },
+      scrollbar: {
+        type: 'default'
+      },
+      notification: {
+        enable: false,
+        delay: 4500,
+        list: '',
+        page_white_list: '',
+        page_black_list: ''
+      },
+      search: {
+        enable: false,
+        path: ''
+      }
+    }
+  </script>
+
+  
+
+  
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="lock-screen">
+  <div class="loading" id="loading"></div>
+  
+    
+
+
+  <nav class="navbar">
+    <div class="left">
+      
+        <i class="iconfont iconhome j-navbar-back-home"></i>
+      
+      
+      
+        <i class="iconfont iconmoono" id="color-toggle" color-toggle="light"></i>
+      
+      
+    </div>
+    <div class="center">五种 I/O 模型</div>
+    <div class="right">
+      <i class="iconfont iconmenu j-navbar-menu"></i>
+    </div>
+    
+  </nav>
+
+  
+  
+
+<nav class="menu">
+  <div class="menu-container">
+    <div class="menu-close">
+      <i class="iconfont iconbaseline-close-px"></i>
+    </div>
+    <ul class="menu-content"><li class="menu-item">
+        <a href="/ " class="underline "> 首页</a>
+      </li><li class="menu-item">
+        <a href="/archives/ " class="underline "> 归档</a>
+      </li><li class="menu-item">
+        <a href="/tags/ " class="underline "> 标签</a>
+      </li><li class="menu-item">
+        <a href="/about/ " class="underline "> 关于</a>
+      </li></ul>
+    
+      <div class="menu-copyright"><p>Powered by <a target="_blank" href="https://hexo.io">Hexo</a>  |  Theme - <a target="_blank" href="https://github.com/izhaoo/hexo-theme-zhaoo">zhaoo</a></p></div>
+    
+  </div>
+</nav>
+  <main id="main">
+  <div class="article-wrap">
+    <div class="row container">
+      <div class="col-xl-3"></div>
+      <div class="col-xl-6"><article class="article">
+  <div class="wrap">
+    <section class="head">
+  <img   class="lazyload" data-original="/img/theme/011.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  draggable="false">
+  <div class="head-mask">
+    <h1 class="head-title">五种 I/O 模型</h1>
+    <div class="head-info">
+      <span class="post-info-item"><i class="iconfont iconcalendar"></i>July 12, 2019</span>
+      
+      <span class="post-info-item"><i class="iconfont iconfont-size"></i>5836</span>
+    </div>
+  </div>
+</section>
+    <section class="main">
+      <section class="content">
+        
+          <p>计算机系统中描述输入输出操作的方式和效率的抽象模型</p>
+        
+        <h3 id="一、基本概念"><a href="#一、基本概念" class="headerlink" title="一、基本概念"></a>一、基本概念</h3><h4 id="1、同步、异步"><a href="#1、同步、异步" class="headerlink" title="1、同步、异步"></a>1、同步、异步</h4><p><strong>同步和异步关注的是消息通信机制</strong> (synchronous communication &#x2F; asynchronous communication)<br><strong>同步</strong>：就是在发出一个功能调用时，在没有得到结果之前，该调用就不返回。<br><strong>异步</strong>：和同步相对。当一个异步过程调用发出后，调用者不能立刻得到结果。实际处理这个调用的部件在完成后，通过状态、通知和回调来通知调用者。</p>
+<h4 id="2、阻塞、非阻塞"><a href="#2、阻塞、非阻塞" class="headerlink" title="2、阻塞、非阻塞"></a>2、阻塞、非阻塞</h4><p><strong>阻塞和非阻塞关注的是程序在等待调用结果（消息，返回值）时的状态</strong>。<br><strong>阻塞</strong>：阻塞调用是指调用结果返回之前，当前线程会被挂起。函数只有在得到结果之后才会返回。有人也许会把阻塞调用和同步调用等同起来，实际上他是不同的。对于同步调用来说，很多时候当前线程还是激活的，只是从逻辑上当前函数没有返回而已。<br><strong>非阻塞</strong>：和阻塞的概念相对应，指在不能立刻得到结果之前，该函数不会阻塞当前线程，而会立刻返回。</p>
+<p>可以简单地理解为：<strong>阻塞、非阻塞说的是调用者。同步、异步说的是被调用者。</strong></p>
+<h4 id="3、阻塞IO、非阻塞IO"><a href="#3、阻塞IO、非阻塞IO" class="headerlink" title="3、阻塞IO、非阻塞IO"></a>3、阻塞IO、非阻塞IO</h4><p><strong>缓存IO</strong><br>缓存 I&#x2F;O 又被称作标准 I&#x2F;O，大多数文件系统的默认 I&#x2F;O 操作都是缓存 I&#x2F;O。在 Linux 的缓存 I&#x2F;O 机制中， 操作系统会将 I&#x2F;O 的数据缓存在文件系统的页缓存中，也就是说，数据会先被拷贝到操作系统内核的缓冲区中，然后才会从操作系统内核的缓冲区拷贝到应用程序的地址空间。<br>缓存 I&#x2F;O 的缺点是数据在传输过程中需要在应用程序地址空间和内核进行多次数据拷贝操作，这些数据拷贝操作所带来的 CPU 以及内存开销是非常大的。</p>
+<p>例如当用户线程对一个文本发起 I&#x2F;O 请求操作时，内核会先去查看要读取的数据是否就绪（是否已存在于操作系统内核），对于阻塞 I&#x2F;O 来说，如果数据没有就绪，则会一直在那等待，直到数据就绪；对于非阻塞 I&#x2F;O 来说，如果数据没有就绪，则会返回一个标志信息告知用户线程当前要读取的数据没有就绪。当数据就绪之后，再来将数据拷贝到用户线程，这样才完成了一个完整的 I&#x2F;O 读请求操作，也就是说一个完整的 I&#x2F;O 读请求操作主要包括两个阶段：<br><strong>阶段一：</strong>查看数据是否就绪<br><strong>阶段二：</strong>将数据由内核拷贝到用户进程</p>
+<p>那么阻塞（blocking I&#x2F;O）和非阻塞（non-blocking I&#x2F;O）的区别就在于第一个阶段，如果数据没有就绪，在查看数据是否就绪的过程中是一直等待，还是直接返回一个标志信息。<br>Java 中传统的 I&#x2F;O 都是阻塞 I&#x2F;O，比如通过 socket 来读数据，调用 read() 方法之后，如果数据没有就绪，当前线程就会一直阻塞在 read 方法调用那里，直到有数据才返回；而如果是非阻塞 I&#x2F;O 的话，当数据没有就绪，read() 方法应该返回一个标志信息，告知当前线程数据没有就绪，而不是一直在那里等待。</p>
+<h4 id="4、同步IO、异步IO"><a href="#4、同步IO、异步IO" class="headerlink" title="4、同步IO、异步IO"></a>4、同步IO、异步IO</h4><p>在《Unix 网络编程》一书中对同步 I&#x2F;O 和异步 I&#x2F;O 的定义是这样的：<br>A synchronous I&#x2F;O operation causes the requesting process to be blocked until that I&#x2F;O operation completes.<br>An asynchronous I&#x2F;O operation does not cause the requesting process to be blocked.<br>从字面意思理解：同步 I&#x2F;O，即如果一个线程请求进行 I&#x2F;O 操作，在 I&#x2F;O 操作完成之前，该线程会被阻塞。而异步 I&#x2F;O 为，如果一个线程请求进行 I&#x2F;O 操作，I&#x2F;O 操作不会导致请求线程被阻塞。</p>
+<p>事实上，同步 I&#x2F;O 和异步 I&#x2F;O 模型是针对用户线程和内核的交互来说的：<br>对于同步 I&#x2F;O：当用户发出 I&#x2F;O 请求操作之后，如果数据没有就绪，需要通过用户线程或者内核不断地去轮询数据是否就绪，当数据就绪时，再将数据从内核拷贝到用户线程；<br>而异步 I&#x2F;O：只有 I&#x2F;O 请求操作的发出是由用户线程来进行的，I&#x2F;O 操作的两个阶段都是由内核自动完成，然后发送通知告知用户线程 I&#x2F;O 操作已经完成。也就是说在异步 I&#x2F;O 中，不会对用户线程产生任何阻塞。</p>
+<h3 id="二、Linux下的五种IO模型"><a href="#二、Linux下的五种IO模型" class="headerlink" title="二、Linux下的五种IO模型"></a>二、Linux下的五种IO模型</h3><h4 id="1、阻塞IO"><a href="#1、阻塞IO" class="headerlink" title="1、阻塞IO"></a>1、阻塞IO</h4><p>在 linux 中，默认情况下所有的 socket 都是 blocking，一个典型的读操作流程大概是这样：<br><strong>第一步：</strong>等待数据从网络中到达，当所有等待数据到达时，它被复制到内核中的某个缓冲区。<br><strong>第二步：</strong>把数据从内核缓冲区复制到应用程序缓冲区。</p>
+<center><img   class="lazyload" data-original="../../../../img/os/blockingIO.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  width="80%" height="80%" /></center>
+
+<p>当用户进程调用了 recvfrom 这个系统调用，kernel 就开始了 I&#x2F;O 的第一个阶段：准备数据。对于 network I&#x2F;O 来说，很多时候数据在一开始还没有到达（比如，还没有收到一个完整的 UDP 包），这个时候 kernel 就要等待足够的数据到来。而在用户进程这边，整个进程会被阻塞。当 kernel 一直等到数据准备好了，它就会将数据从 kernel 中拷贝到用户内存，然后 kernel 返回结果，用户进程才解除 block 的状态，重新运行起来。<font color="#cc0000"><strong>所以，blocking I&#x2F;O 的特点就是在 I&#x2F;O 执行的两个阶段都被阻塞了。</strong></font></p>
+<h4 id="2、非阻塞式IO"><a href="#2、非阻塞式IO" class="headerlink" title="2、非阻塞式IO"></a>2、非阻塞式IO</h4><p>linux 下，可以通过设置 socket 使其变为 non-blocking。当对一个 non-blocking socket 执行读操作时，流程是这个样子：</p>
+<center><img   class="lazyload" data-original="../../../../img/os/non-blockingIO.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  width="80%" height="80%" /></center>
+
+<p>从图中可以看出，当用户进程发出 read 操作时，如果 kernel 中的数据还没有准备好，那么它并不会 block 用户进程，而是立刻返回一个 error。从用户进程角度讲，它发起一个 read 操作后，并不需要等待，而是马上就得到了一个结果。用户进程判断结果是一个 error 时，它就知道数据还没有准备好，于是它可以再次发送 read 操作。一旦 kernel 中的数据准备好了，并且又再次收到了用户进程的 system call，那么它马上就将数据拷贝到了用户内存，然后返回。<font color="#cc0000"><strong>所以，用户进程第一个阶段不是阻塞的,需要不断的主动询问 kernel 数据好了没有；第二个阶段依然总是阻塞的。</strong></font></p>
+<h4 id="3、IO多路复用"><a href="#3、IO多路复用" class="headerlink" title="3、IO多路复用"></a>3、IO多路复用</h4><p>I&#x2F;O 多路复用模型 (I&#x2F;O multiplexing Model)，是目前使用得比较多的模型。Java NIO 实际上就是多路复用 I&#x2F;O。目前支持 I&#x2F;O 多路复用的系统调用有 select、pselect、poll、epoll，I&#x2F;O 多路复用就是通过一种机制，一个进程可以监视多个 socket，一旦某个 socket 就绪，能够通知程序进行相应的读写操作。 但 select、pselect、poll、epoll 本质上都是同步 I&#x2F;O，因为他们都需要在读写事件就绪后自己负责进行读写，也就是说这个读写过程是阻塞的，而异步 I&#x2F;O 则无需自己负责进行读写，异步 I&#x2F;O 的实现会负责把数据从内核拷贝到用户空间  。<br><strong>I&#x2F;O 多路复用同非阻塞 I&#x2F;O 本质一样，不过利用了新的 select 系统调用，由内核来负责本来是请求进程该做的轮询操作。看似比非阻塞 I&#x2F;O 还多了一个系统调用开销，不过因为可以支持多路 I&#x2F;O，才算提高了效率。</strong>它的基本原理就是 select &#x2F; epoll 这个 function 会不断的轮询所负责的所有 socket，当某个 socket 有数据到达了，就通知用户进程。它的流程如图：</p>
+<center><img   class="lazyload" data-original="../../../../img/os/IOmultiplexing.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  width="80%" height="80%" /></center>
+
+<p>当用户进程调用了 select，那么整个进程会被 block，而同时，kernel 会监视所有 select 负责的 socket，当任何一个 socket 中的数据准备好了，select 就会返回。这个时候用户进程再调用 read 操作，将数据从 kernel 拷贝到用户进程。这个图和 blocking I&#x2F;O 的图其实并没有太大的不同，事实上，还更差一些。因为这里需要使用两个 system call (select 和 recvfrom)，而 blocking I&#x2F;O 只调用了一个 system call (recvfrom)。但是，用 select 的优势在于它可以同时处理多个 connection。<strong>所以，如果处理的连接数不是很高的话，使用 I&#x2F;O 多路复用的 web server 不一定比使用多线程 + 阻塞 I&#x2F;O 的 web server 性能更好，可能延迟还更大。</strong></p>
+<p><strong>select &#x2F; epoll 的优势并不是对于单个连接能处理得更快，而是在于能处理更多的连接。</strong><br>在 I&#x2F;O multiplexing Model 中，实际中，对于每一个 socket，一般都设置成为 non-blocking，但是，如上图所示，整个用户的 process 其实是一直被 block 的。只不过 process 是被 select 这个函数 block，而不是被 socket I&#x2F;O 给 block。</p>
+<h4 id="4、信号驱动IO"><a href="#4、信号驱动IO" class="headerlink" title="4、信号驱动IO"></a>4、信号驱动IO</h4><p>用的很少，直接上图：</p>
+<center><img   class="lazyload" data-original="../../../../img/os/SignalDrivenIO.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  width="80%" height="80%" /></center>
+
+<p>在信号驱动 I&#x2F;O 模型中，当用户线程发起一个 I&#x2F;O 请求操作，会给对应的 socket 注册一个信号函数，然后用户线程会继续执行，当内核数据就绪时会发送一个信号给用户线程，用户线程接收到信号之后，便在信号函数中调用 I&#x2F;O 读写操作来进行实际的 I&#x2F;O 请求操作。</p>
+<h4 id="5、异步IO"><a href="#5、异步IO" class="headerlink" title="5、异步IO"></a>5、异步IO</h4><p>异步 I&#x2F;O 模型才是最理想的 I&#x2F;O 模型，它的工作机制是告知内核启动某个操作，并让内核在整个操作（包括将数据从内核拷贝到用户空间）完成后通知我们。如图：</p>
+<center><img   class="lazyload" data-original="../../../../img/os/asynchronousIO.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  width="80%" height="80%" /></center>
+
+<p>用户进程发起 read 操作之后，立刻就可以开始去做其它的事。而另一方面，从 kernel 的角度，当它受到一个 asynchronous read 之后，首先它会立刻返回，所以不会对用户进程产生任何 block。然后，kernel 会等待数据准备完成，然后将数据拷贝到用户内存，当这一切都 完成之后，kernel 会给用户进程发送一个 signal，告诉它 read 操作完成了。在这整个过程中，进程完全没有被 block。异步 I&#x2F;O 是需要操作系统的底层支持，在 Java 7 中，提供了 Asynchronous IO。</p>
+<p><strong>总结</strong><br>其实前四种 I&#x2F;O 模型都是同步 I&#x2F;O 操作，他们的区别在于第一阶段，而他们的第二阶段是一样的：在数据从内核复制到应用缓冲区期间（用户空间），进程阻塞于 recvfrom 调用。</p>
+<h3 id="三、两种高性能IO设计模式"><a href="#三、两种高性能IO设计模式" class="headerlink" title="三、两种高性能IO设计模式"></a>三、两种高性能IO设计模式</h3><p>在传统的网络服务设计模式中，有两种比较经典的模式：一种是多线程，一种是线程池。对于多线程模式，也就说来了 client，服务器就会新建一个线程来处理该 client 的读写事件，如下图所示：</p>
+<center><img   class="lazyload" data-original="../../../../img/os/multithreading.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  width="50%" height="50%" /></center>
+
+<p>这种模式虽然处理起来简单方便，但是由于服务器为每个 client 的连接都采用一个线程去处理，使得资源占用非常大。因此，当连接数量达到上限时，再有用户请求连接，直接会导致资源瓶颈，严重的可能会直接导致服务器崩溃。</p>
+<p>因此，为了解决这种一个线程对应一个客户端模式带来的问题，提出了采用线程池的方式，也就说创建一个固定大小的线程池，来一个客户端，就从线程池取一个空闲线程来处理，当客户端处理完读写操作之后，就交出对线程的占用。因此这样就避免为每一个客户端都要创建线程带来的资源浪费，使得线程可以重用。<br>但是线程池也有它的弊端，如果连接大多是长连接，因此可能会导致在一段时间内，线程池中的线程都被占用，那么当再有用户请求连接时，由于没有可用的空闲线程来处理，就会导致客户端连接失败，从而影响用户体验。<strong>因此，线程池比较适合大量的短连接应用。</strong></p>
+<p>因此便出现了下面的两种高性能 I&#x2F;O 设计模式：Reactor 和 Proactor。<br>在 Reactor 模式中，会先对每个 client 注册感兴趣的事件，然后有一个线程专门去轮询每个 client 是否有事件发生，当有事件发生时，便顺序处理每个事件，当所有事件处理完之后，便再转去继续轮询，如下图所示：</p>
+<center><img   class="lazyload" data-original="../../../../img/os/reactorIOModel.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  width="65%" height="65%" /></center>
+
+<p>从这里可以看出，<strong>Reactor 的核心思想就是 I&#x2F;O 多路复用</strong>。注意，上面的图中展示的是顺序处理每个事件，当然为了提高事件处理速度，可以通过多线程或者线程池的方式来处理事件。</p>
+<p>而在 Proactor 模式中，当检测到有事件发生时，会新起一个异步操作，然后交由内核线程去处理，当内核线程完成 I&#x2F;O 操作之后，发送一个通知告知操作已完成。可以得知，<strong>Proactor 的使用的是异步 I&#x2F;O 模型</strong></p>
+<h3 id="四、应用"><a href="#四、应用" class="headerlink" title="四、应用"></a>四、应用</h3><h4 id="Redis-IO-模型"><a href="#Redis-IO-模型" class="headerlink" title="Redis IO 模型"></a>Redis IO 模型</h4><p>Redis作为一个高性能键值存储系统，在硬件设备较好的情况下，单机QPS甚至能达到10W+。我们知道，Redis是使用单线程来处理客户端的读写请求的，但是为什么单线程能达到如此高的性能呢？主要有如下几个原因：</p>
+<ol>
+<li>所有的读写操作均基于内存</li>
+<li>单线程避免了资源竞争和线程切换带来的开销</li>
+<li>高效的数据结构</li>
+<li><font color="red">非阻塞IO+多路复用</font></li>
+</ol>
+<p><strong>为什么Redis不使用异步IO，而是IO多路复用？</strong></p>
+<p>异步IO在Linux系统目前为止还不成熟，多路复用是同步IO和异步IO之间的一种折衷方案，并且多路复用模型已经能很大程度上解决并发编程问题</p>
+<h4 id=""><a href="#" class="headerlink" title=""></a></h4><blockquote>
+<p>参考：<br>    <a target="_blank" rel="noopener" href="https://www.cnblogs.com/dolphin0520/p/3916526.html">Java NIO：浅析 I&#x2F;O 模型</a><br>    <a target="_blank" rel="noopener" href="http://www.tianshouzhi.com/api/tutorials/netty/221">Unix 五种 I&#x2F;O 模型</a><br>    <a target="_blank" rel="noopener" href="https://www.xncoding.com/2018/04/02/java/io.html">聊聊 Java 中的几种 I&#x2F;O 模型</a><br>    <a target="_blank" rel="noopener" href="https://tech.meituan.com/2016/11/04/nio.html">Java NIO浅析</a></p>
+</blockquote>
+
+      </section>
+      <section class="extra">
+        
+        
+          <section class="donate">
+  <div id="qrcode-donate">
+    <img   class="lazyload" data-original="https://pic.izhaoo.com/alipay.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" >
+  </div>
+  <div class="icon">
+    <a href="javascript:;" id="alipay"><i class="iconfont iconalipay"></i></a>
+    <a href="javascript:;" id="wechat"><i class="iconfont iconwechat-fill"></i></a>
+  </div>
+</section>
+        
+        
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">操作系统</a></li></ul> 
+
+        
+  <nav class="nav">
+    <a href="/2019/07/14/Java%E4%B8%AD%E7%9A%84%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8/"><i class="iconfont iconleft"></i>Java中的四种引用</a>
+    <a href="/2019/07/10/AQS%E4%B9%8BConditionObject/">AQS之ConditionObject<i class="iconfont iconright"></i></a>
+  </nav>
+
+      </section>
+      
+        <section class="comments">
+  
+    <div class="btn" id="comments-btn">查看评论</div>
+  
+  
+<div id="valine"></div>
+<script defer src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<script>
+  window.onload = function () {
+    var loadValine = function () {
+      new Valine({
+        el: '#valine',
+        app_id: "cJOoEEu3sAMF6OftYqgFknB0-gzGzoHsz",
+        app_key: "vJR5GGKTPoLqB5pwiWlNqsP5",
+        placeholder: "雁过留痕",
+        avatar: "mp",
+        pageSize: "10",
+        lang: "zh-CN",
+      });
+    }
+    if ( true ) {
+      $("#comments-btn").on("click", function () {
+        $(this).hide();
+        loadValine();
+      });
+    } else {
+      loadValine();
+    }
+  };
+</script>
+
+</section>
+      
+    </section>
+  </div>
+</article></div>
+      <div class="col-xl-3">
+        
+          
+  <aside class="toc-wrap">
+    <h3 class="toc-title">文章目录：</h3>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-text">一、基本概念</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%E3%80%81%E5%90%8C%E6%AD%A5%E3%80%81%E5%BC%82%E6%AD%A5"><span class="toc-text">1、同步、异步</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%E3%80%81%E9%98%BB%E5%A1%9E%E3%80%81%E9%9D%9E%E9%98%BB%E5%A1%9E"><span class="toc-text">2、阻塞、非阻塞</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%E3%80%81%E9%98%BB%E5%A1%9EIO%E3%80%81%E9%9D%9E%E9%98%BB%E5%A1%9EIO"><span class="toc-text">3、阻塞IO、非阻塞IO</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4%E3%80%81%E5%90%8C%E6%AD%A5IO%E3%80%81%E5%BC%82%E6%AD%A5IO"><span class="toc-text">4、同步IO、异步IO</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81Linux%E4%B8%8B%E7%9A%84%E4%BA%94%E7%A7%8DIO%E6%A8%A1%E5%9E%8B"><span class="toc-text">二、Linux下的五种IO模型</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%E3%80%81%E9%98%BB%E5%A1%9EIO"><span class="toc-text">1、阻塞IO</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%E3%80%81%E9%9D%9E%E9%98%BB%E5%A1%9E%E5%BC%8FIO"><span class="toc-text">2、非阻塞式IO</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%E3%80%81IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8"><span class="toc-text">3、IO多路复用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4%E3%80%81%E4%BF%A1%E5%8F%B7%E9%A9%B1%E5%8A%A8IO"><span class="toc-text">4、信号驱动IO</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5%E3%80%81%E5%BC%82%E6%AD%A5IO"><span class="toc-text">5、异步IO</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E4%B8%A4%E7%A7%8D%E9%AB%98%E6%80%A7%E8%83%BDIO%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F"><span class="toc-text">三、两种高性能IO设计模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E5%BA%94%E7%94%A8"><span class="toc-text">四、应用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Redis-IO-%E6%A8%A1%E5%9E%8B"><span class="toc-text">Redis IO 模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link"><span class="toc-text"></span></a></li></ol></li></ol>
+  </aside>
+
+        
+      </div>
+    </div>
+  </div>
+</main>
+  
+
+<footer class="footer">
+  <div class="footer-social"><a 
+        href="tencent://message/?Menu=yes&uin=894519210 "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#12B7F5'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconQQ "></i>
+      </a><a 
+        href="javascript:; "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#09BB07'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconwechat-fill "></i>
+      </a><a 
+        href="https://www.instagram.com/izhaoo/ "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#DA2E76'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconinstagram "></i>
+      </a><a 
+        href="https://github.com/zhaoo "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#9f7be1'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  icongithub-fill "></i>
+      </a><a 
+        href="mailto:izhaoo@163.com "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color=#FF3B00" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconmail"></i>
+      </a></div>
+  
+    <div class="footer-copyright"><p>Powered by <a target="_blank" href="https://hexo.io">Hexo</a>  |  Theme - <a target="_blank" href="https://github.com/izhaoo/hexo-theme-zhaoo">zhaoo</a></p></div>
+  
+</footer>
+  
+      <div class="fab fab-plus">
+    <i class="iconfont iconplus"></i>
+  </div>
+  
+  
+  
+  <div class="fab fab-up">
+    <i class="iconfont iconcaret-up"></i>
+  </div>
+  
+  
+  
+    
+<script src="/js/color-mode.js"></script>
+
+  
+  
+</body>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+
+
+
+  
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
+
+
+
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
+
+
+
+
+
+
+
+<script src="/js/utils.js"></script>
+<script src="/js/script.js"></script>
+
+
+
+
+
+
+
+  <script>
+    (function () {
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      } else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+</html>

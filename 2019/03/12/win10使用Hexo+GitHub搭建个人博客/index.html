@@ -1,0 +1,461 @@
+
+
+<!DOCTYPE html>
+<html lang="en" color-mode=light>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>个人博客搭建 - Hexo</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="google" content="notranslate" />
+  
+  <meta name="description" content="前言使用github pages服务搭建博客有以下好处...">
+  <meta name="author" content="John Doe">
+  <link rel="icon" href="/img/icons/favicon-32x32.png" type="image/png" sizes="16x16">
+  <link rel="icon" href="/img/icons/favicon-64x64.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/img/icons/favicon-128x128.png" sizes="180x180">
+  <meta rel="mask-icon" href="/img/icons/favicon-128x128.png" color="#333333">
+  
+    <meta rel="msapplication-TileImage" content="/img/icons/favicon-128x128.png">
+    <meta rel="msapplication-TileColor" content="#000000">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+    
+<link rel="stylesheet" href="https://at.alicdn.com/t/font_1445822_p6ry5n7lrr.css">
+
+  
+
+  
+    
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css">
+
+  
+
+  
+    
+      
+        
+        
+<link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.18.1/styles/github.min.css" name="highlight-style" mode="light">
+
+      
+        
+        
+<link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.18.1/styles/github-dark.min.css" name="highlight-style" mode="dark">
+
+      
+  
+
+  <script>
+    var CONFIG = window.CONFIG || {};
+    var ZHAOO = window.ZHAOO || {};
+    CONFIG = {
+      isHome: false,
+      fancybox: true,
+      pjax: false,
+      loading: {
+        gif: '/img/theme/loading.gif',
+        lottie: ''
+      },
+      lazyload: {
+        enable: true,
+        only_post: 'false',
+        loading: {
+          gif: '/img/theme/loading.gif',
+          lottie: ''
+        }
+      },
+      donate: {
+        enable: true,
+        alipay: 'https://pic.izhaoo.com/alipay.jpg',
+        wechat: 'https://pic.izhaoo.com/wechat.jpg'
+      },
+      galleries: {
+        enable: true
+      },
+      fab: {
+        enable: true,
+        always_show: false
+      },
+      carrier: {
+        enable: true
+      },
+      daovoice: {
+        enable: false
+      },
+      preview: {
+        background: {
+          default: '',
+          api: ''
+        },
+        motto: {
+          default: '我在开了灯的床头下，想问问自己的心啊。',
+          typing: true,
+          api: 'https://v2.jinrishici.com/one.json',
+          data_contents: '["data","content"]'
+        },
+      },
+      qrcode: {
+        enable: false,
+        type: 'url',
+        image: 'https://pic.izhaoo.com/weapp-code.jpg',
+      },
+      toc: {
+        enable: true
+      },
+      scrollbar: {
+        type: 'default'
+      },
+      notification: {
+        enable: false,
+        delay: 4500,
+        list: '',
+        page_white_list: '',
+        page_black_list: ''
+      },
+      search: {
+        enable: false,
+        path: ''
+      }
+    }
+  </script>
+
+  
+
+  
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="lock-screen">
+  <div class="loading" id="loading"></div>
+  
+    
+
+
+  <nav class="navbar">
+    <div class="left">
+      
+        <i class="iconfont iconhome j-navbar-back-home"></i>
+      
+      
+      
+        <i class="iconfont iconmoono" id="color-toggle" color-toggle="light"></i>
+      
+      
+    </div>
+    <div class="center">个人博客搭建</div>
+    <div class="right">
+      <i class="iconfont iconmenu j-navbar-menu"></i>
+    </div>
+    
+  </nav>
+
+  
+  
+
+<nav class="menu">
+  <div class="menu-container">
+    <div class="menu-close">
+      <i class="iconfont iconbaseline-close-px"></i>
+    </div>
+    <ul class="menu-content"><li class="menu-item">
+        <a href="/ " class="underline "> 首页</a>
+      </li><li class="menu-item">
+        <a href="/archives/ " class="underline "> 归档</a>
+      </li><li class="menu-item">
+        <a href="/tags/ " class="underline "> 标签</a>
+      </li><li class="menu-item">
+        <a href="/about/ " class="underline "> 关于</a>
+      </li></ul>
+    
+      <div class="menu-copyright"><p>Powered by <a target="_blank" href="https://hexo.io">Hexo</a>  |  Theme - <a target="_blank" href="https://github.com/izhaoo/hexo-theme-zhaoo">zhaoo</a></p></div>
+    
+  </div>
+</nav>
+  <main id="main">
+  <div class="article-wrap">
+    <div class="row container">
+      <div class="col-xl-3"></div>
+      <div class="col-xl-6"><article class="article">
+  <div class="wrap">
+    <section class="head">
+  <img   class="lazyload" data-original="/img/theme/028.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  draggable="false">
+  <div class="head-mask">
+    <h1 class="head-title">个人博客搭建</h1>
+    <div class="head-info">
+      <span class="post-info-item"><i class="iconfont iconcalendar"></i>March 12, 2019</span>
+      
+      <span class="post-info-item"><i class="iconfont iconfont-size"></i>4901</span>
+    </div>
+  </div>
+</section>
+    <section class="main">
+      <section class="content">
+        
+          <p>win10+hexo+github</p>
+        
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>使用github pages服务搭建博客有以下好处：</p>
+<ul>
+<li>全是静态文件，访问速度快</li>
+<li>免费方便，不需要有自己的服务器</li>
+<li>可以随意绑定自己的域名</li>
+<li>数据绝对安全，基于GitHub版本管理，想恢复到哪个版本都行</li>
+<li>博客内容可以轻易打包、转移，发布到其他平台</li>
+</ul>
+<h4 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h4><ul>
+<li>有一个GitHub账号，没有的话去注册一个<a target="_blank" rel="noopener" href="https://github.com/">https://github.com/</a></li>
+<li>安装git for Windows（或者其他的客户端）</li>
+<li>安装node.js、npm</li>
+</ul>
+<h4 id="安装node和npm"><a href="#安装node和npm" class="headerlink" title="安装node和npm"></a>安装node和npm</h4><p><a target="_blank" rel="noopener" href="https://nodejs.org/en/download/">官网下载</a>相应的安装版本，我下的是win64的msi文件<br>下载后直接安装，在选择安装路径步骤可以自定义安装路径，其余全部按照默认配置，一路next（注意：msi文件按以上步骤安装后会自动配置环境变量，会如果之前下载的是zip文件，则需要手动配置环境变量）<br>验证安装是否成功，在cmd或Git Bush中输入<br><code>node -v</code><br>如果出现相应版本号，则安装成功！！！由于新版的nodejs已经集成了npm，所以npm在之前也一并安装了，命令行键入<br><code>npm -v</code><br>如果出现相应版本号，则安装成功！！！</p>
+<p><strong>修改npm的默认安装位置</strong><br>如果不修改npm下载模块的默认位置，默认的安装路径是：C:\Users\Administrator\AppData\Roaming下的npm和npm-cache,所有的模块都安装在这里（当然你也可以不修改）。<br>修改方式：找到node安装路径，依次进入node_modules-&gt;npm，找到<strong>npmrc</strong>文件修改prefix，不知道是由于版本问题还是什么，网上很多教程里的npmrc文件里都有prefix和cache两个，而我npmrc文件却只有一个prefix。<br><code>prefix=D:\NodeJS\node_global</code></p>
+<h3 id="创建GitHub博客仓库"><a href="#创建GitHub博客仓库" class="headerlink" title="创建GitHub博客仓库"></a>创建GitHub博客仓库</h3><h4 id="创建仓库"><a href="#创建仓库" class="headerlink" title="创建仓库"></a>创建仓库</h4><p>新建一个名为<em>你的用户名.github.io</em>的仓库，如果你的github用户名是test，那么你就新建test.github.io的仓库（必须是你的用户名，其它名称无效），将来你的网站访问地址就是 <a target="_blank" rel="noopener" href="http://test.github.io/">http://test.github.io</a> 了。（注意：创建的仓库可能不会立即生效，大概需要10~20分钟）</p>
+<h4 id="配置SSH-key"><a href="#配置SSH-key" class="headerlink" title="配置SSH key"></a>配置SSH key</h4><p>第一步：创建SSH key。在用户主目录下，看看有没有.ssh目录，如果有，再看看这个目录下有没有id_rsa和id_rsa.pub这两个文件，如果已经有了，可直接跳到下一步。如果没有，打开Shell（Windows下打开Git Bash），创建SSH Key：<br><code>ssh-keygen -t rsa -C &quot;youremail@example.com&quot;</code><br>你需要把邮件地址换成你自己的邮件地址，然后一路回车，使用默认值即可。如果一切顺利的话，可以在用户主目录里找到.ssh目录，里面有id_rsa和id_rsa.pub两个文件，这两个就是SSH Key的秘钥对，id_rsa是私钥，不能泄露出去，id_rsa.pub是公钥，可以放心地告诉任何人。<br>第二步：登陆GitHub，打开你的github主页，进入个人设置 -&gt; SSH and GPG keys -&gt; New SSH key，title随意填，将第一步生成的id_rsa.pub中的内容复制到key中，最后点击Add SSH key。<br>可以参照：<a target="_blank" rel="noopener" href="https://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/001374385852170d9c7adf13c30429b9660d0eb689dd43a000">配置SSH key</a></p>
+<h3 id="使用hexo写博客"><a href="#使用hexo写博客" class="headerlink" title="使用hexo写博客"></a>使用hexo写博客</h3><h4 id="hexo简介"><a href="#hexo简介" class="headerlink" title="hexo简介"></a>hexo简介</h4><p>Hexo是一个简单、快速、强大的基于 Github Pages 的博客发布工具，支持Markdown格式，有众多优秀插件和主题。由于github pages存放的都是静态文件，博客存放的不只是文章内容，还有文章列表、分类、标签、翻页等动态内容，假如每次写完一篇文章都要手动更新博文目录和相关链接信息，相信谁都会疯掉，所以hexo所做的就是将这些md文件都放在本地，每次写完文章后调用写好的命令来批量完成相关页面的生成，然后再将有改动的页面提交到github。</p>
+<h4 id="安装hexo"><a href="#安装hexo" class="headerlink" title="安装hexo"></a>安装hexo</h4><p><code>npm install -g hexo</code><br>因为下载源在国外，所以可能出现安装不成功或网速较慢的情况，这时就可以将npm的注册表源设置为国内的镜像。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#获得原来的镜像地址</span><br><span class="line">npm get registry</span><br><span class="line">#设置为淘宝镜像</span><br><span class="line">npm config set registry http://registry.npm.taobao.org/</span><br><span class="line">#换成原来的</span><br><span class="line">npm config set registry https://registry.npmjs.org/</span><br></pre></td></tr></table></figure>
+
+<h4 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h4><p>在电脑的某个地方新建一个名为hexo的文件夹（名字可以随便取），比如我的是D:\Git\myHexo，由于这个文件夹将来就作为你存放代码的地方，所以最好不要随便放。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cd D:/Git/myHexo</span><br><span class="line">hexo init</span><br><span class="line">hexo g    #生成</span><br><span class="line">hexo s    #启动</span><br></pre></td></tr></table></figure>
+<p>执行以上命令之后，hexo就会在public文件夹生成相关html文件，这些文件将来都是要提交到github去的。hexo s是开启本地预览服务，打开浏览器访问 <a target="_blank" rel="noopener" href="http://localhost:4000/">http://localhost:4000</a> 即可看到内容，很多人会碰到浏览器一直在转圈但是就是加载不出来的问题，一般情况下是因为端口占用的缘故，因为4000这个端口太常见了，解决端口冲突问题请参考<a target="_blank" rel="noopener" href="http://blog.liuxianan.com/windows-port-bind.html">这篇文章</a>,第一次初始化的时候hexo已经帮我们写了一篇名为 Hello World 的文章，默认的主题比较丑，打开时就是这个样子：</p>
+<p><img    class="lazyload" data-original="/../../../../img/hexo.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="   ><span class="image-caption">hexo</span></p>
+<h4 id="修改主题"><a href="#修改主题" class="headerlink" title="修改主题"></a>修改主题</h4><p>如果不喜欢默认的主题，可以在<a target="_blank" rel="noopener" href="https://hexo.io/themes/">官网下载</a>换个好看点的。<br>例如换上<a target="_blank" rel="noopener" href="https://github.com/zhaoo/hexo-theme-zhaoo">zhaoo</a>，首先下载主题</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd D:/Git/myHexo</span><br><span class="line">git clone https://github.com/zhaoo/hexo-theme-zhaoo.git themes/zhaoo</span><br></pre></td></tr></table></figure>
+<p>下载的主题都会放在···&#x2F;myHexo&#x2F;themes中，修改myHexo中_config.yml中的theme: landscape改为theme: zhaoo，然后重新执行hexo g来重新生成。<br>如果出现一些莫名其妙的问题，可以先执行hexo clean来清理一下public的内容，然后再来重新生成和发布。</p>
+<h4 id="上传到GitHub"><a href="#上传到GitHub" class="headerlink" title="上传到GitHub"></a>上传到GitHub</h4><p>第一步：配置_config.yml中有关deploy的部分</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repository: git@github.com:liuxianan/liuxianan.github.io.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
+<p>第二步：安装插件<br><code>npm install hexo-deployer-git</code><br>其它命令不确定，部署这个命令一定要用git bash，否则会提示Permission denied (publickey)。<br>第三步：打开你的git bash，输入hexo d就会将本次有改动的代码全部提交。</p>
+<h4 id="写博客"><a href="#写博客" class="headerlink" title="写博客"></a>写博客</h4><p>在source&#x2F;_posts目录下使用hexo new命令，或者手动新建.md文件，写好后使用hexo d -g生成并上传，这样就可以通过yourname.github.io访问博客了！！！</p>
+<h4 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">hexo new &quot;postName&quot; #新建文章</span><br><span class="line">hexo new page &quot;pageName&quot; #新建页面</span><br><span class="line">hexo generate #生成静态页面至public目录</span><br><span class="line">hexo server #开启预览访问端口（默认端口4000，&#x27;ctrl + c&#x27;关闭server）</span><br><span class="line">hexo deploy #部署到GitHub</span><br><span class="line">hexo help  # 查看帮助</span><br><span class="line">hexo version  #查看Hexo的版本</span><br><span class="line"></span><br><span class="line">#缩写</span><br><span class="line">hexo n == hexo new</span><br><span class="line">hexo g == hexo generate</span><br><span class="line">hexo s == hexo server</span><br><span class="line">hexo d == hexo deploy</span><br><span class="line"></span><br><span class="line">#组合命令</span><br><span class="line">hexo s -g #生成并本地预览</span><br><span class="line">hexo d -g #生成并上传</span><br></pre></td></tr></table></figure>
+<h3 id="相关配置"><a href="#相关配置" class="headerlink" title="相关配置"></a>相关配置</h3><h4 id="图片的使用"><a href="#图片的使用" class="headerlink" title="图片的使用"></a>图片的使用</h4><p>hello-world.md 文件在生成静态页面后放在public的子目录中，例如我的是&#x2F;public&#x2F;2019&#x2F;03&#x2F;12&#x2F;hello-world&#x2F;index.html，所以图片的链接可以写为 (..&#x2F;..&#x2F;..&#x2F;..&#x2F;img&#x2F;img.png)，即链接到 public&#x2F;img 文件下的图片。</p>
+<h4 id="修改网站icon"><a href="#修改网站icon" class="headerlink" title="修改网站icon"></a>修改网站icon</h4><ul>
+<li>修改步骤：   <ul>
+<li>找一张自己喜欢的icon，命名为favicon.png</li>
+<li>将图片放在myHexo&#x2F;themes&#x2F;yilia&#x2F;source&#x2F;img&#x2F;中（myHexo是我的hexo空间，yilia是我的主题）</li>
+<li>找到myHexo&#x2F;themes&#x2F;yilia&#x2F;layout&#x2F;_partial&#x2F;head.ejs，找到以下内容并修改为：<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;% if (theme.favicon)&#123; %&gt;</span><br><span class="line">	&lt;link rel=&quot;icon&quot; href=&quot;/img/favicon.png&quot;&gt;</span><br><span class="line">  &lt;% &#125; %&gt;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<h4 id="more标签"><a href="#more标签" class="headerlink" title="more标签"></a>more标签</h4><p>默认情况下，生成的博文目录会显示全部的文章内容，如果想要让博文不显示全部内容，在博文合适的位置加上<code>&lt;!-- more --&gt;</code>标签即可。（注意：改标签前后最好都加上一行空行）</p>
+<p><img   class="lazyload" data-original="/../../../../img/more.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ></p>
+<h4 id="README文件"><a href="#README文件" class="headerlink" title="README文件"></a>README文件</h4><p>Hexo部署到Github时会删掉README文件：</p>
+<ul>
+<li>原因   <ul>
+<li>我们执行命令hexo g之后，会把source文件里的.md格式的文件渲染为html文件并放到public下面</li>
+<li>继续执行命令hexo d之后，会把public下面的所有文件提交到对应的XXX.github.io这个仓库</li>
+<li>由于本地public文件夹里没有README.md这个文件，所以在提交public文件时，github会认为你把README.md文件删掉了，同时github也会删掉仓库里的README.md文件，这就是具体的原因</li>
+</ul>
+</li>
+<li>解决办法   <ul>
+<li>我们在本地的source文件里新建一个README.md文件</li>
+<li>修改Hexo根目录下的_config.yml文件，将skip_render参数的值设置为README.md<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">skip_render: README.md</span><br><span class="line"></span><br><span class="line">//  为什么需要设置这一步呢？</span><br><span class="line">//  因为你执行hexo g命令时，hexo会默认将source文件里的所有md文件渲染为html文件放到public中，</span><br><span class="line">//  同时README.md会被渲染为README.html文件放到public文件里</span><br><span class="line">//  加上这段设置，就是告诉hexo的解析器，你在渲染source文件里的md文件时，跳过README.md文件</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/wxl1555/article/details/79291865/">参考这里</a></p>
+<h3 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h3><p>很久之前就搭建一次，但是因为弄得很乱，所以一直没用（主要是因为不怎么会用，也不怎么写博客）。但现在正在找实习当中，经常看一些别人的面经，也试着去回答那些问题，但发现很多知识点自己都会，但是不能清晰、精准的表达出来，所以准备重新搭建起这个博客，希望能把自己每天的积累到的一些重要知识用文字的形式表达出来，以此来锻炼一下自己的表达能力，同时也是对知识的一个消化、总结。<br>上次搭建博客花了很多时间，由于对node.js、npm、hexo不了解，所以总感觉哪里不对头，就算按照别人的教程来，也会出现各种各样的错误（感觉自己有强迫症！！！）。今天搭这个东西也花了一两个小时，最后总算搞出来了！！！</p>
+<blockquote>
+<p>参考：<br>    <a target="_blank" rel="noopener" href="https://www.cnblogs.com/liuxianan/p/build-blog-website-by-hexo-github.html#%E4%B8%8A%E4%BC%A0%E5%88%B0github">使用hexo+github搭建免费个人博客详细教程</a><br>    <a target="_blank" rel="noopener" href="https://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000">Git教程</a></p>
+</blockquote>
+
+      </section>
+      <section class="extra">
+        
+        
+          <section class="donate">
+  <div id="qrcode-donate">
+    <img   class="lazyload" data-original="https://pic.izhaoo.com/alipay.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" >
+  </div>
+  <div class="icon">
+    <a href="javascript:;" id="alipay"><i class="iconfont iconalipay"></i></a>
+    <a href="javascript:;" id="wechat"><i class="iconfont iconwechat-fill"></i></a>
+  </div>
+</section>
+        
+        
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" rel="tag">环境配置</a></li></ul> 
+
+        
+  <nav class="nav">
+    <a href="/2019/03/16/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3HashMap/"><i class="iconfont iconleft"></i>深入理解HashMap（JDK1.8）</a>
+    <a></a>
+  </nav>
+
+      </section>
+      
+        <section class="comments">
+  
+    <div class="btn" id="comments-btn">查看评论</div>
+  
+  
+<div id="valine"></div>
+<script defer src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<script>
+  window.onload = function () {
+    var loadValine = function () {
+      new Valine({
+        el: '#valine',
+        app_id: "cJOoEEu3sAMF6OftYqgFknB0-gzGzoHsz",
+        app_key: "vJR5GGKTPoLqB5pwiWlNqsP5",
+        placeholder: "雁过留痕",
+        avatar: "mp",
+        pageSize: "10",
+        lang: "zh-CN",
+      });
+    }
+    if ( true ) {
+      $("#comments-btn").on("click", function () {
+        $(this).hide();
+        loadValine();
+      });
+    } else {
+      loadValine();
+    }
+  };
+</script>
+
+</section>
+      
+    </section>
+  </div>
+</article></div>
+      <div class="col-xl-3">
+        
+          
+  <aside class="toc-wrap">
+    <h3 class="toc-title">文章目录：</h3>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="toc-text">准备工作</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%89%E8%A3%85node%E5%92%8Cnpm"><span class="toc-text">安装node和npm</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAGitHub%E5%8D%9A%E5%AE%A2%E4%BB%93%E5%BA%93"><span class="toc-text">创建GitHub博客仓库</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E4%BB%93%E5%BA%93"><span class="toc-text">创建仓库</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%85%8D%E7%BD%AESSH-key"><span class="toc-text">配置SSH key</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8hexo%E5%86%99%E5%8D%9A%E5%AE%A2"><span class="toc-text">使用hexo写博客</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#hexo%E7%AE%80%E4%BB%8B"><span class="toc-text">hexo简介</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%89%E8%A3%85hexo"><span class="toc-text">安装hexo</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-text">初始化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9%E4%B8%BB%E9%A2%98"><span class="toc-text">修改主题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%8A%E4%BC%A0%E5%88%B0GitHub"><span class="toc-text">上传到GitHub</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%86%99%E5%8D%9A%E5%AE%A2"><span class="toc-text">写博客</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="toc-text">常用命令</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E9%85%8D%E7%BD%AE"><span class="toc-text">相关配置</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9B%BE%E7%89%87%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-text">图片的使用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9%E7%BD%91%E7%AB%99icon"><span class="toc-text">修改网站icon</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#more%E6%A0%87%E7%AD%BE"><span class="toc-text">more标签</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#README%E6%96%87%E4%BB%B6"><span class="toc-text">README文件</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%8E%E8%AE%B0"><span class="toc-text">后记</span></a></li></ol>
+  </aside>
+
+        
+      </div>
+    </div>
+  </div>
+</main>
+  
+
+<footer class="footer">
+  <div class="footer-social"><a 
+        href="tencent://message/?Menu=yes&uin=894519210 "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#12B7F5'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconQQ "></i>
+      </a><a 
+        href="javascript:; "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#09BB07'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconwechat-fill "></i>
+      </a><a 
+        href="https://www.instagram.com/izhaoo/ "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#DA2E76'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconinstagram "></i>
+      </a><a 
+        href="https://github.com/zhaoo "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#9f7be1'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  icongithub-fill "></i>
+      </a><a 
+        href="mailto:izhaoo@163.com "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color=#FF3B00" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconmail"></i>
+      </a></div>
+  
+    <div class="footer-copyright"><p>Powered by <a target="_blank" href="https://hexo.io">Hexo</a>  |  Theme - <a target="_blank" href="https://github.com/izhaoo/hexo-theme-zhaoo">zhaoo</a></p></div>
+  
+</footer>
+  
+      <div class="fab fab-plus">
+    <i class="iconfont iconplus"></i>
+  </div>
+  
+  
+  
+  <div class="fab fab-up">
+    <i class="iconfont iconcaret-up"></i>
+  </div>
+  
+  
+  
+    
+<script src="/js/color-mode.js"></script>
+
+  
+  
+</body>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+
+
+
+  
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
+
+
+
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
+
+
+
+
+
+
+
+<script src="/js/utils.js"></script>
+<script src="/js/script.js"></script>
+
+
+
+
+
+
+
+  <script>
+    (function () {
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      } else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+</html>

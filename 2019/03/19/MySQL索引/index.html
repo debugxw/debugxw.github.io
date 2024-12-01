@@ -1,0 +1,506 @@
+
+
+<!DOCTYPE html>
+<html lang="en" color-mode=light>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>MySQL索引 - Hexo</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="google" content="notranslate" />
+  
+  <meta name="description" content="一、索引概述索引是帮助MySQL高效获取数据的一种数据...">
+  <meta name="author" content="John Doe">
+  <link rel="icon" href="/img/icons/favicon-32x32.png" type="image/png" sizes="16x16">
+  <link rel="icon" href="/img/icons/favicon-64x64.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/img/icons/favicon-128x128.png" sizes="180x180">
+  <meta rel="mask-icon" href="/img/icons/favicon-128x128.png" color="#333333">
+  
+    <meta rel="msapplication-TileImage" content="/img/icons/favicon-128x128.png">
+    <meta rel="msapplication-TileColor" content="#000000">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+    
+<link rel="stylesheet" href="https://at.alicdn.com/t/font_1445822_p6ry5n7lrr.css">
+
+  
+
+  
+    
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css">
+
+  
+
+  
+    
+      
+        
+        
+<link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.18.1/styles/github.min.css" name="highlight-style" mode="light">
+
+      
+        
+        
+<link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.18.1/styles/github-dark.min.css" name="highlight-style" mode="dark">
+
+      
+  
+
+  <script>
+    var CONFIG = window.CONFIG || {};
+    var ZHAOO = window.ZHAOO || {};
+    CONFIG = {
+      isHome: false,
+      fancybox: true,
+      pjax: false,
+      loading: {
+        gif: '/img/theme/loading.gif',
+        lottie: ''
+      },
+      lazyload: {
+        enable: true,
+        only_post: 'false',
+        loading: {
+          gif: '/img/theme/loading.gif',
+          lottie: ''
+        }
+      },
+      donate: {
+        enable: true,
+        alipay: 'https://pic.izhaoo.com/alipay.jpg',
+        wechat: 'https://pic.izhaoo.com/wechat.jpg'
+      },
+      galleries: {
+        enable: true
+      },
+      fab: {
+        enable: true,
+        always_show: false
+      },
+      carrier: {
+        enable: true
+      },
+      daovoice: {
+        enable: false
+      },
+      preview: {
+        background: {
+          default: '',
+          api: ''
+        },
+        motto: {
+          default: '我在开了灯的床头下，想问问自己的心啊。',
+          typing: true,
+          api: 'https://v2.jinrishici.com/one.json',
+          data_contents: '["data","content"]'
+        },
+      },
+      qrcode: {
+        enable: false,
+        type: 'url',
+        image: 'https://pic.izhaoo.com/weapp-code.jpg',
+      },
+      toc: {
+        enable: true
+      },
+      scrollbar: {
+        type: 'default'
+      },
+      notification: {
+        enable: false,
+        delay: 4500,
+        list: '',
+        page_white_list: '',
+        page_black_list: ''
+      },
+      search: {
+        enable: false,
+        path: ''
+      }
+    }
+  </script>
+
+  
+
+  
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="lock-screen">
+  <div class="loading" id="loading"></div>
+  
+    
+
+
+  <nav class="navbar">
+    <div class="left">
+      
+        <i class="iconfont iconhome j-navbar-back-home"></i>
+      
+      
+      
+        <i class="iconfont iconmoono" id="color-toggle" color-toggle="light"></i>
+      
+      
+    </div>
+    <div class="center">MySQL索引</div>
+    <div class="right">
+      <i class="iconfont iconmenu j-navbar-menu"></i>
+    </div>
+    
+  </nav>
+
+  
+  
+
+<nav class="menu">
+  <div class="menu-container">
+    <div class="menu-close">
+      <i class="iconfont iconbaseline-close-px"></i>
+    </div>
+    <ul class="menu-content"><li class="menu-item">
+        <a href="/ " class="underline "> 首页</a>
+      </li><li class="menu-item">
+        <a href="/archives/ " class="underline "> 归档</a>
+      </li><li class="menu-item">
+        <a href="/tags/ " class="underline "> 标签</a>
+      </li><li class="menu-item">
+        <a href="/about/ " class="underline "> 关于</a>
+      </li></ul>
+    
+      <div class="menu-copyright"><p>Powered by <a target="_blank" href="https://hexo.io">Hexo</a>  |  Theme - <a target="_blank" href="https://github.com/izhaoo/hexo-theme-zhaoo">zhaoo</a></p></div>
+    
+  </div>
+</nav>
+  <main id="main">
+  <div class="article-wrap">
+    <div class="row container">
+      <div class="col-xl-3"></div>
+      <div class="col-xl-6"><article class="article">
+  <div class="wrap">
+    <section class="head">
+  <img   class="lazyload" data-original="/img/theme/014.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  draggable="false">
+  <div class="head-mask">
+    <h1 class="head-title">MySQL索引</h1>
+    <div class="head-info">
+      <span class="post-info-item"><i class="iconfont iconcalendar"></i>March 19, 2019</span>
+      
+      <span class="post-info-item"><i class="iconfont iconfont-size"></i>8030</span>
+    </div>
+  </div>
+</section>
+    <section class="main">
+      <section class="content">
+        
+          <p>帮助MySQL实现高效数据查询的一种数据结构</p>
+        
+        <h3 id="一、索引概述"><a href="#一、索引概述" class="headerlink" title="一、索引概述"></a>一、索引概述</h3><p>索引是帮助MySQL高效获取数据的一种数据结构。在数据之外，数据库系统还维护着满足特定查找算法的数据结构，这些数据结构以某种方式引用（指向）数据，这样就可以在这些数据结构上实现高效查找算法。一句话，索引就是为了实现高效的数据查询的一种数据结构。例如像哈希表、有序数组、跳表、平衡二叉树、红黑树、B-Tree、B+Tree这些数据结构都能够实现高效的数据查询，但是他们之中谁更加适合作为数据库的索引呢？（如未作说明，以下讨论均基于InnoDB）</p>
+<h3 id="二、什么样的数据结构适合作为索引"><a href="#二、什么样的数据结构适合作为索引" class="headerlink" title="二、什么样的数据结构适合作为索引"></a>二、什么样的数据结构适合作为索引</h3><h4 id="哈希索引"><a href="#哈希索引" class="headerlink" title="哈希索引"></a>哈希索引</h4><p>哈希表的查询效率非常的高，几乎可以达到惊人的O(1)，但哈希表却并不适合作为数据库的索引结构，主要原因如下：</p>
+<ul>
+<li>不支持范围查询，因为原先是有序的键值，经过哈希算法后，有可能变成不连续的了，就没办法再利用索引完成范围查询</li>
+<li>同理，哈希索引也没办法利用索引完成排序，以及<code>like &#39;xxx%&#39;</code>这样的部分模糊查询（这种部分模糊查询，其实本质上也是范围查询）</li>
+<li>哈希索引也不支持多列联合索引</li>
+<li>在有大量重复键值的情况下，哈希索引的效率会急剧下降，因为存在所谓的哈希碰撞问题</li>
+</ul>
+<p>但是哈希表也不是完全不能作为数据库的索引，因为如果是等值查询，那么哈希索引明显有绝对优势。例如像基于内存的Memory存储引擎默认的索引结构就是哈希索引</p>
+<h4 id="有序数组-跳表"><a href="#有序数组-跳表" class="headerlink" title="有序数组&#x2F;跳表"></a>有序数组&#x2F;跳表</h4><p>有序数组和跳表的查询效率分别能达到O(logN)和O(log2N)，查询效率非常高。但是，我们在选择适合作为数据库索引的数据结构时，还要考虑到一个问题：一般来说，索引本身也很大，不可能全部存储在内存中，因此索引往往以索引文件的形式存储的磁盘上。这样的话，索引查找过程中就要产生磁盘I&#x2F;O消耗，相对于内存存取，I&#x2F;O存取的消耗要高几个数量级，所以评价一个数据结构作为索引的优劣最重要的指标就是在查找过程中磁盘I&#x2F;O操作次数的渐进复杂度。换句话说，索引的结构组织要尽量减少查找过程中磁盘I&#x2F;O的存取次数。另外，数组的插入和删除效率也非常低。考虑到这些因素，有序数组和跳表并不适合作为数据库的索引结构，而树形结构才是最佳之选</p>
+<h4 id="平衡二叉树-红黑树-B-Tree"><a href="#平衡二叉树-红黑树-B-Tree" class="headerlink" title="平衡二叉树&#x2F;红黑树&#x2F;B-Tree"></a>平衡二叉树&#x2F;红黑树&#x2F;B-Tree</h4><p>平衡二叉树的平均查找时间复杂度为O(log2N)，红黑树的平均查找时间复杂度为O(logN)，虽然他们的查询效率很高，但他们却并不适合作为数据库的索引。而最适合作为数据库索引的是B-Tree</p>
+<p><strong>B-Tree更适合作为索引</strong><br>难道B-Tree的查询时间复杂度更低吗？并不是，但它查找的时间复杂度也近似O(log2N)。前面提到过，索引文件往往是存储在磁盘中的，如果要查询某条记录，就要进行磁盘I&#x2F;O操作。这里就涉及到计算机科学中的局部性原理和磁盘预读：</p>
+<blockquote>
+<p>局部性原理与磁盘预读:</p>
+<blockquote>
+<p>由于存储介质的特性，磁盘本身存取就比主存慢很多，再加上机械运动耗费，磁盘的存取速度往往是主存的几百分之一，因此为了提高效率，要尽量减少磁盘I&#x2F;O。为了达到这个目的，磁盘往往不是严格按需读取，而是每次都会预读，即使只需要一个字节，磁盘也会从这个位置开始，顺序向后读取一定长度的数据放入内存。这样做的理论依据是计算机科学中著名的局部性原理：<br>当一个数据被用到时，其附近的数据也通常会马上被使用。<br>程序运行期间所需要的数据通常比较集中。<br>由于磁盘顺序读取的效率很高（不需要寻道时间，只需很少的旋转时间），因此对于具有局部性的程序来说，预读可以提高I&#x2F;O效率</p>
+</blockquote>
+</blockquote>
+<p>像平衡二叉树，红黑树这种结构，其深度明显要比B-Tree深的多。由于逻辑上很近的节点（父子）物理（磁盘）上可能相距很远，每次磁盘预读中的很多数据是用不上的数据，无法利用局部性，所以红黑树要进行更多的I&#x2F;O操作，效率明显比B-Tree差很多。而B树的每个节点可以存储多个关键字，它将节点大小设置为磁盘页的大小（每次新建一个节点的同时，直接申请一个页的空间，这样就保证一个节点物理上也存储在一个页里，加之计算机存储分配都是按页对齐的，就实现了一个node只需一次I&#x2F;O），充分利用了磁盘预读的功能。每次读取磁盘页时就会读取一整个节点。也正因每个节点存储着非常多个关键字，树的深度就会非常的小。进而要执行的磁盘I&#x2F;O操作次数就会非常少，更多的是在内存中对读取进来的数据进行查找。<br>B树的查询，主要发生在内存中，而平衡二叉树或红黑树的查询，则主要是发生在磁盘读取中。因此，虽然B-Tree查询的次数不比平衡二叉树或红黑树的次数少，但是相比起磁盘I&#x2F;O速度，内存中比较的耗时就可以忽略不计了。因此，B-Tree更适合作为索引。</p>
+<h4 id="B-Tree"><a href="#B-Tree" class="headerlink" title="B+Tree"></a>B+Tree</h4><p>比B-Tree更适合作为索引的结构——B+Tree。这里引用两段话：</p>
+<blockquote>
+<p>走进搜索引擎的作者梁斌老师针对B树、B+树给出了他的意见（为了真实性，特引用其原话，未作任何改动）：<br>“B+树还有一个最大的好处，方便扫库，B树必须用中序遍历的方法按序扫库，而B+树直接从叶子结点挨个扫一遍就完了，B+树支持range-query非常方便，而B树不支持。这是数据库选用B+树的最主要原因。<br>比如要查 5-10之间的，B+树一把到5这个标记，再一把到10，然后串起来就行了，B树就非常麻烦。B树的好处，就是成功查询特别有利，因为树的高度总体要比B+树矮。不成功的情况下，B树也比B+树稍稍占一点点便宜。<br>B树比如你的例子中查17的话，一把就得到结果了，有很多基于频率的搜索是选用B树，越频繁query的结点越往根上走，前提是需要对query做统计，而且要对key做一些变化。<br>另外B树也好B+树也好，根或者上面几层因为被反复query，所以这几块基本都在内存中，不会出现读磁盘IO，一般已启动的时候，就会主动换入内存。”</p>
+</blockquote>
+<blockquote>
+<p>数据库索引采用B+Tree的主要原因是B-Tree在提高了磁盘I&#x2F;O性能的同时并没有解决元素遍历的效率低下的问题。正是为了解决这个问题，B+Tree应运而生。B+Tree只要遍历叶子节点就可以实现整棵树的遍历。而且在数据库中基于范围的查询是非常频繁的，而B-Tree不支持这样的操作（或者说效率太低）。</p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.baidu.com/">更多关于B-Tree、B+Tree、B*Tree点这里</a></p>
+<h3 id="三、MySQL的两种存储引擎的索引存储机制"><a href="#三、MySQL的两种存储引擎的索引存储机制" class="headerlink" title="三、MySQL的两种存储引擎的索引存储机制"></a>三、MySQL的两种存储引擎的索引存储机制</h3><h4 id="MyISAM索引实现"><a href="#MyISAM索引实现" class="headerlink" title="MyISAM索引实现"></a>MyISAM索引实现</h4><p>MyISAM引擎使用B+Tree作为索引结构，叶节点的data域存放的是数据记录的地址。</p>
+<center>
+<img   class="lazyload" data-original="../../../../img/db/index_MyISAM_1.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  width="60%" height="60%" />
+</center>
+
+<p>这里设表一共有三列，假设我们以Col1为主键，则上图是一个MyISAM表的主索引（Primary key）示意。可以看出MyISAM的索引文件仅仅保存数据记录的地址。在MyISAM中，主索引和辅助索引（Secondary key）在结构上没有任何区别，只是主索引要求key是唯一的，而辅助索引的key可以重复。如果我们在Col2上建立一个辅助索引，则此索引的结构如下图所示：</p>
+<center>
+<img   class="lazyload" data-original="../../../../img/db/index_MyISAM_2.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  width="60%" height="60%" />
+</center>
+
+<p>同样也是一颗B+Tree，data域保存数据记录的地址。因此，MyISAM中索引检索的算法为首先按照B+Tree搜索算法搜索索引，如果指定的Key存在，则取出其data域的值，然后以data域的值为地址，读取相应数据记录。<br>MyISAM的索引方式也叫做“非聚集索引”。</p>
+<h4 id="InnoDB索引实现"><a href="#InnoDB索引实现" class="headerlink" title="InnoDB索引实现"></a>InnoDB索引实现</h4><p>虽然InnoDB也使用B+Tree作为索引结构，但具体实现方式却与MyISAM截然不同。第一个重大区别是InnoDB的数据文件本身就是索引文件。从上文知道，MyISAM索引文件和数据文件是分离的，索引文件仅保存数据记录的地址。而在InnoDB中，表数据文件本身就是按B+Tree组织的一个索引结构，这棵树的叶节点data域保存了完整的数据记录。这个索引的key是数据表的主键，因此InnoDB表数据文件本身就是主索引。</p>
+<center>
+<img   class="lazyload" data-original="../../../../img/db/index_InnoDB_1.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  width="60%" height="60%" />
+</center>
+
+<p>上图是InnoDB主键索引（同时也是数据文件）的示意图，可以看到叶节点包含了完整的数据记录。这种索引叫做聚集索引。因为InnoDB的数据文件本身要按主键聚集，所以InnoDB要求表必须有主键（MyISAM可以没有），如果没有显式指定，则MySQL系统会自动选择一个可以唯一标识数据记录的列作为主键，如果不存在这种列，则MySQL自动为InnoDB表生成一个隐含字段作为主键，这个字段长度为6个字节，类型为长整形。<br>第二个与MyISAM索引的不同是InnoDB的非主键索引data域存储相应记录主键的值而不是地址。换句话说，InnoDB的所有非主键索引都引用主键作为data域。例如，定义在Col3上的一个非主键索引：</p>
+<center>
+<img   class="lazyload" data-original="../../../../img/db/index_InnoDB_2.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  width="60%" height="60%" />
+</center>
+
+<p>这里以英文字符的ASCII码作为比较准则。聚集索引这种实现方式使得按主键的搜索十分高效，但是非主键索引搜索需要检索两遍索引：首先检索非主键索引获得主键，然后用主键到主键索引中检索获得记录。</p>
+<h3 id="四、索引的分类"><a href="#四、索引的分类" class="headerlink" title="四、索引的分类"></a>四、索引的分类</h3><ul>
+<li>普通索引：基本的索引，它没有任何限制</li>
+<li>唯一索引：与普通索引类似，不同的就是：MySQL数据库索引列的值必须唯一，但允许有空值。如果是组合索引，则列值的组合必须唯一。</li>
+<li>主键索引：一种特殊的唯一索引，不允许有空值。一般是在建表的时候同时创建主键索引。</li>
+<li>全文索引：全文检索是对大数据文本进行索引，在建立的索引中对要查找的单词进行进行搜索，定位哪些文本数据包括要搜索的单词。因此，全文检索的全部工作就是建立索引和在索引中搜索定位，所有的工作都是围绕这两个来进行的。建立全文索引中有两项非常重要，一个是如何对文本进行分词，一是建立索引的数据结构。分词的方法基本上是二元分词法、最大匹配法和统计方法。索引的数据结构基本上采用倒排索引的结构。分词的好坏关系到查询的准确程度和生成的索引的大小。MySQL中的MyISAM支持全文索引，而InnoDB不支持。</li>
+</ul>
+<h3 id="五、覆盖索引"><a href="#五、覆盖索引" class="headerlink" title="五、覆盖索引"></a>五、覆盖索引</h3><p>上面提到，对于非主键索引的查询，会先查询记录对应的主键，再去主键索引查询记录。在这个过程中，回到主键索引树搜索的过程，我们称为回表。<br>但是，如果非主键索引已经包含了全部的待查询字段，那么此时InnoDB就不会进行回表操作，而是直接返回。例如如下查询：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 表结构</span></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> T (</span><br><span class="line">    id <span class="type">int</span> <span class="keyword">primary</span> key,</span><br><span class="line">    a <span class="type">varchar</span>(<span class="number">16</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">    b <span class="type">int</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="number">0</span>,</span><br><span class="line">    index idx_a(a)</span><br><span class="line">)engine<span class="operator">=</span>InnoDB;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 查询语句1</span></span><br><span class="line"><span class="keyword">select</span> id, a, b <span class="keyword">from</span> T <span class="keyword">where</span> a <span class="operator">=</span> <span class="string">&#x27;abc&#x27;</span>;    <span class="comment">-- 1次回表</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查询语句2</span></span><br><span class="line"><span class="keyword">select</span> id, a <span class="keyword">from</span> T <span class="keyword">where</span> a <span class="operator">=</span> <span class="string">&#x27;abc&#x27;</span>; <span class="comment">-- 0次回表</span></span><br></pre></td></tr></table></figure>
+
+<p>在上面的查询语句1当中，通过idx_a索引并不能查询到b字段，所以会先查询idx_a索引，拿到主键，再去主键索引中查询，回表次数为1。<br>而在查询语句2当中，非主键索引idx_a已经包含了全部的待查询字段（id, a），所以InnoDB在非主键索引树上查询到数据后就会直接返回，回表次数为0。<br>像idx_a这种已经“覆盖”了我们的查询需求的索引，我们称之为覆盖索引。<strong>由于覆盖索引可以减少树的搜索次数，显著提升查询性能，所以使用覆盖索引是一个常用的性能优化手段</strong></p>
+<h3 id="六、多列索引（组合索引）"><a href="#六、多列索引（组合索引）" class="headerlink" title="六、多列索引（组合索引）"></a>六、多列索引（组合索引）</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">--相当于创建了(name)单列索引，(name, age)组合索引以及(name, age, sex)组合索引</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> people <span class="keyword">ADD</span> INDEX height_name_age (name, age, sex);</span><br></pre></td></tr></table></figure>
+
+<p><strong>最左前缀原则：</strong>在mysql建立联合索引时会遵循最左前缀匹配的原则，即最左优先，在检索数据时从联合索引的最左边开始匹配。</p>
+<ul>
+<li>B+Tree的数据项是复合的数据结构，比如上面的(name, age, sex)，B+Tree是按照从左到右的顺序来建立搜索树的，比如当(张三, 20, 男)这样的数据来检索的时候，B+Tree会优先比较name来确定下一步的所搜方向，如果name相同再依次比较age和sex，最后得到检索的数据。当(20, 男)这样的没有name的数据来的时候，B+Tree就不知道第一步该查哪个节点，因为建立搜索树的时候name就是第一个比较因子，必须要先根据name来搜索才能知道下一步去哪里查询。</li>
+<li>比如当(张三, 男)这样的数据来检索时，b+Tree可以用name来指定搜索方向，但由于字段age的缺失而无法和左前缀连接，所以只能把名字等于张三的数据都找到，然后再对sex进行过滤，这个是非常重要的性质，即索引的最左匹配特性（这种情况无法用到联合索引）。如果想让sex也使用索引而不是where过滤，有以下两种方法：   <ul>
+<li>增加一个辅助索引，此时上面的查询就会使用到这个索引</li>
+<li>使用一种称之为“隔离列”的优化方法，将name与sex之间的“坑”填上<blockquote>
+<p>如果age的值只有 (19, 20, 21) 三种，可以考虑用”IN”来填补这个坑从而形成最左前缀。<br>SELECT * FROM people WHERE name &#x3D; ‘张三’ AND age IN (19, 20, 21) AND sex &#x3D; ‘男’;<br>这样的话就是用了 (name, age, sex) 索引，但是 IN 实际上执行了一个 range 查询，这里检查了3个key（具体可用 explain 查看）。“填坑”后性能提升了一点。如果经过 name 筛选后余下很多数据，则后者性能优势会更加明显。当然，如果 age 的值很多，用填坑就不合适了，必须建立辅助索引。</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li>匹配某列的前缀字符串时，如果通配符%不出现在开头，则可以用到索引，但根据具体情况不同可能只会用其中一个前缀。</li>
+<li>如果查询条件中含有函数或表达式，则MySQL不会为这列使用索引。</li>
+<li>关于最左前缀原则<ul>
+<li>最左前缀匹配原则，mysql 会一直向右匹配直到遇到范围查询 (&gt;、&lt;、between、like) 就停止匹配，比如 a &#x3D; 1 and b &#x3D; 2 and c &gt; 3 and d &#x3D; 4 如果建立 (a, b, c, d) 顺序的索引，d 是用不到索引的，如果建立 (a, b, d, c) 的索引则都可以用到，a, b, d 的顺序可以任意调整。</li>
+<li>进行精确匹配（指 &#x3D; 或 in 的匹配）时可以乱序，比如 a &#x3D; 1 and b &#x3D; 2 and c &#x3D; 3 建立 (a, b, c) 索引可以任意顺序，mysql 的查询优化器会自动调整 where 子句的条件顺序以使用合适的索引。</li>
+</ul>
+</li>
+</ul>
+<p><strong>为什么条件查询中有函数、范围查询遇到!&#x3D;等就用不到索引</strong><br>假设我们在a字段上面建立了索引，那么这个索引树（也就是B+Tree）中节点存储的就是a字段的值，所以我们可以用a的等值查询来检索，例如：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> T <span class="keyword">where</span> a <span class="operator">=</span> <span class="string">&#x27;abc&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>因为是等值查询所以可以直接通过a的索引树定位到’abc’（如果定位不到，那么说明记录不存在）。但是如果我在查询条件中增加了函数计算，例如：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">from</span> T <span class="keyword">where</span> concat(a, <span class="string">&#x27;str&#x27;</span>) <span class="operator">=</span> <span class="string">&#x27;abc&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>这个时候是肯定用不到a这个索引的，查询条件是concat(a, ‘str’)，但是a索引存储的是a的值，MySQL并不知道到concat(a, ‘str’)函数计算之后是个什么东西，所以只能一个一个记录的去遍历，做函数计算，然后再来判断。<br>当遇到!&#x3D;这样的操作符时，也是一样的道理，只能一个一个记录的去遍历，而无法使用到这个索引。</p>
+<p><strong>为什么最左前缀原则中范围查询后面的字段用不到索引</strong><br>假设有如下查询：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> T (</span><br><span class="line">    id <span class="type">int</span> <span class="keyword">primary</span> key,</span><br><span class="line">    a <span class="type">varchar</span>(<span class="number">16</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">    b <span class="type">int</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="number">0</span>,</span><br><span class="line">     <span class="type">int</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="number">0</span>,</span><br><span class="line">    index idx_a_b_c(a, b, c)</span><br><span class="line">)engine<span class="operator">=</span>InnoDB;</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> T <span class="keyword">where</span> a <span class="operator">=</span> <span class="string">&#x27;111&#x27;</span> <span class="keyword">and</span> b <span class="operator">&gt;</span> <span class="number">10</span> <span class="keyword">and</span> c <span class="operator">=</span> <span class="number">30</span>;</span><br></pre></td></tr></table></figure>
+
+<p>虽然我们创建了联合索引idx_a_b_c，但是由于b属于范围查询，所以关于c的索引是使用不到的。假设这个表有如下记录：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="number">111</span>, <span class="number">8</span>, <span class="number">30</span>),(<span class="number">111</span>, <span class="number">11</span>, <span class="number">20</span>),(<span class="number">111</span>, <span class="number">11</span>, <span class="number">30</span>),(<span class="number">111</span>, <span class="number">11</span>, <span class="number">25</span>),(<span class="number">111</span>, <span class="number">16</span>, <span class="number">20</span>),(<span class="number">112</span>, <span class="number">8</span>, <span class="number">30</span>)</span><br></pre></td></tr></table></figure>
+
+<p>上面这条查询首先通过a索引定位到(111, , )，再通过b定位到(111, 11, 20)，因为在b字段上面使用的是范围查询&gt;，所以当定位到(111, 11, 20)这个记录时，后面的记录中的b都是大于10的，但是并不能确定后面的记录中c字段是否满足查询条件，因为b&gt;10的记录有可能c不等于30，例如(111, 14, 25)，所以只能一个一个的去向后遍历，那么也就只能用到a、b的索引，而用不到c的索引</p>
+<h3 id="七、索引下推"><a href="#七、索引下推" class="headerlink" title="七、索引下推"></a>七、索引下推</h3><p>上文提到满足最左前缀原则的时候，最左前缀可以用于在索引中定位记录。那些不符合最左前缀的部分，会怎么样呢？我们以用户表为例，表结构如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `<span class="keyword">user</span>` (</span><br><span class="line">    `id` <span class="type">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">    `name` <span class="type">varchar</span>(<span class="number">32</span>) <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">    `age` <span class="type">int</span>(<span class="number">11</span>) <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">    `ismale` tinyint(<span class="number">1</span>) <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">    <span class="keyword">PRIMARY</span> KEY (`id`),</span><br><span class="line">    KEY `name_age` (`name`,`age`)</span><br><span class="line">) ENGINE<span class="operator">=</span>InnoDB</span><br></pre></td></tr></table></figure>
+
+<p>假设现在需要检索出表中“名字第一个字是张，而且年龄是10岁的所有男孩”。那么，SQL 语句是这么写的：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> name <span class="keyword">like</span> <span class="string">&#x27;张%&#x27;</span> <span class="keyword">and</span> age<span class="operator">=</span><span class="number">10</span> <span class="keyword">and</span> ismale<span class="operator">=</span><span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<p>显然，这个语句在搜索索引树的时候，只能用 “张”，找到第一个满足条件的记录，假设为ID3，然后判断其他条件是否满足<br>在MySQL 5.6之前，只能从X开始一个个回表。到主键索引上找出数据行，再对比字段值<br>而MySQL 5.6引入的<font color='red'><strong>索引下推</strong></font>优化（index condition pushdown），可以在索引遍历过程中，对索引中包含的字段先做判断，直接过滤掉不满足条件的记录，减少回表次数<br>这两个过程分别如下图所示：</p>
+<p><img   class="lazyload" data-original="/../../../../img/db/%E6%97%A0%E7%B4%A2%E5%BC%95%E4%B8%8B%E6%8E%A8.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  alt="无索引下推执行流程"></p>
+<p><img   class="lazyload" data-original="/../../../../img/db/%E6%9C%89%E7%B4%A2%E5%BC%95%E4%B8%8B%E6%8E%A8.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  alt="索引下推执行流程"></p>
+<blockquote>
+<p>参考：<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_30531261/article/details/79312676">https://blog.csdn.net/weixin_30531261/article/details/79312676</a><br><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/1775b4ff123a">https://www.jianshu.com/p/1775b4ff123a</a><br><a target="_blank" rel="noopener" href="https://www.kancloud.cn/kancloud/theory-of-mysql-index/41857">https://www.kancloud.cn/kancloud/theory-of-mysql-index/41857</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/wezheng/p/8399305.html">https://www.cnblogs.com/wezheng/p/8399305.html</a></p>
+</blockquote>
+
+      </section>
+      <section class="extra">
+        
+        
+          <section class="donate">
+  <div id="qrcode-donate">
+    <img   class="lazyload" data-original="https://pic.izhaoo.com/alipay.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" >
+  </div>
+  <div class="icon">
+    <a href="javascript:;" id="alipay"><i class="iconfont iconalipay"></i></a>
+    <a href="javascript:;" id="wechat"><i class="iconfont iconwechat-fill"></i></a>
+  </div>
+</section>
+        
+        
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">数据库</a></li></ul> 
+
+        
+  <nav class="nav">
+    <a href="/2019/04/04/JDK1.6%E4%B9%8B%E5%90%8E%E7%9A%84%E9%94%81%E4%BC%98%E5%8C%96/"><i class="iconfont iconleft"></i>JDK1.6之后的锁优化</a>
+    <a href="/2019/03/16/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3HashMap/">深入理解HashMap（JDK1.8）<i class="iconfont iconright"></i></a>
+  </nav>
+
+      </section>
+      
+        <section class="comments">
+  
+    <div class="btn" id="comments-btn">查看评论</div>
+  
+  
+<div id="valine"></div>
+<script defer src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<script>
+  window.onload = function () {
+    var loadValine = function () {
+      new Valine({
+        el: '#valine',
+        app_id: "cJOoEEu3sAMF6OftYqgFknB0-gzGzoHsz",
+        app_key: "vJR5GGKTPoLqB5pwiWlNqsP5",
+        placeholder: "雁过留痕",
+        avatar: "mp",
+        pageSize: "10",
+        lang: "zh-CN",
+      });
+    }
+    if ( true ) {
+      $("#comments-btn").on("click", function () {
+        $(this).hide();
+        loadValine();
+      });
+    } else {
+      loadValine();
+    }
+  };
+</script>
+
+</section>
+      
+    </section>
+  </div>
+</article></div>
+      <div class="col-xl-3">
+        
+          
+  <aside class="toc-wrap">
+    <h3 class="toc-title">文章目录：</h3>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E7%B4%A2%E5%BC%95%E6%A6%82%E8%BF%B0"><span class="toc-text">一、索引概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E4%BB%80%E4%B9%88%E6%A0%B7%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E9%80%82%E5%90%88%E4%BD%9C%E4%B8%BA%E7%B4%A2%E5%BC%95"><span class="toc-text">二、什么样的数据结构适合作为索引</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%93%88%E5%B8%8C%E7%B4%A2%E5%BC%95"><span class="toc-text">哈希索引</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9C%89%E5%BA%8F%E6%95%B0%E7%BB%84-%E8%B7%B3%E8%A1%A8"><span class="toc-text">有序数组&#x2F;跳表</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B9%B3%E8%A1%A1%E4%BA%8C%E5%8F%89%E6%A0%91-%E7%BA%A2%E9%BB%91%E6%A0%91-B-Tree"><span class="toc-text">平衡二叉树&#x2F;红黑树&#x2F;B-Tree</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#B-Tree"><span class="toc-text">B+Tree</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81MySQL%E7%9A%84%E4%B8%A4%E7%A7%8D%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E7%9A%84%E7%B4%A2%E5%BC%95%E5%AD%98%E5%82%A8%E6%9C%BA%E5%88%B6"><span class="toc-text">三、MySQL的两种存储引擎的索引存储机制</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#MyISAM%E7%B4%A2%E5%BC%95%E5%AE%9E%E7%8E%B0"><span class="toc-text">MyISAM索引实现</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#InnoDB%E7%B4%A2%E5%BC%95%E5%AE%9E%E7%8E%B0"><span class="toc-text">InnoDB索引实现</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E7%B4%A2%E5%BC%95%E7%9A%84%E5%88%86%E7%B1%BB"><span class="toc-text">四、索引的分类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E8%A6%86%E7%9B%96%E7%B4%A2%E5%BC%95"><span class="toc-text">五、覆盖索引</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E5%A4%9A%E5%88%97%E7%B4%A2%E5%BC%95%EF%BC%88%E7%BB%84%E5%90%88%E7%B4%A2%E5%BC%95%EF%BC%89"><span class="toc-text">六、多列索引（组合索引）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E7%B4%A2%E5%BC%95%E4%B8%8B%E6%8E%A8"><span class="toc-text">七、索引下推</span></a></li></ol>
+  </aside>
+
+        
+      </div>
+    </div>
+  </div>
+</main>
+  
+
+<footer class="footer">
+  <div class="footer-social"><a 
+        href="tencent://message/?Menu=yes&uin=894519210 "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#12B7F5'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconQQ "></i>
+      </a><a 
+        href="javascript:; "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#09BB07'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconwechat-fill "></i>
+      </a><a 
+        href="https://www.instagram.com/izhaoo/ "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#DA2E76'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconinstagram "></i>
+      </a><a 
+        href="https://github.com/zhaoo "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#9f7be1'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  icongithub-fill "></i>
+      </a><a 
+        href="mailto:izhaoo@163.com "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color=#FF3B00" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconmail"></i>
+      </a></div>
+  
+    <div class="footer-copyright"><p>Powered by <a target="_blank" href="https://hexo.io">Hexo</a>  |  Theme - <a target="_blank" href="https://github.com/izhaoo/hexo-theme-zhaoo">zhaoo</a></p></div>
+  
+</footer>
+  
+      <div class="fab fab-plus">
+    <i class="iconfont iconplus"></i>
+  </div>
+  
+  
+  
+  <div class="fab fab-up">
+    <i class="iconfont iconcaret-up"></i>
+  </div>
+  
+  
+  
+    
+<script src="/js/color-mode.js"></script>
+
+  
+  
+</body>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+
+
+
+  
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
+
+
+
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
+
+
+
+
+
+
+
+<script src="/js/utils.js"></script>
+<script src="/js/script.js"></script>
+
+
+
+
+
+
+
+  <script>
+    (function () {
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      } else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+</html>

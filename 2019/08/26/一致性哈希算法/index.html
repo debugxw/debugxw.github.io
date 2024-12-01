@@ -1,0 +1,416 @@
+
+
+<!DOCTYPE html>
+<html lang="en" color-mode=light>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>一致性哈希算法 - Hexo</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="google" content="notranslate" />
+  
+  <meta name="description" content="
+原作者：好刚  原文链接：7分钟视频详解一致性has...">
+  <meta name="author" content="John Doe">
+  <link rel="icon" href="/img/icons/favicon-32x32.png" type="image/png" sizes="16x16">
+  <link rel="icon" href="/img/icons/favicon-64x64.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/img/icons/favicon-128x128.png" sizes="180x180">
+  <meta rel="mask-icon" href="/img/icons/favicon-128x128.png" color="#333333">
+  
+    <meta rel="msapplication-TileImage" content="/img/icons/favicon-128x128.png">
+    <meta rel="msapplication-TileColor" content="#000000">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+    
+<link rel="stylesheet" href="https://at.alicdn.com/t/font_1445822_p6ry5n7lrr.css">
+
+  
+
+  
+    
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css">
+
+  
+
+  
+    
+      
+        
+        
+<link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.18.1/styles/github.min.css" name="highlight-style" mode="light">
+
+      
+        
+        
+<link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.18.1/styles/github-dark.min.css" name="highlight-style" mode="dark">
+
+      
+  
+
+  <script>
+    var CONFIG = window.CONFIG || {};
+    var ZHAOO = window.ZHAOO || {};
+    CONFIG = {
+      isHome: false,
+      fancybox: true,
+      pjax: false,
+      loading: {
+        gif: '/img/theme/loading.gif',
+        lottie: ''
+      },
+      lazyload: {
+        enable: true,
+        only_post: 'false',
+        loading: {
+          gif: '/img/theme/loading.gif',
+          lottie: ''
+        }
+      },
+      donate: {
+        enable: true,
+        alipay: 'https://pic.izhaoo.com/alipay.jpg',
+        wechat: 'https://pic.izhaoo.com/wechat.jpg'
+      },
+      galleries: {
+        enable: true
+      },
+      fab: {
+        enable: true,
+        always_show: false
+      },
+      carrier: {
+        enable: true
+      },
+      daovoice: {
+        enable: false
+      },
+      preview: {
+        background: {
+          default: '',
+          api: ''
+        },
+        motto: {
+          default: '我在开了灯的床头下，想问问自己的心啊。',
+          typing: true,
+          api: 'https://v2.jinrishici.com/one.json',
+          data_contents: '["data","content"]'
+        },
+      },
+      qrcode: {
+        enable: false,
+        type: 'url',
+        image: 'https://pic.izhaoo.com/weapp-code.jpg',
+      },
+      toc: {
+        enable: true
+      },
+      scrollbar: {
+        type: 'default'
+      },
+      notification: {
+        enable: false,
+        delay: 4500,
+        list: '',
+        page_white_list: '',
+        page_black_list: ''
+      },
+      search: {
+        enable: false,
+        path: ''
+      }
+    }
+  </script>
+
+  
+
+  
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="lock-screen">
+  <div class="loading" id="loading"></div>
+  
+    
+
+
+  <nav class="navbar">
+    <div class="left">
+      
+        <i class="iconfont iconhome j-navbar-back-home"></i>
+      
+      
+      
+        <i class="iconfont iconmoono" id="color-toggle" color-toggle="light"></i>
+      
+      
+    </div>
+    <div class="center">一致性哈希算法</div>
+    <div class="right">
+      <i class="iconfont iconmenu j-navbar-menu"></i>
+    </div>
+    
+  </nav>
+
+  
+  
+
+<nav class="menu">
+  <div class="menu-container">
+    <div class="menu-close">
+      <i class="iconfont iconbaseline-close-px"></i>
+    </div>
+    <ul class="menu-content"><li class="menu-item">
+        <a href="/ " class="underline "> 首页</a>
+      </li><li class="menu-item">
+        <a href="/archives/ " class="underline "> 归档</a>
+      </li><li class="menu-item">
+        <a href="/tags/ " class="underline "> 标签</a>
+      </li><li class="menu-item">
+        <a href="/about/ " class="underline "> 关于</a>
+      </li></ul>
+    
+      <div class="menu-copyright"><p>Powered by <a target="_blank" href="https://hexo.io">Hexo</a>  |  Theme - <a target="_blank" href="https://github.com/izhaoo/hexo-theme-zhaoo">zhaoo</a></p></div>
+    
+  </div>
+</nav>
+  <main id="main">
+  <div class="article-wrap">
+    <div class="row container">
+      <div class="col-xl-3"></div>
+      <div class="col-xl-6"><article class="article">
+  <div class="wrap">
+    <section class="head">
+  <img   class="lazyload" data-original="/img/theme/003.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  draggable="false">
+  <div class="head-mask">
+    <h1 class="head-title">一致性哈希算法</h1>
+    <div class="head-info">
+      <span class="post-info-item"><i class="iconfont iconcalendar"></i>August 26, 2019</span>
+      
+      <span class="post-info-item"><i class="iconfont iconfont-size"></i>1840</span>
+    </div>
+  </div>
+</section>
+    <section class="main">
+      <section class="content">
+        
+          <p>分布式系统中数据分片、节点变化和负载均衡的解决方案</p>
+        
+        <blockquote>
+<p>原作者：好刚<br>  原文链接：<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/av25184175?from=search&seid=7113954758271022234">7分钟视频详解一致性hash 算法</a></p>
+</blockquote>
+<h2 id="一、为什么要使用一致性哈希算法"><a href="#一、为什么要使用一致性哈希算法" class="headerlink" title="一、为什么要使用一致性哈希算法"></a>一、为什么要使用一致性哈希算法</h2><p>先来看这样一个分布式缓存的应用场景，假设我们有三台缓存服务器，服务器编号分别为 S0，S1，S2，同时有三万张图片需要缓存，最好这些图片能够均匀的缓存在这三台服务器中，这样它们就能分摊缓存的压力。那么应该怎样实现这个功能呢？</p>
+<p>简单的做法是对图片的名称进行哈希运算得到一个哈希值，再用这个哈希值对缓存服务器的数量取模，这样我们就可以知道这张图片应该缓存在哪一台服务器上。因为对同一个图片名称做相同的哈希运算时，得到的哈希值是不变的，所以当需要访问图片的时候，只需要再次对图片名称进行哈希运算和取模运算，就可以知道图片缓存在哪一台服务器上，从而到相应的缓存服务器上去获取图片。通过该这种方法，就可以将三万张图片缓存到三台服务器上，而且当下载或访问某张图片时，能够直接通过哈希计算出图片缓存在哪一台服务器上，这样就能满足我们的需求。这就是简单的哈希算法。</p>
+<h4 id="缺陷"><a href="#缺陷" class="headerlink" title="缺陷"></a>缺陷</h4><p>假设现在需要向缓存服务器集群中增加一台服务器，那么缓存服务器的数量就由三台变成了四台。这个时候要计算所访问的图片在哪一台服务器上时，可以先对图片名称进行哈希运算得到一个哈希值，再对服务器的数量取模。但是由于现在服务器的数量由三台变成了四台，而图片的哈希值是没有改变的，那么通过哈希值对服务器数量取模得到的余数就会不同。也就是说，这张图片会映射到错误的服务器上去。这样就会导致大量的图片缓存失效，而程序在无法通过缓存获取数据时，就会向后端服务器请求数据。由于大量缓存在同一时间失效，造成缓存雪崩，缓存集群无法起到承担访问压力的作用，压力就全部转移到后端服务器，整个系统很有可能被压垮。为了避免这种问题，就需要使用一致性哈希算法。</p>
+<h2 id="二、原理"><a href="#二、原理" class="headerlink" title="二、原理"></a>二、原理</h2><p>假设存在这样一个哈希圆环，上面均匀的分布着 2^32 个点，编号分别为 0 到 2^32 - 1。假设还是有三台缓存服务器，编号为 A、B、C，我们可以对每台缓存服务器进行哈希运算然后再对 2^32 取模，那么就可以将这三台服务器映射到哈希环上的三个点。例如：</p>
+<center><img   class="lazyload" data-original="../../../../img/consistent_hash/consistentHash_1.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  width="40%" height="40%" /></center>
+
+<p>假设需要缓存三张图片，图片名称分别为 a.jpg、b.jpg、c.jpg，我们也可以使用同样的方法将其映射到哈希环上。这个时候缓存服务器和图片都已经被映射到了哈希环上，接下来需要确定图片应该被缓存在那一台服务器上，其实很简单，只需要从图片在哈希环上的位置顺时针查找，找到的第一个服务器就是图片应该存放的位置。例如：</p>
+<center><img   class="lazyload" data-original="../../../../img/consistent_hash/consistentHash_2.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  width="40%" height="40%" /></center>
+
+<p>当需要访问某张图片时，我们可以使用相同的方法计算出图片被缓存在哪一台服务器上，然后去对应的服务器上获取图片。那么一致性哈希算法能不能解决之前哈希算法遇到的问题呢？</p>
+<p>例如，现在需要增加一台缓存服务器 D，按照一致性哈希算法的规则，先将服务器 D 映射到哈希环上。这样的话，一部分图片沿顺时针遇到的第一台服务器就由 A 变成了 D。也就是说，如果增加了一台服务器，会导致一小部分图片缓存失效。但是我们也可以看到，大部分图片任然可以正常访问，这就是一致性哈希算法的优点。</p>
+<center><img   class="lazyload" data-original="../../../../img/consistent_hash/consistentHash_3.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  width="40%" height="40%" /></center>
+
+<p><strong>总结：</strong><br>使用一致性哈希算法时，如果服务器的数量发生了改变，并不是所有的缓存都会失效，而是只有部分缓存会失效，缓存服务器集群任然能够分摊整个系统的大部分压力，而不至于大部分的压力在同一时间都集中到后端服务器上。</p>
+<h4 id="哈希偏斜"><a href="#哈希偏斜" class="headerlink" title="哈希偏斜"></a>哈希偏斜</h4><p>在之前的介绍一致性哈希算法的原理时，我们理想的认为三台服务器均匀的分布到了哈希环上。但在实际的映射中，服务器在映射到哈希环上时，很有可能时倾斜的，例如：</p>
+<center><img   class="lazyload" data-original="../../../../img/consistent_hash/consistentHash_4.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  width="35%" height="35%" /></center>
+
+<p>这种情况称为哈希偏斜，哈希环偏斜的情况下，大部分的缓存对象很有可能被缓存到一台服务器上，导致缓存分布极度不均匀。如果缓存数据较多的服务器出现故障，由于失效的缓存太多，在极端的情况下，很有可能引起系统崩溃。</p>
+<p>那么我们如何解决呢？要想服务器均匀的分布在哈希环上，最好是让服务器尽量的多。具体的实现方式是加上一层虚拟节点，这里我们真实的服务器资源只有三台，但是我们可以基于现有的物理节点映射出很多的虚拟节点。例如服务器 A，我们可以映射出服务器 A1、A2…An，将这些虚拟节点加入哈希环。引入虚拟节点之后，虚拟节点越多，哈希环上的服务器节点就越多，缓存数据被均匀分布的概率也就越大。这样就可以在一定程度上减小哈希环倾斜带来的影响。具体在进行缓存读写时，缓存数据可以先找到自己的虚拟服务器节点，虚拟服务器节点再找到自己的真实服务器节点，然后再进行缓存数据的读写。例如：</p>
+<center><img   class="lazyload" data-original="../../../../img/consistent_hash/consistentHash_5.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  width="35%" height="35%" /></center>
+      </section>
+      <section class="extra">
+        
+        
+          <section class="donate">
+  <div id="qrcode-donate">
+    <img   class="lazyload" data-original="https://pic.izhaoo.com/alipay.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" >
+  </div>
+  <div class="icon">
+    <a href="javascript:;" id="alipay"><i class="iconfont iconalipay"></i></a>
+    <a href="javascript:;" id="wechat"><i class="iconfont iconwechat-fill"></i></a>
+  </div>
+</section>
+        
+        
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li></ul> 
+
+        
+  <nav class="nav">
+    <a href="/2020/09/19/%E7%94%A8Java%E5%AE%9E%E7%8E%B0%E4%B8%89%E4%B8%AA%E7%BA%BF%E7%A8%8B%E9%A1%BA%E5%BA%8F%E6%89%93%E5%8D%B0ABC/"><i class="iconfont iconleft"></i>三个线程顺序打印ABC</a>
+    <a href="/2019/07/24/JVM%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6/">JVM类加载机制<i class="iconfont iconright"></i></a>
+  </nav>
+
+      </section>
+      
+        <section class="comments">
+  
+    <div class="btn" id="comments-btn">查看评论</div>
+  
+  
+<div id="valine"></div>
+<script defer src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<script>
+  window.onload = function () {
+    var loadValine = function () {
+      new Valine({
+        el: '#valine',
+        app_id: "cJOoEEu3sAMF6OftYqgFknB0-gzGzoHsz",
+        app_key: "vJR5GGKTPoLqB5pwiWlNqsP5",
+        placeholder: "雁过留痕",
+        avatar: "mp",
+        pageSize: "10",
+        lang: "zh-CN",
+      });
+    }
+    if ( true ) {
+      $("#comments-btn").on("click", function () {
+        $(this).hide();
+        loadValine();
+      });
+    } else {
+      loadValine();
+    }
+  };
+</script>
+
+</section>
+      
+    </section>
+  </div>
+</article></div>
+      <div class="col-xl-3">
+        
+          
+        
+      </div>
+    </div>
+  </div>
+</main>
+  
+
+<footer class="footer">
+  <div class="footer-social"><a 
+        href="tencent://message/?Menu=yes&uin=894519210 "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#12B7F5'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconQQ "></i>
+      </a><a 
+        href="javascript:; "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#09BB07'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconwechat-fill "></i>
+      </a><a 
+        href="https://www.instagram.com/izhaoo/ "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#DA2E76'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconinstagram "></i>
+      </a><a 
+        href="https://github.com/zhaoo "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#9f7be1'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  icongithub-fill "></i>
+      </a><a 
+        href="mailto:izhaoo@163.com "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color=#FF3B00" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconmail"></i>
+      </a></div>
+  
+    <div class="footer-copyright"><p>Powered by <a target="_blank" href="https://hexo.io">Hexo</a>  |  Theme - <a target="_blank" href="https://github.com/izhaoo/hexo-theme-zhaoo">zhaoo</a></p></div>
+  
+</footer>
+  
+      <div class="fab fab-plus">
+    <i class="iconfont iconplus"></i>
+  </div>
+  
+  
+  
+  <div class="fab fab-up">
+    <i class="iconfont iconcaret-up"></i>
+  </div>
+  
+  
+  
+    
+<script src="/js/color-mode.js"></script>
+
+  
+  
+</body>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+
+
+
+  
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
+
+
+
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
+
+
+
+
+
+
+
+<script src="/js/utils.js"></script>
+<script src="/js/script.js"></script>
+
+
+
+
+
+
+
+  <script>
+    (function () {
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      } else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+</html>

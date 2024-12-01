@@ -1,0 +1,491 @@
+
+
+<!DOCTYPE html>
+<html lang="en" color-mode=light>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>协程VS线程 - Hexo</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="google" content="notranslate" />
+  
+  <meta name="description" content="Java线程 VS Golang协程Java线程在Ja...">
+  <meta name="author" content="John Doe">
+  <link rel="icon" href="/img/icons/favicon-32x32.png" type="image/png" sizes="16x16">
+  <link rel="icon" href="/img/icons/favicon-64x64.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/img/icons/favicon-128x128.png" sizes="180x180">
+  <meta rel="mask-icon" href="/img/icons/favicon-128x128.png" color="#333333">
+  
+    <meta rel="msapplication-TileImage" content="/img/icons/favicon-128x128.png">
+    <meta rel="msapplication-TileColor" content="#000000">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+    
+<link rel="stylesheet" href="https://at.alicdn.com/t/font_1445822_p6ry5n7lrr.css">
+
+  
+
+  
+    
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css">
+
+  
+
+  
+    
+      
+        
+        
+<link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.18.1/styles/github.min.css" name="highlight-style" mode="light">
+
+      
+        
+        
+<link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.18.1/styles/github-dark.min.css" name="highlight-style" mode="dark">
+
+      
+  
+
+  <script>
+    var CONFIG = window.CONFIG || {};
+    var ZHAOO = window.ZHAOO || {};
+    CONFIG = {
+      isHome: false,
+      fancybox: true,
+      pjax: false,
+      loading: {
+        gif: '/img/theme/loading.gif',
+        lottie: ''
+      },
+      lazyload: {
+        enable: true,
+        only_post: 'false',
+        loading: {
+          gif: '/img/theme/loading.gif',
+          lottie: ''
+        }
+      },
+      donate: {
+        enable: true,
+        alipay: 'https://pic.izhaoo.com/alipay.jpg',
+        wechat: 'https://pic.izhaoo.com/wechat.jpg'
+      },
+      galleries: {
+        enable: true
+      },
+      fab: {
+        enable: true,
+        always_show: false
+      },
+      carrier: {
+        enable: true
+      },
+      daovoice: {
+        enable: false
+      },
+      preview: {
+        background: {
+          default: '',
+          api: ''
+        },
+        motto: {
+          default: '我在开了灯的床头下，想问问自己的心啊。',
+          typing: true,
+          api: 'https://v2.jinrishici.com/one.json',
+          data_contents: '["data","content"]'
+        },
+      },
+      qrcode: {
+        enable: false,
+        type: 'url',
+        image: 'https://pic.izhaoo.com/weapp-code.jpg',
+      },
+      toc: {
+        enable: true
+      },
+      scrollbar: {
+        type: 'default'
+      },
+      notification: {
+        enable: false,
+        delay: 4500,
+        list: '',
+        page_white_list: '',
+        page_black_list: ''
+      },
+      search: {
+        enable: false,
+        path: ''
+      }
+    }
+  </script>
+
+  
+
+  
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="lock-screen">
+  <div class="loading" id="loading"></div>
+  
+    
+
+
+  <nav class="navbar">
+    <div class="left">
+      
+        <i class="iconfont iconhome j-navbar-back-home"></i>
+      
+      
+      
+        <i class="iconfont iconmoono" id="color-toggle" color-toggle="light"></i>
+      
+      
+    </div>
+    <div class="center">协程VS线程</div>
+    <div class="right">
+      <i class="iconfont iconmenu j-navbar-menu"></i>
+    </div>
+    
+  </nav>
+
+  
+  
+
+<nav class="menu">
+  <div class="menu-container">
+    <div class="menu-close">
+      <i class="iconfont iconbaseline-close-px"></i>
+    </div>
+    <ul class="menu-content"><li class="menu-item">
+        <a href="/ " class="underline "> 首页</a>
+      </li><li class="menu-item">
+        <a href="/archives/ " class="underline "> 归档</a>
+      </li><li class="menu-item">
+        <a href="/tags/ " class="underline "> 标签</a>
+      </li><li class="menu-item">
+        <a href="/about/ " class="underline "> 关于</a>
+      </li></ul>
+    
+      <div class="menu-copyright"><p>Powered by <a target="_blank" href="https://hexo.io">Hexo</a>  |  Theme - <a target="_blank" href="https://github.com/izhaoo/hexo-theme-zhaoo">zhaoo</a></p></div>
+    
+  </div>
+</nav>
+  <main id="main">
+  <div class="article-wrap">
+    <div class="row container">
+      <div class="col-xl-3"></div>
+      <div class="col-xl-6"><article class="article">
+  <div class="wrap">
+    <section class="head">
+  <img   class="lazyload" data-original="/img/theme/026.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  draggable="false">
+  <div class="head-mask">
+    <h1 class="head-title">协程VS线程</h1>
+    <div class="head-info">
+      <span class="post-info-item"><i class="iconfont iconcalendar"></i>June 26, 2023</span>
+      
+      <span class="post-info-item"><i class="iconfont iconfont-size"></i>4890</span>
+    </div>
+  </div>
+</section>
+    <section class="main">
+      <section class="content">
+        
+          <p>Go在语言层面上提供的协程(goroutine)和通道(channel)两个基础并发原语，使得并发编程变得更加简单</p>
+        
+        <h2 id="Java线程-VS-Golang协程"><a href="#Java线程-VS-Golang协程" class="headerlink" title="Java线程 VS Golang协程"></a>Java线程 VS Golang协程</h2><h3 id="Java线程"><a href="#Java线程" class="headerlink" title="Java线程"></a>Java线程</h3><p>在Java语言中，我们想要新开一个线程去执行并发任务，就需要使用<code>new Thread(() -&gt; &#123; do something... &#125;).start()</code>这样的方式去创建线程并执行任务。但是如果有大量的任务需要并发执行，我们还以这种方式去执行任务的话，缺点就显而易见，主要有以下两点：</p>
+<ul>
+<li>线程上下文切换、频繁的创建与销毁会带来严重的性能开销</li>
+<li>大量的线程同样会占用大量的系统资源，例如内存</li>
+</ul>
+<p>为了解决这个问题，Java实现了线程版本的池化技术-<strong>线程池</strong><br>线程池维护着一定数量的线程，并允许应用程序将任务派发给这些线程进行并行处理。线程池通过复用线程来执行并发任务，减少了线程数量，避免了反复创建和销毁线程所带来的性能开销。同时也给我们提供了易于使用的方式来管理、调度线程，使得线程在执行任务时更加高效。<br>但是线程池也有一个很大的问题，那就是线程池的线程数量如何设置，设置得多了，就会造成资源的浪费，少了又会造成任务堆积，所以设置合理的线程数量成了线程池的一大难题？在通用场景下我们可以根据任务是IO密集型、还是CPU密集型、以及具体业务场景来设置，但是我们的业务往往不是那么的通用。。。之前看到一篇美团的技术<a target="_blank" rel="noopener" href="https://tech.meituan.com/2020/04/02/java-pooling-pratice-in-meituan.html">文章</a>，通过实时监控线程池的状态来动态的调整线程池的数量，确实是一种比较好的思路！！！</p>
+<h3 id="Golang协程"><a href="#Golang协程" class="headerlink" title="Golang协程"></a>Golang协程</h3><p>在Golang中想要实现类似于Java里面新开一个线程的功能，只需要使用<code>go func() &#123; do something &#125;</code>这样的方式，就可以执行并行任务，是不是比Java简单多了？而且在Golang中即使你创建大量的并发任务，也不会有上文所提到的性能开销和资源占用，因为本质上Golang中执行并发任务的载体不是线程，而是<strong>协程</strong>。那这个协程又是个什么东西呢？在了解它之前，我们先来看看操作系统的一些概念</p>
+<h2 id="进程、线程、协程"><a href="#进程、线程、协程" class="headerlink" title="进程、线程、协程"></a>进程、线程、协程</h2><p>在计算机系统中，操作系统负责管理硬件资源并为应用程序提供服务，通常操作系统处于“内核空间”，而应用程序则处于“用户空间”</p>
+<p>当一个应用程序需要请求操作系统提供某些服务时（例如读写磁盘、打印输出等），它就需要调用操作系统提供的接口，让操作系统来执行所需的操作。在此过程中，应用程序的权限将被限制，并且必须经过内核的检查和授权才能继续执行<br>由于内核和应用程序具有不同的权限和执行环境，因此在应用程序调用系统接口时，用户态和内核态之间进行切换是必须的。通过这种方式，<strong>操作系统可以保护系统的安全性和稳定性，并防止应用程序对硬件资源造成损坏或滥用</strong>。（有点类似于软件设计中的单一原则，系统服务就由我内核来实现，应用程序只需要调我给你提供的接口就行）</p>
+<p>此外，内核还会负责处理系统中断、多任务管理、内存管理等底层任务，这些任务需要在内核态中执行。而在用户态中，应用程序则主要负责业务逻辑和数据处理等高级任务。因此，用户态和内核态之间的切换也是保证系统效率的重要手段</p>
+<p>先来看看几个概念：</p>
+<p><strong>进程</strong>：进程是操作系统分配资源和进行调度的基本单位，每个进程都有独立的内存空间、文件描述符和其他系统资源，进程需要相对较大的系统开销，同时也可以使得多个线程共享资源，比如文件句柄和打开的网络连接等<br><strong>线程</strong>：线程是CPU调度的基本单位，一个进程中可以有多个线程，这些线程共享进程的资源，如内存空间、文件句柄等，但每个线程都拥有自己的执行栈和程序计数器，使得它们可以并发地执行<br><strong>协程</strong>：协程又被称为微线程，是一种用户态的轻量级线程。与线程不同的是，线程的调度由操作系统负责，而协程的调度则由应用程序控制</p>
+<p>简单来理解，一个进程对应多个线程，一个线程对应多个协程：</p>
+<p><img   class="lazyload" data-original="/../../../../img/os/%E8%BF%9B%E7%A8%8B-%E7%BA%BF%E7%A8%8B-%E5%8D%8F%E7%A8%8B.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ></p>
+<h3 id="内核级线程"><a href="#内核级线程" class="headerlink" title="内核级线程"></a>内核级线程</h3><p>在内核空间由内核创建的线程，内核在对其分配CPU资源时，是以内核级线程为调度单位。纯内核级线程程序有如下特点：</p>
+<ul>
+<li>进程中的一个线程被阻塞，内核能调度同一进程的其他线程（就绪态）占有处理器并执行任务</li>
+<li>多处理器环境中，内核能同时调度同一进程的多线程，将这些线程映射到不同的处理器核心上，提高进程的执行效率（这样可以实现并行）</li>
+<li>应用程序线程在用户态运行，线程调度和管理在内核实现。线程调度时，控制权从一个线程改变到另一线程，需要模式切换，系统开销较大</li>
+</ul>
+<h3 id="用户级线程"><a href="#用户级线程" class="headerlink" title="用户级线程"></a>用户级线程</h3><p>在用户空间通过操作系统程序库创建的线程，操作系统的内核是感知不到它的存在的。如果该进程没有创建内核级线程，那么内核在对其分配CPU资源时，依旧会以进程为调度单位。纯用户级线程程序有如下特点：</p>
+<ul>
+<li>线程切换不需要内核模式，能节省模式切换开销和内核资源</li>
+<li>允许进程按照特定的需要选择不同的调度算法来调度线程，调度算法需要自己实现</li>
+<li>由于其不需要内核进行支持，所以可以跨OS运行</li>
+<li>不能利用多核处理器的优势，内核调度以进程为单位，每个进程仅有一个用户级线程能执行</li>
+<li>一个用户级线程阻塞，将导致整个进程的阻塞</li>
+</ul>
+<blockquote>
+<p>注意：这里所说的操作系统程序库和操作系统内核是两个不同的概念，它们有联系但也有区别<br>操作系统程序库（Library）：操作系统内核是操作系统最核心的部分，通常是由一些高级语言不易编写的低级语言编写而成。其主要职责是管理和调度计算机的硬件资源，并提供相应的接口供上层应用程序或服务程序使用。内核是操作系统的核心，负责管理和分配处理器、内存、I&#x2F;O 设备等底层硬件资源，为系统提供基本的服务和保障<br>操作系统内核（Kernel）：操作系统程序库则是一组高级别的程序代码集合，为应用程序提供可重用的功能模块和服务。与内核不同，程序库是属于用户空间的，是在内核之上构建的。程序库包含了各种常用的函数和工具，可以被应用程序直接调用，比如 I&#x2F;O 操作、网络通信、线程管理等。程序库可以通过 API 的形式暴露给应用程序使用，从而简化应用程序的编写和维护<br>   在设计和实现上，内核需要面对更多的底层硬件抽象和安全问题，因此需要更加高效和健壮；程序库则更关注提供高层次的抽象和易用性，因此需要更加灵活和易于扩展</p>
+</blockquote>
+<p>可以看出，用户级线程和内核级线程都有各自的优点和缺点，在应用上主要表现为：</p>
+<ul>
+<li>用户级多线程对于处理逻辑并行性问题有很好的效果。但不擅长于解决物理并行问题</li>
+<li>内核级多线程适用于解决物理并行性问题</li>
+</ul>
+<h3 id="线程组合策略"><a href="#线程组合策略" class="headerlink" title="线程组合策略"></a>线程组合策略</h3><p>由操作系统内核支持内核级多线程，由操作系统程序库来支持用户级多线程。用户级线程完全在用户空间创建，调度也是在应用程序内部进行，然后把用户级多线程映射到（或者说是绑定到）一些内核级多线程。<strong>编程人员可以针对不同的应用特点调节内核级线程的数目来达到物理并行性和逻辑并行性的最佳方案</strong></p>
+<h4 id="一对一"><a href="#一对一" class="headerlink" title="一对一"></a>一对一</h4><p>该模型为每个用户态的线程分配一个单独的内核态线程，在这种情况下，每个用户级线程都需要通过系统调用创建一个绑定的内核线程，并附加在上面执行。 这种模型允许所有线程并行执行，能够充分利用多核优势。目前Linux中的线程、OpenJDK Java线程等采用的都是一对一线程模型。每一个JVM线程，都有一个对应的内核线程</p>
+<p><strong>优点</strong></p>
+<ul>
+<li>实现起来较为简单</li>
+<li>能够充分利用多核优势</li>
+</ul>
+<p><strong>缺点</strong></p>
+<ul>
+<li>每创建一个用户线程，相应地就需要创建一个内核线程，开销较大，因此需要限制整个系统的线程数量</li>
+<li>用户级线程的切换会导致内核级线程的切换，进而引起用户态和内核态的频繁切换，开销较大</li>
+</ul>
+<p><img   class="lazyload" data-original="/../../../../img/os/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%AD%96%E7%95%A5-%E4%B8%80%E5%AF%B9%E4%B8%80.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ></p>
+<h4 id="多对一"><a href="#多对一" class="headerlink" title="多对一"></a>多对一</h4><p>顾名思义，多对一线程模型中，多个用户线程对应到同一个内核线程上，线程的创建、调度、同步的所有细节全部由进程的用户空间线程库来处理。这样，极大地减少了创建内核态线程的成本，但是线程不可以并行。因此，这种模型现在基本上用的很少</p>
+<p><strong>优点</strong></p>
+<ul>
+<li>用户线程的很多操作对内核来说都是透明的，不需要用户态和内核态的频繁切换。使线程的创建、调度、同步等非常快</li>
+</ul>
+<p><strong>缺点</strong></p>
+<ul>
+<li>由于多个用户线程对应到同一个内核线程，如果其中一个用户线程阻塞，那么该程序内其他用户线程也无法执行</li>
+<li>无法利用内核调度算法，应用程序需要自己实现</li>
+</ul>
+<p><img   class="lazyload" data-original="/../../../../img/os/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%AD%96%E7%95%A5-%E5%A4%9A%E5%AF%B9%E4%B8%80.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ></p>
+<h4 id="多对多"><a href="#多对多" class="headerlink" title="多对多"></a>多对多</h4><p>这种模式下会为 n 个用户态线程分配 m 个内核态线程。m 通常小于 n（一种可行的策略是将 m 设置为核数）。这种多对多的关系，减少了内核线程，同时也保证了多核心并行。多对多模型中线程的调度需要由内核态和用户态一起来实现，例如线程间同步需要用户态和内核态共同实现。用户态和内核态的分工合作导致实现该模型非常复杂。Golang多线程模型所采用的就是多对多模型。Linux多线程模型曾经也想使用该模型，但它太复杂，要对内核进行大范围改动，所以还是采用了一对一的模型</p>
+<p><strong>优点</strong></p>
+<ul>
+<li>能够利用多核CPU实现并行</li>
+<li>用户级线程切换大多数情况是在用户空间完成，不需要内核介入，减少了用户态和内核态切换带来的开销</li>
+<li>可使用的线程数量大幅增加</li>
+</ul>
+<p><strong>缺点</strong></p>
+<ul>
+<li>实现起来非常复杂</li>
+</ul>
+<p><img   class="lazyload" data-original="/../../../../img/os/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%AD%96%E7%95%A5-%E5%A4%9A%E5%AF%B9%E5%A4%9A.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ></p>
+<p>我们再回到文章开头的那个问题，为什么在Golang中创建大量的协程来执行并行任务，协程的创建、销毁、切换不会带来明显的性能开销？<br>很明显，Golang中的协程其实是用户级线程，而且采用了多对多的模型将协程映射到内核级线程，所以Golang即使创建成千上万的协程，也不会有太大的性能瓶颈。</p>
+<p>再来看看Java线程池和Golang协程，其实它们有很多类似的地方：</p>
+<ul>
+<li>Golang执行任务的内核级线程其实可以看作是Java线程池里的线程（只不过Java线程池里的用户级线程一一对应了一个内核级线程）</li>
+<li>Golang中的协程其实可以看作是Java线程池中的任务，协程由Golang协程调度器来管理，Java线程池里的线程由线程池来管理（这样看来，Golang协程调度器是不是就类似于一个Java线程池）</li>
+</ul>
+<p>这样一类比，是不是就容易理解多了！！！</p>
+<h2 id="Golang协程调度"><a href="#Golang协程调度" class="headerlink" title="Golang协程调度"></a>Golang协程调度</h2><h3 id="GM模型"><a href="#GM模型" class="headerlink" title="GM模型"></a>GM模型</h3><p>在Golang早期版本中，协程调度使用的是GM模型，其中G表示一个Goroutine，M表示一个内核线程，全局有一个协程队列用来存储全部的G</p>
+<p><img   class="lazyload" data-original="/../../../../img/os/GM%E6%A8%A1%E5%9E%8B.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ></p>
+<p>但是这种调度模型存在一些性能问题：</p>
+<ul>
+<li>当M想要执行一个G时，就会从全局队列中去取一个G，由于全局队列只有一个，而M有多个，所以每当M去获取G的时候，就会形成<strong>激烈的锁竞争</strong></li>
+<li>当G中创建一个新的协程G‘时，为了运行G’，需要将G‘放入全局队列，再由空闲的M来执行。但是通常情况下，由G创建的G’和G是息息相关的，所以应尽可能的将G‘放在和执行G相同的M上来执行，这就造成了<strong>很差的局部性</strong></li>
+</ul>
+<h3 id="GMP模型"><a href="#GMP模型" class="headerlink" title="GMP模型"></a>GMP模型</h3><p><img   class="lazyload" data-original="/../../../../img/os/GMP%E6%A8%A1%E5%9E%8B.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" ></p>
+<p>再计算机的世界里有这么一句真理：<strong>没有什么问题是加一个中间层不能解决的</strong>。基于此，Golang在原有的GM模型上增加了一个调度器P，于是乎就有了现在的GMP模型。<br>再GMP模型中，每个P都会有一个本地队列用来存储G，最多存储256个G。线程M想要运行G，首先就要与P绑定，然后从P中取一个G来执行。如果P队列为空，那么M会尝试从全局队列拿一批G放入P，或者从其他P的本地队列中拿一半G放到与自己绑定的P的本地队列，然后再从P中取一个G来执行。<br>在新建G‘时，G’优先加入到P的本地队列，如果本地队列满了，则把P队列中一半的G移到全局队列中去，然后再将G‘加入P的本地队列</p>
+<p>我们再来看看GMP模型是如何解决GM上述两个问题的：<br>首先是锁竞争，GMP模型通过增加P本地队列，使得每个M都是从不同的位置获取G，那么就在大多数情况下完全消除了锁竞争（只有在M所对应P的本地队列为空，需要去全局队列或其他P的本地队列中拿G时，才会有锁竞争）<br>其次是局部性，新创建的G’大多数情况下都会被加入到创建它的G所在P的本地队列中，这就从一定程度上解决了GM模型局部性差的问题</p>
+<h3 id="Q-A"><a href="#Q-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h3><h4 id="为什么P的逻辑不直接加在M上"><a href="#为什么P的逻辑不直接加在M上" class="headerlink" title="为什么P的逻辑不直接加在M上"></a>为什么P的逻辑不直接加在M上</h4><p>主要还是因为 M 其实是内核线程，内核只知道自己在跑线程，而 golang 的运行时（包括调度，垃圾回收等）其实都是用户空间里的逻辑。操作系统内核哪里还知道，也不需要知道用户空间的 golang 应用原来还有那么多花花肠子。这一切逻辑交给应用层自己去做就好，毕竟改内核线程的逻辑也不合适啊</p>
+<blockquote>
+<p>参考<br>   <a target="_blank" rel="noopener" href="https://www.yuque.com/aceld/golang/srxd6d#7a8af6b1">Golang的协程调度器原理及GMP设计思想</a><br>   <a target="_blank" rel="noopener" href="https://www.cnblogs.com/FengZeng666/p/14219477.html">用户态线程和内核态线程的区别</a></p>
+</blockquote>
+
+      </section>
+      <section class="extra">
+        
+        
+          <section class="donate">
+  <div id="qrcode-donate">
+    <img   class="lazyload" data-original="https://pic.izhaoo.com/alipay.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" >
+  </div>
+  <div class="icon">
+    <a href="javascript:;" id="alipay"><i class="iconfont iconalipay"></i></a>
+    <a href="javascript:;" id="wechat"><i class="iconfont iconwechat-fill"></i></a>
+  </div>
+</section>
+        
+        
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang/" rel="tag">Golang</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91/" rel="tag">并发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">操作系统</a></li></ul> 
+
+        
+  <nav class="nav">
+    <a href="/2023/12/15/%E4%BA%91%E5%8E%9F%E7%94%9F%E6%97%B6%E4%BB%A3%E7%9A%84Java-%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0/"><i class="iconfont iconleft"></i>云原生时代的Java</a>
+    <a href="/2023/05/25/%E6%B1%82%E8%81%8C%E6%84%9F%E6%82%9F/">求职感悟<i class="iconfont iconright"></i></a>
+  </nav>
+
+      </section>
+      
+        <section class="comments">
+  
+    <div class="btn" id="comments-btn">查看评论</div>
+  
+  
+<div id="valine"></div>
+<script defer src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<script>
+  window.onload = function () {
+    var loadValine = function () {
+      new Valine({
+        el: '#valine',
+        app_id: "cJOoEEu3sAMF6OftYqgFknB0-gzGzoHsz",
+        app_key: "vJR5GGKTPoLqB5pwiWlNqsP5",
+        placeholder: "雁过留痕",
+        avatar: "mp",
+        pageSize: "10",
+        lang: "zh-CN",
+      });
+    }
+    if ( true ) {
+      $("#comments-btn").on("click", function () {
+        $(this).hide();
+        loadValine();
+      });
+    } else {
+      loadValine();
+    }
+  };
+</script>
+
+</section>
+      
+    </section>
+  </div>
+</article></div>
+      <div class="col-xl-3">
+        
+          
+  <aside class="toc-wrap">
+    <h3 class="toc-title">文章目录：</h3>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Java%E7%BA%BF%E7%A8%8B-VS-Golang%E5%8D%8F%E7%A8%8B"><span class="toc-text">Java线程 VS Golang协程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Java%E7%BA%BF%E7%A8%8B"><span class="toc-text">Java线程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Golang%E5%8D%8F%E7%A8%8B"><span class="toc-text">Golang协程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E3%80%81%E7%BA%BF%E7%A8%8B%E3%80%81%E5%8D%8F%E7%A8%8B"><span class="toc-text">进程、线程、协程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E7%BA%A7%E7%BA%BF%E7%A8%8B"><span class="toc-text">内核级线程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%A8%E6%88%B7%E7%BA%A7%E7%BA%BF%E7%A8%8B"><span class="toc-text">用户级线程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%BF%E7%A8%8B%E7%BB%84%E5%90%88%E7%AD%96%E7%95%A5"><span class="toc-text">线程组合策略</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%80%E5%AF%B9%E4%B8%80"><span class="toc-text">一对一</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%9A%E5%AF%B9%E4%B8%80"><span class="toc-text">多对一</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%9A%E5%AF%B9%E5%A4%9A"><span class="toc-text">多对多</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Golang%E5%8D%8F%E7%A8%8B%E8%B0%83%E5%BA%A6"><span class="toc-text">Golang协程调度</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#GM%E6%A8%A1%E5%9E%8B"><span class="toc-text">GM模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GMP%E6%A8%A1%E5%9E%8B"><span class="toc-text">GMP模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Q-A"><span class="toc-text">Q&amp;A</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88P%E7%9A%84%E9%80%BB%E8%BE%91%E4%B8%8D%E7%9B%B4%E6%8E%A5%E5%8A%A0%E5%9C%A8M%E4%B8%8A"><span class="toc-text">为什么P的逻辑不直接加在M上</span></a></li></ol></li></ol></li></ol>
+  </aside>
+
+        
+      </div>
+    </div>
+  </div>
+</main>
+  
+
+<footer class="footer">
+  <div class="footer-social"><a 
+        href="tencent://message/?Menu=yes&uin=894519210 "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#12B7F5'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconQQ "></i>
+      </a><a 
+        href="javascript:; "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#09BB07'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconwechat-fill "></i>
+      </a><a 
+        href="https://www.instagram.com/izhaoo/ "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#DA2E76'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconinstagram "></i>
+      </a><a 
+        href="https://github.com/zhaoo "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#9f7be1'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  icongithub-fill "></i>
+      </a><a 
+        href="mailto:izhaoo@163.com "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color=#FF3B00" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconmail"></i>
+      </a></div>
+  
+    <div class="footer-copyright"><p>Powered by <a target="_blank" href="https://hexo.io">Hexo</a>  |  Theme - <a target="_blank" href="https://github.com/izhaoo/hexo-theme-zhaoo">zhaoo</a></p></div>
+  
+</footer>
+  
+      <div class="fab fab-plus">
+    <i class="iconfont iconplus"></i>
+  </div>
+  
+  
+  
+  <div class="fab fab-up">
+    <i class="iconfont iconcaret-up"></i>
+  </div>
+  
+  
+  
+    
+<script src="/js/color-mode.js"></script>
+
+  
+  
+</body>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+
+
+
+  
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
+
+
+
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
+
+
+
+
+
+
+
+<script src="/js/utils.js"></script>
+<script src="/js/script.js"></script>
+
+
+
+
+
+
+
+  <script>
+    (function () {
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      } else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+</html>

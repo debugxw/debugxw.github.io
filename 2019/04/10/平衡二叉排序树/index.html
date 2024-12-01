@@ -1,0 +1,455 @@
+
+
+<!DOCTYPE html>
+<html lang="en" color-mode=light>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>平衡二叉排序树 - Hexo</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="google" content="notranslate" />
+  
+  <meta name="description" content="一、概述平衡二叉排序树又称 AVL 树。一颗 AVL ...">
+  <meta name="author" content="John Doe">
+  <link rel="icon" href="/img/icons/favicon-32x32.png" type="image/png" sizes="16x16">
+  <link rel="icon" href="/img/icons/favicon-64x64.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/img/icons/favicon-128x128.png" sizes="180x180">
+  <meta rel="mask-icon" href="/img/icons/favicon-128x128.png" color="#333333">
+  
+    <meta rel="msapplication-TileImage" content="/img/icons/favicon-128x128.png">
+    <meta rel="msapplication-TileColor" content="#000000">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+    
+<link rel="stylesheet" href="https://at.alicdn.com/t/font_1445822_p6ry5n7lrr.css">
+
+  
+
+  
+    
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css">
+
+  
+
+  
+    
+      
+        
+        
+<link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.18.1/styles/github.min.css" name="highlight-style" mode="light">
+
+      
+        
+        
+<link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.18.1/styles/github-dark.min.css" name="highlight-style" mode="dark">
+
+      
+  
+
+  <script>
+    var CONFIG = window.CONFIG || {};
+    var ZHAOO = window.ZHAOO || {};
+    CONFIG = {
+      isHome: false,
+      fancybox: true,
+      pjax: false,
+      loading: {
+        gif: '/img/theme/loading.gif',
+        lottie: ''
+      },
+      lazyload: {
+        enable: true,
+        only_post: 'false',
+        loading: {
+          gif: '/img/theme/loading.gif',
+          lottie: ''
+        }
+      },
+      donate: {
+        enable: true,
+        alipay: 'https://pic.izhaoo.com/alipay.jpg',
+        wechat: 'https://pic.izhaoo.com/wechat.jpg'
+      },
+      galleries: {
+        enable: true
+      },
+      fab: {
+        enable: true,
+        always_show: false
+      },
+      carrier: {
+        enable: true
+      },
+      daovoice: {
+        enable: false
+      },
+      preview: {
+        background: {
+          default: '',
+          api: ''
+        },
+        motto: {
+          default: '我在开了灯的床头下，想问问自己的心啊。',
+          typing: true,
+          api: 'https://v2.jinrishici.com/one.json',
+          data_contents: '["data","content"]'
+        },
+      },
+      qrcode: {
+        enable: false,
+        type: 'url',
+        image: 'https://pic.izhaoo.com/weapp-code.jpg',
+      },
+      toc: {
+        enable: true
+      },
+      scrollbar: {
+        type: 'default'
+      },
+      notification: {
+        enable: false,
+        delay: 4500,
+        list: '',
+        page_white_list: '',
+        page_black_list: ''
+      },
+      search: {
+        enable: false,
+        path: ''
+      }
+    }
+  </script>
+
+  
+
+  
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="lock-screen">
+  <div class="loading" id="loading"></div>
+  
+    
+
+
+  <nav class="navbar">
+    <div class="left">
+      
+        <i class="iconfont iconhome j-navbar-back-home"></i>
+      
+      
+      
+        <i class="iconfont iconmoono" id="color-toggle" color-toggle="light"></i>
+      
+      
+    </div>
+    <div class="center">平衡二叉排序树</div>
+    <div class="right">
+      <i class="iconfont iconmenu j-navbar-menu"></i>
+    </div>
+    
+  </nav>
+
+  
+  
+
+<nav class="menu">
+  <div class="menu-container">
+    <div class="menu-close">
+      <i class="iconfont iconbaseline-close-px"></i>
+    </div>
+    <ul class="menu-content"><li class="menu-item">
+        <a href="/ " class="underline "> 首页</a>
+      </li><li class="menu-item">
+        <a href="/archives/ " class="underline "> 归档</a>
+      </li><li class="menu-item">
+        <a href="/tags/ " class="underline "> 标签</a>
+      </li><li class="menu-item">
+        <a href="/about/ " class="underline "> 关于</a>
+      </li></ul>
+    
+      <div class="menu-copyright"><p>Powered by <a target="_blank" href="https://hexo.io">Hexo</a>  |  Theme - <a target="_blank" href="https://github.com/izhaoo/hexo-theme-zhaoo">zhaoo</a></p></div>
+    
+  </div>
+</nav>
+  <main id="main">
+  <div class="article-wrap">
+    <div class="row container">
+      <div class="col-xl-3"></div>
+      <div class="col-xl-6"><article class="article">
+  <div class="wrap">
+    <section class="head">
+  <img   class="lazyload" data-original="/img/theme/017.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  draggable="false">
+  <div class="head-mask">
+    <h1 class="head-title">平衡二叉排序树</h1>
+    <div class="head-info">
+      <span class="post-info-item"><i class="iconfont iconcalendar"></i>April 10, 2019</span>
+      
+      <span class="post-info-item"><i class="iconfont iconfont-size"></i>14775</span>
+    </div>
+  </div>
+</section>
+    <section class="main">
+      <section class="content">
+        
+          <p>能实现高效查询、插入、删除等操作的高度平衡的二叉搜索树</p>
+        
+        <h2 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h2><p>平衡二叉排序树又称 AVL 树。一颗 AVL 树或者是空树，或者是具有下列性质的二叉排序树：</p>
+<ul>
+<li>左子树与右子树的高度之差的绝对值小于等于 1</li>
+<li>左子树和右子树也是 AVL 树</li>
+</ul>
+<p>引入 AVL 树的目的是为了提高查找效率，其平均查找长度为 O(logN)。同时，AVL 树也很好的解决了二叉排序树在极端情况下退化成链表的问题。</p>
+<p><strong>局限性</strong><br>虽然 AVL 树的查找效率很高，但由于维护这种高度平衡所付出的代价比从中获得的效率收益还大，故而实际的应用不多（Windows 对进程地址空间的管理用到了 AVL 树），更多的地方是用追求局部而不是非常严格整体平衡的红黑树。当然，如果应用场景中对插入删除不频繁，只是对查找要求较高，那么 AVL 树还是较优于红黑树。</p>
+<h2 id="二、插入"><a href="#二、插入" class="headerlink" title="二、插入"></a>二、插入</h2><p>AVL 树节点的平衡因子定义为：节点的左子树深度与右子树深度之差。显然对于一颗 AVL 树而言，其所有节点的平衡因子只能是 -1、0 或 1。当在一颗 AVL 树上插入一个节点时，有可能导致失衡，即出现平衡因子大于 1 或 小于 -1 的节点。在这种情况下，为了恢复平衡就要对 AVL 树进行相应的调整。失衡类型及相应的调整方法可归结为以下四种。</p>
+<h3 id="1、LL-型"><a href="#1、LL-型" class="headerlink" title="1、LL 型"></a>1、LL 型</h3><p>假设最底层失衡节点为 A，在节点 A 的左子树的左子树插入新节点 S 后导致失衡，如图所示。</p>
+<center>
+<img   class="lazyload" data-original="../../../../img/data_structure/avl_LL.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  width="60%" height="60%" />
+</center>
+
+<p>由上可知，LL 型失衡的特点是 A.bf &#x3D; 2, B.bf &#x3D; 1 (bf 是节点的平衡因子)。为恢复平衡，可将 B 的右子树改为 A 的左子树，然后把 A 改为 B 的右子树。这相当于以 B 为轴，对 A 做了一次顺时针旋转。这时，A 和 B 的平衡因子都变为 0。最后，将调整后二叉树的根节点 B 接到原来的 A 处。设 A 原来的父节点为 FA，如果 FA 非空，则用 B 代替 A 做 FA 的左子树或右子树；否则原来 A 就是根节点，此时应令根指针指向 B。</p>
+<h3 id="2、LR-型"><a href="#2、LR-型" class="headerlink" title="2、LR 型"></a>2、LR 型</h3><p>假设最底层失衡节点为 A，在节点 A 的左子树的右子树插入新节点 S 后导致失衡，如图所示。</p>
+<center>
+<img   class="lazyload" data-original="../../../../img/data_structure/avl_LR.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  width="60%" height="60%" />
+</center>
+
+<p>这里假设 CL 下插入 S，如果是在 CR 下插入 S，对树的调整方法相同，只是调整后 A、B 的平衡因子不同。由 A、B、C 的平衡因子容易推知，CL 与 CR 深度相同，BL 与 AR 深度相同且 BL、AR 的深度比 CL、CR 的深度大 1。为恢复平衡并保持 AVL 树的特性，可先将 B 改为 C 的左子树，而 C 原来的左子树改为 B 的右子树；然后将 A 改为 C 的右子树，C 原来的右子树改为 A 的左子树。这相当于<strong>对 B 做了一次逆时针旋转，对 A 做了一次顺时针旋转</strong>。</p>
+<p>上面提到了在 CL 下插入 S 和在 CR 下插入 S 的两种情况，还有一种情况是 B 的右子树为空，C 本生就是插入的新节点 S，此时，CL、CR、BL、AR 均为空。在这种情况下，对树的调整方法任然相同，只是调整后 A、B 的平衡因子均为 0。<br>LR 型失衡的特点是 A.bf &#x3D; 2, B.bf &#x3D; -1。最后，将调整的二叉树的根节点 C 接到原来的 A 处。设 A 原来的父节点为 FA，如果 FA 非空，则用 C 代替 A 做 FA 的左子树或右子树；否则原来 A 就是根节点，此时应令根指针指向 C。</p>
+<h3 id="3、RR-型"><a href="#3、RR-型" class="headerlink" title="3、RR 型"></a>3、RR 型</h3><p>RR 型与 LL 型对称。假设最底层失衡节点为 A，在节点 A 的右子树的右子树插入新节点 S 后导致失衡，如图所示。</p>
+<center>
+<img   class="lazyload" data-original="../../../../img/data_structure/avl_RR.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  width="60%" height="60%" />
+</center>
+
+<p>由上可知，RR 型失衡的特点是 A.bf &#x3D; -2, B.bf &#x3D; -1。为恢复平衡，可将 B 的左子树改为 A 的右子树，然后把 A 改为 B 的左子树。这相当于以 B 为轴，对 A 做了一次逆时针旋转。这时，A 和 B 的平衡因子都变为 0。最后，将调整后二叉树的根节点 B 接到原来的 A 处。设 A 原来的父节点为 FA，如果 FA 非空，则用 B 代替 A 做 FA 的左子树或右子树；否则原来 A 就是根节点，此时应令根指针指向 B。</p>
+<h3 id="4、RL-型"><a href="#4、RL-型" class="headerlink" title="4、RL 型"></a>4、RL 型</h3><p>RL 型与 LR 型对称。假设最底层失衡节点为 A，在节点 A 的右子树的左子树插入新节点 S 后导致失衡，如图所示。</p>
+<center>
+<img   class="lazyload" data-original="../../../../img/data_structure/avl_RL.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  width="60%" height="60%" />
+</center>
+
+<p>这里假设 CR 下插入 S，如果是在 CL 下插入 S，对树的调整方法相同，只是调整后 A、B 的平衡因子不同。由 A、B、C 的平衡因子容易推知，CL 与 CR 深度相同，AL 与 BR 深度相同且 AL、BR 的深度比 CL、CR 的深度大 1。为恢复平衡并保持 AVL 树的特性，可先将 B 改为 C 的右子树，而 C 原来的右子树改为 B 的左子树；然后将 A 改为 C 的左子树，C 原来的左子树改为 A 的右子树。这相当于<strong>对 B 做了一次顺时针旋转，对 A 做了一次逆时针旋转</strong>。</p>
+<p>上面提到了在 CL 下插入 S 和在 CR 下插入 S 的两种情况，还有一种情况是 B 的左子树为空，C 本生就是插入的新节点 S，此时，CL、CR、AL、BR 均为空。在这种情况下，对树的调整方法任然相同，只是调整后 A、B 的平衡因子均为 0。<br>RL 型失衡的特点是 A.bf &#x3D; -2, B.bf &#x3D; 1。最后，将调整的二叉树的根节点 C 接到原来的 A 处。设 A 原来的父节点为 FA，如果 FA 非空，则用 C 代替 A 做 FA 的左子树或右子树；否则原来 A 就是根节点，此时应令根指针指向 C。</p>
+<h3 id="5、插入代码"><a href="#5、插入代码" class="headerlink" title="5、插入代码"></a>5、插入代码</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SaluteAVLTree</span>&lt;T <span class="keyword">extends</span> <span class="title class_">Comparable</span>&gt; &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Node&lt;T&gt; root;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">Node</span>&lt;T&gt; &#123;</span><br><span class="line">        T value;</span><br><span class="line">        <span class="type">int</span> bf;     <span class="comment">//平衡因子</span></span><br><span class="line">        Node&lt;T&gt; leftChild;</span><br><span class="line">        Node&lt;T&gt; rightChild;</span><br><span class="line"></span><br><span class="line">        Node(T value) &#123;</span><br><span class="line">            <span class="built_in">this</span>.value = value;</span><br><span class="line">            <span class="built_in">this</span>.bf = <span class="number">0</span>;</span><br><span class="line">            <span class="built_in">this</span>.leftChild = <span class="literal">null</span>;</span><br><span class="line">            <span class="built_in">this</span>.rightChild = <span class="literal">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">add</span><span class="params">(T value)</span> &#123;</span><br><span class="line">        Node&lt;T&gt; newNode = <span class="keyword">new</span> <span class="title class_">Node</span>&lt;&gt;(value);</span><br><span class="line">        <span class="keyword">if</span> (root == <span class="literal">null</span>)</span><br><span class="line">            root = newNode;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">/**</span></span><br><span class="line"><span class="comment">             * 首先查找 S 的插入位置 fp，同时记录距 S 的插入位置最近且平衡因子</span></span><br><span class="line"><span class="comment">             * 不等于0（等于-1或1）的节点 A，A 为可能的失衡节点</span></span><br><span class="line"><span class="comment">             */</span></span><br><span class="line">            Node&lt;T&gt; A = root; Node&lt;T&gt; FA = <span class="literal">null</span>;</span><br><span class="line">            Node&lt;T&gt; p = root; Node&lt;T&gt; fp = <span class="literal">null</span>;</span><br><span class="line">            <span class="keyword">while</span> (p != <span class="literal">null</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (p.bf != <span class="number">0</span>) &#123;</span><br><span class="line">                    A = p;</span><br><span class="line">                    FA = fp;</span><br><span class="line">                &#125;</span><br><span class="line">                fp = p;</span><br><span class="line">                <span class="keyword">if</span> (value.compareTo(p.value) &lt; <span class="number">0</span>)</span><br><span class="line">                    p = p.leftChild;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (value.compareTo(p.value) &gt; <span class="number">0</span>)</span><br><span class="line">                    p = p.rightChild;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                    <span class="keyword">return</span> ;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (value.compareTo(fp.value) &lt; <span class="number">0</span>)</span><br><span class="line">                fp.leftChild = newNode;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                fp.rightChild = newNode;</span><br><span class="line"></span><br><span class="line">            <span class="comment">/**</span></span><br><span class="line"><span class="comment">             * 确定节点 B，并修改节点 A 的平衡因子</span></span><br><span class="line"><span class="comment">             */</span></span><br><span class="line">            Node&lt;T&gt; B;</span><br><span class="line">            <span class="keyword">if</span> (value.compareTo(A.value) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                B = A.leftChild;</span><br><span class="line">                A.bf = A.bf + <span class="number">1</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                B = A.rightChild;</span><br><span class="line">                A.bf = A.bf - <span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">/**</span></span><br><span class="line"><span class="comment">             * 修改 B 到 newNode 路径上各节点的平衡因子（原值均为0）</span></span><br><span class="line"><span class="comment">             */</span></span><br><span class="line">            p = B;</span><br><span class="line">            <span class="keyword">while</span> (p != newNode) &#123;</span><br><span class="line">                <span class="keyword">if</span> (value.compareTo(p.value) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                    p.bf = <span class="number">1</span>;</span><br><span class="line">                    p = p.leftChild;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    p.bf = -<span class="number">1</span>;</span><br><span class="line">                    p = p.rightChild;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">/**</span></span><br><span class="line"><span class="comment">             * 判断失衡类型并做相应处理</span></span><br><span class="line"><span class="comment">             */</span></span><br><span class="line">            <span class="keyword">if</span> (A.bf == <span class="number">2</span> &amp;&amp; B.bf == <span class="number">1</span>) &#123;     <span class="comment">/* LL型 */</span></span><br><span class="line">                A.leftChild = B.rightChild;</span><br><span class="line">                B.rightChild = A;</span><br><span class="line">                A.bf = <span class="number">0</span>;</span><br><span class="line">                B.bf = <span class="number">0</span>;</span><br><span class="line">                <span class="keyword">if</span> (FA == <span class="literal">null</span>) root = B;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (FA.leftChild == A) FA.leftChild = B;</span><br><span class="line">                <span class="keyword">else</span> FA.rightChild = B;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (A.bf == <span class="number">2</span> &amp;&amp; B.bf == -<span class="number">1</span>) &#123;       <span class="comment">/* LR型 */</span></span><br><span class="line">                Node&lt;T&gt; C = B.rightChild;</span><br><span class="line">                B.rightChild = C.leftChild;</span><br><span class="line">                A.leftChild = C.rightChild;</span><br><span class="line">                C.leftChild = B;</span><br><span class="line">                C.rightChild = A;</span><br><span class="line">                <span class="comment">/* 分别对应三种不同的情况设置平衡因子 */</span></span><br><span class="line">                <span class="type">int</span> <span class="variable">compare</span> <span class="operator">=</span> newNode.value.compareTo(C.value);</span><br><span class="line">                <span class="keyword">if</span> (compare &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                    A.bf = -<span class="number">1</span>;</span><br><span class="line">                    B.bf = <span class="number">0</span>;</span><br><span class="line">                &#125; <span class="keyword">else</span> <span class="keyword">if</span> (compare &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                    A.bf = <span class="number">0</span>;</span><br><span class="line">                    B.bf = <span class="number">1</span>;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    A.bf = <span class="number">0</span>;</span><br><span class="line">                    B.bf = <span class="number">0</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (FA == <span class="literal">null</span>) root = C;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (FA.leftChild == A) FA.leftChild = C;</span><br><span class="line">                <span class="keyword">else</span> FA.rightChild = C;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (A.bf == -<span class="number">2</span> &amp;&amp; B.bf == <span class="number">1</span>) &#123;       <span class="comment">/* RL型 */</span></span><br><span class="line">                Node&lt;T&gt; C = B.leftChild;</span><br><span class="line">                A.rightChild = C.leftChild;</span><br><span class="line">                B.leftChild = C.rightChild;</span><br><span class="line">                C.leftChild = A;</span><br><span class="line">                C.rightChild = B;</span><br><span class="line">                <span class="comment">/* 分别对应三种不同的情况设置平衡因子 */</span></span><br><span class="line">                <span class="type">int</span> <span class="variable">compare</span> <span class="operator">=</span> newNode.value.compareTo(C.value);</span><br><span class="line">                <span class="keyword">if</span> (compare &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                    A.bf = <span class="number">0</span>;</span><br><span class="line">                    B.bf = -<span class="number">1</span>;</span><br><span class="line">                &#125; <span class="keyword">else</span> <span class="keyword">if</span> (compare &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                    A.bf = <span class="number">1</span>;</span><br><span class="line">                    B.bf = <span class="number">0</span>;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    A.bf = <span class="number">0</span>;</span><br><span class="line">                    B.bf = <span class="number">0</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (FA == <span class="literal">null</span>) root = C;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (FA.leftChild == A) FA.leftChild = C;</span><br><span class="line">                <span class="keyword">else</span> FA.rightChild = C;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (A.bf == -<span class="number">2</span> &amp;&amp; B.bf == -<span class="number">1</span>) &#123;      <span class="comment">/* RR型 */</span></span><br><span class="line">                A.rightChild = B.leftChild;</span><br><span class="line">                B.leftChild = A;</span><br><span class="line">                A.bf = <span class="number">0</span>;</span><br><span class="line">                B.bf = <span class="number">0</span>;</span><br><span class="line">                <span class="keyword">if</span> (FA == <span class="literal">null</span>) root = B;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (FA.leftChild == A) FA.leftChild = B;</span><br><span class="line">                <span class="keyword">else</span> FA.rightChild = B;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">inorder</span><span class="params">(Node&lt;T&gt; r)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="literal">null</span> != r) &#123;</span><br><span class="line">            inorder(r.leftChild);</span><br><span class="line">            System.out.print(r.value + <span class="string">&quot; &quot;</span>);</span><br><span class="line">            inorder(r.rightChild);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 中序输出</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">inorderTraversal</span><span class="params">()</span> &#123;</span><br><span class="line">        inorder(root);</span><br><span class="line">        System.out.println();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="三、删除"><a href="#三、删除" class="headerlink" title="三、删除"></a>三、删除</h2><p>当从 AVL 树中删除一个节点时，有可能会导致 AVL 树失衡，为了恢复平衡就要对 AVL 树做相应的调整。对于待删除节点 X，存在以下四种情况：</p>
+<ol>
+<li>X 为叶子节点，即 X 的左右子树都为空。这时可以直接将 X 删除，并依次向上回溯调整相应节点的高度 height</li>
+<li>X 的左子树不为空，右子树为空。因为原来的 X 是平衡的，所以如果右子树为空，那么 X 的左子树的高度一定为 1，即左子树只有一个节点。这时只需用 X 的左子树来替换 X，并依次向上回溯调整相应节点的高度 height 即可</li>
+<li>X 的左子树为空，右子树不为空（和情况二对称）。因为原来的 X 是平衡的，所以如果左子树为空，那么 X 的右子树的高度一定为 1，即右子树只有一个节点。这时只需用 X 的右子树来替换 X，并依次向上回溯调整相应节点的高度 height 即可</li>
+<li>X 的左右子树都不为空。这种情况和 BST 的删除类似，只不过多了一步调整树的高度而已。需要先用 X 的左子树的最大值（即中序遍历下 X 的先驱节点）来替换 X 的值，然后删除 X 的先驱节点即可，而删除先驱节点必定会转换为情况 1 或 2。也可以先用 X 的右子树的最小值（即中序遍历下 X 的后继节点）来替换 X 的值，然后删除 X 的后继节点，如果使用这种方式，那么删除后继节点必定会转换为情况 1 或 3。</li>
+</ol>
+<p><strong>补充——二叉排序树（Binary Sort Tree, BST）的删除</strong><br>BST 的删除分为三种情况（假设待删除节点为 P，P 的父节点为 F）：</p>
+<ol>
+<li>P 为叶节点，直接删除</li>
+<li>P 只有左子树或只有右子树，则可将 P 的左子树或右子树，直接改为其父节点 F 的左子树或右子树</li>
+<li>P 既有左子树，又有右子树，此时有两种处理方法：</li>
+</ol>
+<ul>
+<li>首先找到 P 节点在中序遍历中的直接前驱 S 节点，然后将 P 的左子树改为 F 的左子树，而将 P 的右子树改为 S 的右子树（如图 a）</li>
+<li>首先找到 P 节点在中序遍历中的直接前驱 S 节点，然后用 S 节点的值代替 P 节点的值，再将 S 节点删除，原 S 节点的左子树改为 S 的父节点 Q 的右子树（如图b）</li>
+</ul>
+<center><img   class="lazyload" data-original="../../../../img/data_structure/bst_delete.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  width="80%" height="80%" /></center>
+
+<h2 id="四、完整源代码"><a href="#四、完整源代码" class="headerlink" title="四、完整源代码"></a>四、完整源代码</h2><p>这里的代码不再使用 bf，取而代之的是 height，代表以该节点为根的树的高度，平衡因子的就可以表示为左子树的高度减去右子树的高度。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AVLTree</span>&lt;T <span class="keyword">extends</span> <span class="title class_">Comparable</span>&gt; &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Node&lt;T&gt; root;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">Node</span>&lt;T&gt; &#123;</span><br><span class="line"></span><br><span class="line">        T value;</span><br><span class="line">        <span class="type">int</span> height;</span><br><span class="line">        Node&lt;T&gt; leftChild;</span><br><span class="line">        Node&lt;T&gt; rightChild;</span><br><span class="line"></span><br><span class="line">        Node(T value) &#123;</span><br><span class="line">            <span class="built_in">this</span>.value = value;</span><br><span class="line">            <span class="built_in">this</span>.height = <span class="number">1</span>;</span><br><span class="line">            <span class="built_in">this</span>.leftChild = <span class="literal">null</span>;</span><br><span class="line">            <span class="built_in">this</span>.rightChild = <span class="literal">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// LL型失衡，右旋，返回旋转后的根节点</span></span><br><span class="line">    <span class="keyword">private</span> Node&lt;T&gt; <span class="title function_">LLRotate</span><span class="params">(Node&lt;T&gt; A)</span> &#123;</span><br><span class="line">        Node&lt;T&gt; B = A.leftChild;</span><br><span class="line">        A.leftChild = B.rightChild;</span><br><span class="line">        B.rightChild = A;</span><br><span class="line">        A.height = Math.max(height(A.leftChild), height(A.rightChild)) + <span class="number">1</span>;</span><br><span class="line">        B.height = Math.max(height(B.leftChild), height(B.rightChild)) + <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">return</span> B;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//LR型失衡，先左旋再右旋，返回旋转后的根节点</span></span><br><span class="line">    <span class="keyword">private</span> Node&lt;T&gt; <span class="title function_">LRRotate</span><span class="params">(Node&lt;T&gt; A)</span> &#123;</span><br><span class="line">        A.leftChild = RRRotate(A.leftChild);</span><br><span class="line">        <span class="keyword">return</span> LLRotate(A);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//RL型失衡，先右旋再左旋，返回旋转后的根节点</span></span><br><span class="line">    <span class="keyword">private</span> Node&lt;T&gt; <span class="title function_">RLRotate</span><span class="params">(Node&lt;T&gt; A)</span> &#123;</span><br><span class="line">        A.rightChild = LLRotate(A.rightChild);</span><br><span class="line">        <span class="keyword">return</span> RRRotate(A);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// RR失衡，左旋，返回旋转后的根节点</span></span><br><span class="line">    <span class="keyword">private</span> Node&lt;T&gt; <span class="title function_">RRRotate</span><span class="params">(Node&lt;T&gt; A)</span> &#123;</span><br><span class="line">        Node&lt;T&gt; B = A.rightChild;</span><br><span class="line">        A.rightChild = B.leftChild;</span><br><span class="line">        B.leftChild = A;</span><br><span class="line">        A.height = Math.max(height(A.leftChild), height(A.rightChild)) + <span class="number">1</span>;</span><br><span class="line">        B.height = Math.max(height(B.leftChild), height(B.rightChild)) + <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">return</span> B;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">add</span><span class="params">(T data)</span> &#123;</span><br><span class="line">        root = add(root, data);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 添加节点，返回子树根节点</span></span><br><span class="line">    <span class="keyword">public</span> Node&lt;T&gt; <span class="title function_">add</span><span class="params">(Node&lt;T&gt; node, T value)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (node == <span class="literal">null</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Node</span>&lt;&gt;(value);</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> <span class="variable">cmp</span> <span class="operator">=</span> node.value.compareTo(value);</span><br><span class="line">        <span class="keyword">if</span> (cmp &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            node.leftChild = add(node.leftChild, value);</span><br><span class="line">            <span class="keyword">if</span> (height(node.leftChild) - height(node.rightChild) == <span class="number">2</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (node.leftChild.value.compareTo(value) &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                    node = LLRotate(node);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    node = LRRotate(node);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (cmp &lt; <span class="number">0</span>) &#123;</span><br><span class="line">            node.rightChild = add(node.rightChild, value);</span><br><span class="line">            <span class="keyword">if</span> (height(node.leftChild) - height(node.rightChild) == -<span class="number">2</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (value.compareTo(node.rightChild.value) &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                    node = RRRotate(node);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    node = RLRotate(node);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 调整树的高度</span></span><br><span class="line">        node.height = Math.max(height(node.leftChild), height(node.rightChild)) + <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">return</span> node;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">remove</span><span class="params">(T value)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (contains(value) == <span class="literal">false</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        remove(root, value);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 删除节点，返回子树根节点</span></span><br><span class="line">    <span class="keyword">private</span> Node&lt;T&gt; <span class="title function_">remove</span><span class="params">(Node&lt;T&gt; node, T value)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (node == <span class="literal">null</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> <span class="variable">cmp</span> <span class="operator">=</span> node.value.compareTo(value);</span><br><span class="line">        <span class="keyword">if</span> (cmp &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            node.leftChild = remove(node.leftChild, value);</span><br><span class="line">            <span class="keyword">if</span> (height(node.leftChild) - height(node.rightChild) == -<span class="number">2</span>) &#123;</span><br><span class="line">                Node&lt;T&gt; tem = node.rightChild;</span><br><span class="line">                <span class="keyword">if</span> (height(tem.leftChild) &gt; height(tem.rightChild)) &#123;</span><br><span class="line">                    node = RLRotate(node);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    node = RRRotate(node);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (cmp &lt; <span class="number">0</span>) &#123;</span><br><span class="line">            node.rightChild = remove(node.rightChild, value);</span><br><span class="line">            <span class="keyword">if</span> (height(node.leftChild) - height(node.rightChild) == <span class="number">2</span>) &#123;</span><br><span class="line">                Node&lt;T&gt; tem = node.leftChild;</span><br><span class="line">                <span class="keyword">if</span> (height(tem.leftChild) &lt; height(tem.rightChild)) &#123;</span><br><span class="line">                    node = LRRotate(node);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    node = LLRotate(node);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (node.leftChild == <span class="literal">null</span> &amp;&amp; node.rightChild == <span class="literal">null</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (node.leftChild != <span class="literal">null</span> &amp;&amp; node.rightChild == <span class="literal">null</span>) &#123;</span><br><span class="line">                node = node.leftChild;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (node.leftChild == <span class="literal">null</span> &amp;&amp; node.rightChild != <span class="literal">null</span>) &#123;</span><br><span class="line">                node = node.rightChild;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                Node&lt;T&gt; tem = node.leftChild;</span><br><span class="line">                <span class="keyword">while</span> (tem.rightChild != <span class="literal">null</span>) &#123;</span><br><span class="line">                    tem = tem.rightChild;</span><br><span class="line">                &#125;</span><br><span class="line">                node.value = tem.value;</span><br><span class="line">                node.leftChild = remove(node.leftChild, tem.value);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 调整树的高度</span></span><br><span class="line">        node.height = Math.max(height(node.leftChild), height(node.rightChild)) + <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">return</span> node;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> <span class="title function_">height</span><span class="params">(Node&lt;T&gt; node)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> node == <span class="literal">null</span> ? <span class="number">0</span> : node.height;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 判断是否含有某个节点</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">contains</span><span class="params">(T value)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (root != <span class="literal">null</span>) &#123;</span><br><span class="line">            Node&lt;T&gt; p = root;</span><br><span class="line">            <span class="type">int</span> compare;</span><br><span class="line">            <span class="keyword">while</span> (p != <span class="literal">null</span>) &#123;</span><br><span class="line">                compare = value.compareTo(p.value);</span><br><span class="line">                <span class="keyword">if</span> (compare == <span class="number">0</span>) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (compare &lt; <span class="number">0</span>)</span><br><span class="line">                    p = p.leftChild;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                    p = p.rightChild;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">inorder</span><span class="params">(Node&lt;T&gt; r)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="literal">null</span> != r) &#123;</span><br><span class="line">            inorder(r.leftChild);</span><br><span class="line">            System.out.print(r.value + <span class="string">&quot; &quot;</span>);</span><br><span class="line">            inorder(r.rightChild);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 中序输出</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">inorderTraversal</span><span class="params">()</span> &#123;</span><br><span class="line">        inorder(root);</span><br><span class="line">        System.out.println();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      </section>
+      <section class="extra">
+        
+        
+          <section class="donate">
+  <div id="qrcode-donate">
+    <img   class="lazyload" data-original="https://pic.izhaoo.com/alipay.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" >
+  </div>
+  <div class="icon">
+    <a href="javascript:;" id="alipay"><i class="iconfont iconalipay"></i></a>
+    <a href="javascript:;" id="wechat"><i class="iconfont iconwechat-fill"></i></a>
+  </div>
+</section>
+        
+        
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag">数据结构</a></li></ul> 
+
+        
+  <nav class="nav">
+    <a href="/2019/04/12/%E7%BA%A2%E9%BB%91%E6%A0%91/"><i class="iconfont iconleft"></i>红黑树</a>
+    <a href="/2019/04/04/JDK1.6%E4%B9%8B%E5%90%8E%E7%9A%84%E9%94%81%E4%BC%98%E5%8C%96/">JDK1.6之后的锁优化<i class="iconfont iconright"></i></a>
+  </nav>
+
+      </section>
+      
+        <section class="comments">
+  
+    <div class="btn" id="comments-btn">查看评论</div>
+  
+  
+<div id="valine"></div>
+<script defer src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<script>
+  window.onload = function () {
+    var loadValine = function () {
+      new Valine({
+        el: '#valine',
+        app_id: "cJOoEEu3sAMF6OftYqgFknB0-gzGzoHsz",
+        app_key: "vJR5GGKTPoLqB5pwiWlNqsP5",
+        placeholder: "雁过留痕",
+        avatar: "mp",
+        pageSize: "10",
+        lang: "zh-CN",
+      });
+    }
+    if ( true ) {
+      $("#comments-btn").on("click", function () {
+        $(this).hide();
+        loadValine();
+      });
+    } else {
+      loadValine();
+    }
+  };
+</script>
+
+</section>
+      
+    </section>
+  </div>
+</article></div>
+      <div class="col-xl-3">
+        
+          
+  <aside class="toc-wrap">
+    <h3 class="toc-title">文章目录：</h3>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E6%A6%82%E8%BF%B0"><span class="toc-text">一、概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%8F%92%E5%85%A5"><span class="toc-text">二、插入</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81LL-%E5%9E%8B"><span class="toc-text">1、LL 型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81LR-%E5%9E%8B"><span class="toc-text">2、LR 型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3%E3%80%81RR-%E5%9E%8B"><span class="toc-text">3、RR 型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4%E3%80%81RL-%E5%9E%8B"><span class="toc-text">4、RL 型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5%E3%80%81%E6%8F%92%E5%85%A5%E4%BB%A3%E7%A0%81"><span class="toc-text">5、插入代码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E5%88%A0%E9%99%A4"><span class="toc-text">三、删除</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E5%AE%8C%E6%95%B4%E6%BA%90%E4%BB%A3%E7%A0%81"><span class="toc-text">四、完整源代码</span></a></li></ol>
+  </aside>
+
+        
+      </div>
+    </div>
+  </div>
+</main>
+  
+
+<footer class="footer">
+  <div class="footer-social"><a 
+        href="tencent://message/?Menu=yes&uin=894519210 "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#12B7F5'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconQQ "></i>
+      </a><a 
+        href="javascript:; "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#09BB07'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconwechat-fill "></i>
+      </a><a 
+        href="https://www.instagram.com/izhaoo/ "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#DA2E76'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconinstagram "></i>
+      </a><a 
+        href="https://github.com/zhaoo "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#9f7be1'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  icongithub-fill "></i>
+      </a><a 
+        href="mailto:izhaoo@163.com "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color=#FF3B00" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconmail"></i>
+      </a></div>
+  
+    <div class="footer-copyright"><p>Powered by <a target="_blank" href="https://hexo.io">Hexo</a>  |  Theme - <a target="_blank" href="https://github.com/izhaoo/hexo-theme-zhaoo">zhaoo</a></p></div>
+  
+</footer>
+  
+      <div class="fab fab-plus">
+    <i class="iconfont iconplus"></i>
+  </div>
+  
+  
+  
+  <div class="fab fab-up">
+    <i class="iconfont iconcaret-up"></i>
+  </div>
+  
+  
+  
+    
+<script src="/js/color-mode.js"></script>
+
+  
+  
+</body>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+
+
+
+  
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
+
+
+
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
+
+
+
+
+
+
+
+<script src="/js/utils.js"></script>
+<script src="/js/script.js"></script>
+
+
+
+
+
+
+
+  <script>
+    (function () {
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      } else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+</html>
