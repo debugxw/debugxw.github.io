@@ -6,7 +6,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>JVM类加载机制 - Hexo</title>
+  <title>JVM类加载机制 - 读万卷书，行万里路</title>
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="google" content="notranslate" />
@@ -192,7 +192,7 @@
     <div class="head-info">
       <span class="post-info-item"><i class="iconfont iconcalendar"></i>July 24, 2019</span>
       
-      <span class="post-info-item"><i class="iconfont iconfont-size"></i>4792</span>
+      <span class="post-info-item"><i class="iconfont iconfont-size"></i>4806</span>
     </div>
   </div>
 </section>
@@ -229,7 +229,7 @@
 <p><strong>双亲委派模型工作流程：</strong><br>如果一个类加载器收到了类加载的请求，它首先不会自己去尝试加载这个类，而是把请求委托给父加载器去完成，依次向上，因此，所有的类加载请求最终都应该被传递到顶层的启动类加载器中，只有当父加载器在它的搜索范围中没有找到所需的类时，即无法完成该加载，子加载器才会尝试自己去加载该类。<br>使用双亲委派模型来组织类加载器之间的关系，有一个很明显的好处，<strong>就是 Java 类随着它的类加载器（说白了，就是它所在的目录）一起具备了一种带有优先级的层次关系，这对于保证 Java 程序的稳定运作很重要</strong>。例如，类 java.lang.Object 类存放在 JDK\jre\lib 下的 rt.jar 之中，因此无论是哪个类加载器要加载此类，最终都会委派给启动类加载器进行加载，这便保证了 Object 类在程序中的各种类加载器中都是同一个类。</p>
 <h3 id="Tomcat破坏双亲委派模型"><a href="#Tomcat破坏双亲委派模型" class="headerlink" title="Tomcat破坏双亲委派模型"></a>Tomcat破坏双亲委派模型</h3><p><strong>为什么Tomcat要打破双亲委派机制？</strong><br>一个Tomcat实例可以部署多个war包，也就是多个Web应用。如果两个Web应用都有一个类Car，且类限定名都为com.xxx.Car，但是他们的实现是不一样的，为了保证这两个类不冲突，Tomcat打破了双亲委派机制</p>
 <p><strong>实现原理</strong><br>Tomcat会给每个Web应用程序创建一个类加载实例（WebAppClassLoader），该加载器重写了ClassLoader.loadClass()方法，优先加载当前应用目录下的类。这样就做到了Web应用层级的隔离：</p>
-<p><img   class="lazyload" data-original="/../../../../img/jdk/tomcat_break_parent.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  alt="Tomcat破话双亲委派模型"></p>
+<p><img    class="lazyload" data-original="/../../../../img/jdk/tomcat_break_parent.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="   ><span class="image-caption">Tomcat破话双亲委派模型</span></p>
 <h3 id="SPI破坏双亲委派模型"><a href="#SPI破坏双亲委派模型" class="headerlink" title="SPI破坏双亲委派模型"></a>SPI破坏双亲委派模型</h3><p><strong>什么是SPI</strong><br>简单理解，就是为某个接口寻找具体实例的机制，例如JDBC驱动<br><strong>加载JDBC驱动过程</strong><br>当ServiceLoader在加载驱动的时候，实际上使用的是当前线程的上下文类加载器，这个加载器实际上就是应用程序类加载器，在获取链接的时候，首先使用扩展类加载器和启动类加载器，但是这两个加载器肯定是加载不到的，最终由应用程序类加载器进行加载<br><strong>这种机制破坏双亲委派机制了吗？</strong><br>这点其实有待商榷，网上相关的谈论也很多，这里不做过多讨论（但本质上，双亲委派机制的一个作用就是为了保证JDK基础类能够被正确的加载，这样就不会出现你写一个String类和JDK的String出现冲突的情况）</p>
 <blockquote>
 <p>参考：<br>  《深入理解Java虚拟机：JVM高级特性与最佳实践》<br>  <a target="_blank" rel="noopener" href="https://blog.csdn.net/ns_code/article/details/17881581">【深入Java虚拟机】之四：类加载机制</a><br>  <a target="_blank" rel="noopener" href="https://www.zhihu.com/question/466696410">Tomcat为什么要JAVA破坏双亲委派机制？</a></p>
