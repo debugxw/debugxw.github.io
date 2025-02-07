@@ -16,17 +16,33 @@ image: /img/theme/030.jpg
 
 #### 数据对象
 当我们执行commit之后，Git会以本次修改内容做一系列的哈希运算得到的40位哈希值的后38位作为文件名，前两位作为目录，将本次的所有修改过的文件内容存储在```.git/objects```目录下
-
-![对象存储路径]()
+```
+➜ find .git/objects
+.git/objects
+.git/objects/92
+.git/objects/92/56a0a5660f06035d2b410df02fd5e002461718
+.git/objects/03
+.git/objects/03/3b4468fa6b2a9547a70d88d1bbe8bf3f9ed0d5
+.git/objects/pack
+.git/objects/38
+.git/objects/38/feecbdf638935287fd920e8f2d694aa8c28d9f
+.git/objects/info
+```
 
 用于存储文件数据的对象即为数据对象（Git称之为Blog），可以通过```git cat-file -t```命令来查看对象的类型(注意：需要提供40位的哈希值)
-
-![数据对象]()
+```
+➜ git cat-file -t 033b4468fa6b2a9547a70d88d1bbe8bf3f9ed0d5
+blob
+```
 
 #### 树对象
-对于数据对象，其中只存储了每个文件的数据，但是却并没有存储数据属于哪个文件，也就是我们需要一个地方来存储文件名、文件的目录结构等信息。这就需要用到树对象（Git称之为Tree），一个树对象包含了一条或多条树对象记录，每条记录含有一个指向数据对象或者子树对象的指针，以及相应的模式、类型、文件名信息等。可以通过```git cat-file -p release^{tree}```命令来查看release分支上最新的提交所指向的树对象
-
-![树对象（该树对象保存了0个指向Blob对象的指针和0个指向Tree对象的指针）]()
+对于数据对象，其中只存储了每个文件的数据，但是却并没有存储数据属于哪个文件，也就是我们需要一个地方来存储文件名、文件的目录结构等信息。这就需要用到树对象（Git称之为Tree），一个树对象包含了一条或多条树对象记录，每条记录含有一个指向数据对象或者子树对象的指针，以及相应的模式、类型、文件名信息等。可以通过```git cat-file -p master^{tree}```命令来查看master分支上最新的提交所指向的树对象
+```
+# 该树对象保存了1个指向Blob对象的指针和1个指向Tree对象的指针
+➜ git cat-file -p master^{tree}
+040000 tree 637c389ee6f1ea958294818793572ca052b11dab	pro
+100644 blob 033b4468fa6b2a9547a70d88d1bbe8bf3f9ed0d5	repo.rb
+```
 
 简单来说，Git内部存储的数据类似于
 
