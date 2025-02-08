@@ -2,8 +2,8 @@
 title: 记一次Golang线上故障排查
 excerpt: Package pprof serves via its HTTP server runtime profiling data in the format expected by the pprof visualization tool
 date: 2024-03-01
-tags: Golang
-image: /img/theme/027.jpg
+tags: [Golang,工具]
+image: /img/theme/034.jpg
 toc: false
 ---
 

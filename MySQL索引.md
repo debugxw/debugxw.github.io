@@ -2,7 +2,7 @@
 title: MySQL索引
 excerpt: 帮助MySQL实现高效数据查询的一种数据结构
 date: 2019-03-19 16:54:34
-tags: [数据库,MySQL]
+tags: [MySQL,存储]
 image: /img/theme/014.jpg
 ---
 
