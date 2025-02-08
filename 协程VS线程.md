@@ -3,7 +3,7 @@ title: 协程VS线程
 excerpt: Go在语言层面上提供的协程(goroutine)和通道(channel)两个基础并发原语，使得并发编程变得更加简单
 date: 2023-06-26
 tags: [并发,Golang,操作系统]
-image: /img/theme/026.jpg
+image: /img/theme/032.jpg
 ---
 
 ## Java线程 VS Golang协程
