@@ -1,5 +1,7 @@
 # idea
-.idea/
+.idea
+**/.idea
+.idea?
 
 # mac
 .DS_Store
