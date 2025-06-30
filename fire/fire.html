@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>梦想的火焰熊熊燃烧</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- 配置Tailwind自定义颜色和字体 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#0FC6C2',
+                        success: '#00B42A',
+                        warning: '#FF7D00',
+                        danger: '#F53F3F',
+                        neutral: '#86909C',
+                        light: '#F2F3F5',
+                        dark: '#1D2129',
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <!-- 自定义工具类 -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .table-shadow {
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            }
+            .input-focus {
+                @apply focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200;
+            }
+            .cell-transition {
+                @apply transition-all duration-200;
+            }
+            .no-spin::-webkit-outer-spin-button,
+            .no-spin::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+            .no-spin {
+                -moz-appearance: textfield;
+            }
+            .hover-border {
+                @apply border-transparent hover:border-gray-300 focus:border-primary;
+            }
+            .update-indicator {
+                @apply absolute top-4 right-4 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm;
+            }
+            .input-text-center {
+                text-align: center;
+            }
+            .input-text-center::placeholder {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen font-inter text-dark">
+    <div class="container mx-auto px-4 py-8 max-w-7xl relative">
+        <!-- 页面标题 -->
+        <header class="mb-8 text-center">
+            <h1 class="text-[clamp(1.75rem,3vw,2.5rem)] font-bold text-dark mb-2">梦想的火焰熊熊燃烧</h1>
+        </header>
+        
+        <!-- 更新指示器 -->
+        <div id="update-indicator" class="update-indicator opacity-0 transition-opacity duration-500">
+            数据已更新
+        </div>
+        
+        <!-- 排行更新提示器 -->
+        <div id="ranking-update-indicator" class="absolute top-16 right-4 bg-warning/10 text-warning px-4 py-2 rounded-lg text-sm opacity-0 transition-opacity duration-500 shadow-lg">
+            <div class="flex items-center gap-3">
+                <i class="fa fa-exclamation-triangle"></i>
+                <span>是否更新排行？</span>
+                <button id="confirm-ranking-update" class="bg-warning text-white px-3 py-1 rounded text-xs hover:bg-warning/80 transition-colors">
+                    确认
+                </button>
+                <button id="cancel-ranking-update" class="bg-gray-300 text-gray-700 px-3 py-1 rounded text-xs hover:bg-gray-400 transition-colors">
+                    取消
+                </button>
+            </div>
+        </div>
+        
+        <!-- 表格容器 -->
+        <div class="bg-white rounded-xl overflow-hidden table-shadow">
+            <div class="overflow-x-auto">
+                <table class="w-full min-w-[1200px] border-collapse table-fixed">
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-gray-200">
+                            <th class="px-4 py-3 text-center font-semibold text-dark w-1/12">空</th>
+                            <th class="px-4 py-3 text-center font-semibold text-dark w-1/12">y</th>
+                            <th class="px-4 py-3 text-center font-semibold text-dark w-1/12">t</th>
+                            <th class="px-4 py-3 text-center font-semibold text-dark w-1/12">x</th>
+                            <th class="px-4 py-3 text-center font-semibold text-dark w-1/12">b</th>
+                            <th class="px-4 py-3 text-center font-semibold text-dark w-1/12">s</th>
+                            <th class="px-4 py-3 text-center font-semibold text-dark w-1/12">q</th>
+                            <th class="px-4 py-3 text-center font-semibold text-dark w-1/12">z1</th>
+                            <th class="px-4 py-3 text-center font-semibold text-dark w-1/12">z2</th>
+                            <th class="px-4 py-3 text-center font-semibold text-dark w-1/12">j</th>
+                            <th class="px-4 py-3 text-center font-semibold text-dark w-1/12">z</th>
+                            <th class="px-4 py-3 text-center font-semibold text-dark w-1/12">r</th>
+                        </tr>
+                    </thead>
+                    <tbody id="data-table-body">
+                        <!-- JavaScript将动态生成表格内容 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 表格数据 - 将从fire.json动态加载
+        let tableData = [];
+        let totalRows = 0;
+        let totalEditableColumns = 0;
+        let colOrder = ["空", "y", "t", "x", "b", "s", "q", "z1", "z2", "j", "z", "r"]; // 默认列顺序
+        
+        // 初始化表格数据
+        function initializeTableData() {
+            totalRows = 0;
+            totalEditableColumns = 0;
+            tableData = [];
+        }
+        
+        // 缓存DOM元素
+        const tbody = document.getElementById('data-table-body');
+        const updateIndicator = document.getElementById('update-indicator');
+        const rankingUpdateIndicator = document.getElementById('ranking-update-indicator');
+        const confirmRankingUpdateBtn = document.getElementById('confirm-ranking-update');
+        const cancelRankingUpdateBtn = document.getElementById('cancel-ranking-update');
+        
+        // 防抖计时器
+        let updateTimer = null;
+        // 记录是否有单元格处于焦点状态
+        let hasFocusedCell = false;
+        // 记录是否需要更新排行
+        let needsRankingUpdate = false;
+        
+        // 数据保存相关
+        const SAVE_FILE_PATH = './fire.json';
+        let autoSaveTimer = null;
+        let lastSaveTime = null;
+        
+        // 检查是否通过HTTP服务器访问
+        function checkHttpProtocol() {
+            if (window.location.protocol === 'file:') {
+                console.warn('检测到通过文件系统直接访问，建议通过HTTP服务器访问以获得完整功能');
+                showProtocolWarning();
+                return false;
+            }
+            return true;
+        }
+        
+        // 显示协议警告
+        function showProtocolWarning() {
+            const warningDiv = document.createElement('div');
+            warningDiv.className = 'fixed top-0 left-0 right-0 bg-yellow-500 text-white px-4 py-2 text-center z-50';
+            warningDiv.innerHTML = `
+                <div class="flex items-center justify-center gap-2">
+                    <i class="fa fa-exclamation-triangle"></i>
+                    <span>检测到通过文件系统直接访问，数据保存功能可能受限。建议通过HTTP服务器访问：</span>
+                    <code class="bg-yellow-600 px-2 py-1 rounded">http://localhost:8000/fire.html</code>
+                </div>
+            `;
+            document.body.appendChild(warningDiv);
+            
+            // 10秒后自动隐藏
+            setTimeout(() => {
+                if (warningDiv.parentNode) {
+                    warningDiv.parentNode.removeChild(warningDiv);
+                }
+            }, 10000);
+        }
+        
+        // 保存数据到JSON文件
+        async function saveDataToFile() {
+            // 检查是否通过HTTP服务器访问
+            if (!checkHttpProtocol()) {
+                // 如果不是通过HTTP服务器，直接使用localStorage
+                saveDataToLocalStorage();
+                return;
+            }
+            
+            try {
+                // 收集当前用户输入
+                collectUserInput();
+                
+                const dataToSave = {
+                    timestamp: new Date().toISOString(),
+                    tableData: tableData,
+                    colOrder: colOrder
+                };
+                
+                const response = await fetch(SAVE_FILE_PATH, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(dataToSave, null, 2)
+                });
+                
+                if (response.ok) {
+                    lastSaveTime = new Date();
+                    console.log('数据已保存到', SAVE_FILE_PATH);
+                } else {
+                    console.error('保存数据失败:', response.statusText);
+                    // 如果服务器保存失败，尝试使用localStorage作为备选方案
+                    saveDataToLocalStorage();
+                }
+            } catch (error) {
+                console.error('保存数据时出错:', error);
+                // 如果服务器保存失败，尝试使用localStorage作为备选方案
+                saveDataToLocalStorage();
+            }
+        }
+        
+        // 保存数据到localStorage（备选方案）
+        function saveDataToLocalStorage() {
+            try {
+                collectUserInput();
+                const dataToSave = {
+                    timestamp: new Date().toISOString(),
+                    tableData: tableData,
+                    colOrder: colOrder
+                };
+                localStorage.setItem('fireTableData', JSON.stringify(dataToSave));
+                lastSaveTime = new Date();
+                console.log('数据已保存到localStorage');
+            } catch (error) {
+                console.error('保存到localStorage失败:', error);
+            }
+        }
+        
+        // 从JSON文件加载数据
+        async function loadDataFromFile() {
+            // 检查是否通过HTTP服务器访问
+            if (!checkHttpProtocol()) {
+                // 如果不是通过HTTP服务器，直接使用localStorage
+                return loadDataFromLocalStorage();
+            }
+            
+            try {
+                const response = await fetch(SAVE_FILE_PATH);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.tableData && Array.isArray(data.tableData)) {
+                        tableData = data.tableData;
+                        
+                        // 加载列顺序，如果没有则使用默认值
+                        if (data.colOrder && Array.isArray(data.colOrder)) {
+                            colOrder = data.colOrder;
+                        } else {
+                            // 使用默认列顺序
+                            colOrder = ["空", "y", "t", "x", "b", "s", "q", "z1", "z2", "j", "z", "r"];
+                            console.log('文件中没有colOrder字段，使用默认列顺序');
+                        }
+                        
+                        // 处理向后兼容性：如果数据中没有"空"字段但有rowLabels，则添加"空"字段
+                        if (data.rowLabels && Array.isArray(data.rowLabels)) {
+                            console.log('检测到旧格式数据，正在转换为新格式...');
+                            tableData.forEach((row, index) => {
+                                if (!row.空 && data.rowLabels[index]) {
+                                    row.空 = data.rowLabels[index];
+                                }
+                            });
+                        }
+                        
+                        // 确保数据兼容性
+                        ensureDataCompatibility();
+                        
+                        // 计算总行数和可编辑列数
+                        totalRows = tableData.length;
+                        const editableColumns = colOrder.filter(col => 
+                            !['空', 'z1', 'z2', 'j', 'z', 'r'].includes(col)
+                        );
+                        totalEditableColumns = editableColumns.length;
+                        
+                        console.log('从文件加载数据成功');
+                        return true;
+                    }
+                }
+            } catch (error) {
+                console.log('从文件加载数据失败，尝试从localStorage加载:', error);
+            }
+            
+            // 如果文件加载失败，尝试从localStorage加载
+            return loadDataFromLocalStorage();
+        }
+        
+        // 从localStorage加载数据（备选方案）
+        function loadDataFromLocalStorage() {
+            try {
+                const savedData = localStorage.getItem('fireTableData');
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    if (data.tableData && Array.isArray(data.tableData)) {
+                        tableData = data.tableData;
+                        
+                        // 加载列顺序，如果没有则使用默认值
+                        if (data.colOrder && Array.isArray(data.colOrder)) {
+                            colOrder = data.colOrder;
+                        } else {
+                            // 使用默认列顺序
+                            colOrder = ["空", "y", "t", "x", "b", "s", "q", "z1", "z2", "j", "z", "r"];
+                            console.log('localStorage中没有colOrder字段，使用默认列顺序');
+                        }
+                        
+                        // 处理向后兼容性：如果数据中没有"空"字段但有rowLabels，则添加"空"字段
+                        if (data.rowLabels && Array.isArray(data.rowLabels)) {
+                            console.log('检测到旧格式数据，正在转换为新格式...');
+                            tableData.forEach((row, index) => {
+                                if (!row.空 && data.rowLabels[index]) {
+                                    row.空 = data.rowLabels[index];
+                                }
+                            });
+                        }
+                        
+                        // 确保数据兼容性
+                        ensureDataCompatibility();
+                        
+                        // 计算总行数和可编辑列数
+                        totalRows = tableData.length;
+                        const editableColumns = colOrder.filter(col => 
+                            !['空', 'z1', 'z2', 'j', 'z', 'r'].includes(col)
+                        );
+                        totalEditableColumns = editableColumns.length;
+                        
+                        console.log('从localStorage加载数据成功');
+                        return true;
+                    }
+                }
+            } catch (error) {
+                console.error('从localStorage加载数据失败:', error);
+            }
+            return false;
+        }
+        
+        // 数据兼容性处理：确保tableData数据完整性
+        function ensureDataCompatibility() {
+            // 确保每行都有正确的originalIndex和必要的字段
+            tableData.forEach((row, index) => {
+                row.originalIndex = index;
+                
+                // 确保必要的字段存在
+                if (!row.空) {
+                    row.空 = `行${index + 1}`;
+                }
+                if (row.z1 === undefined) row.z1 = 0;
+                if (row.z2 === undefined) row.z2 = 0;
+                if (row.j === undefined) row.j = '';
+                if (row.z === undefined) row.z = 0;
+                if (row.r === undefined) row.r = 0;
+                
+                // 根据colOrder添加可编辑列（如果不存在）
+                const editableColumns = colOrder.filter(col => 
+                    !['空', 'z1', 'z2', 'j', 'z', 'r'].includes(col)
+                );
+                
+                editableColumns.forEach(colKey => {
+                    if (row[colKey] === undefined) {
+                        row[colKey] = '';
+                    }
+                });
+            });
+        }
+        
+        // 自动保存功能
+        function startAutoSave() {
+            clearAutoSaveTimer();
+            autoSaveTimer = setTimeout(() => {
+                if (!hasFocusedCell) {
+                    saveDataToFile();
+                }
+            }, 3000); // 3秒后自动保存
+        }
+        
+        // 清除自动保存计时器
+        function clearAutoSaveTimer() {
+            if (autoSaveTimer) {
+                clearTimeout(autoSaveTimer);
+                autoSaveTimer = null;
+            }
+        }
+        
+        // 检查当前表格顺序是否符合排行
+        function checkRankingOrder() {
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            if (rows.length === 0) return true;
+            
+            // 获取r列的位置
+            const rColumnIndex = colOrder.indexOf('r') + 1;
+            
+            // 检查是否有有效的排名数据
+            const hasValidRankings = rows.some(row => {
+                const rankText = row.querySelector(`td:nth-child(${rColumnIndex}) span`)?.textContent;
+                return rankText && rankText !== '-' && !isNaN(parseInt(rankText));
+            });
+            
+            if (!hasValidRankings) return true; // 如果没有有效排名，认为顺序正确
+            
+            // 检查排名顺序是否正确（升序）
+            for (let i = 0; i < rows.length - 1; i++) {
+                const currentRow = rows[i];
+                const nextRow = rows[i + 1];
+                
+                const currentRank = parseInt(currentRow.querySelector(`td:nth-child(${rColumnIndex}) span`)?.textContent) || 0;
+                const nextRank = parseInt(nextRow.querySelector(`td:nth-child(${rColumnIndex}) span`)?.textContent) || 0;
+                
+                // 如果当前行的排名大于下一行的排名，说明顺序不正确
+                if (currentRank > nextRank && currentRank !== 0 && nextRank !== 0) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        // 显示排行更新提示
+        function showRankingUpdatePrompt() {
+            needsRankingUpdate = true;
+            rankingUpdateIndicator.classList.remove('opacity-0');
+            rankingUpdateIndicator.classList.add('opacity-100');
+        }
+        
+        // 隐藏排行更新提示
+        function hideRankingUpdatePrompt() {
+            needsRankingUpdate = false;
+            rankingUpdateIndicator.classList.remove('opacity-100');
+            rankingUpdateIndicator.classList.add('opacity-0');
+        }
+        
+        // 执行排行更新
+        function executeRankingUpdate() {
+            // 先收集当前用户输入，确保数据是最新的
+            collectUserInput();
+            
+            // 按排名排序数据
+            tableData.sort((a, b) => {
+                const rankA = parseInt(a.r) || 0;
+                const rankB = parseInt(b.r) || 0;
+                return rankA - rankB; // 升序排列，排名小的在前面
+            });
+            
+            // 重新渲染表格
+            renderTable();
+            hideRankingUpdatePrompt();
+            
+            // 显示更新成功提示
+            updateIndicator.textContent = '排行已更新';
+            showUpdateIndicator();
+        }
+        
+        // 渲染表格
+        function renderTable() {
+            const fragment = document.createDocumentFragment();
+            
+            // 获取可编辑列（除了固定列）
+            const editableColumns = colOrder.filter(col => 
+                !['空', 'z1', 'z2', 'j', 'z', 'r'].includes(col)
+            );
+            
+            tableData.forEach((row, rowIndex) => {
+                const tr = document.createElement('tr');
+                tr.dataset.originalIndex = row.originalIndex;
+                tr.className = 'border-b border-gray-100 hover:bg-gray-50/30 transition-colors';
+                
+                // 根据colOrder渲染每一列
+                colOrder.forEach(colKey => {
+                    if (colKey === '空') {
+                        // 第一列：行标签
+                        const labelCell = document.createElement('td');
+                        labelCell.className = 'px-4 py-3 text-center font-medium text-dark bg-gray-50/30';
+                        labelCell.textContent = row.空 || `行${row.originalIndex + 1}`;
+                        tr.appendChild(labelCell);
+                    } else if (colKey === 'z1' || colKey === 'z2') {
+                        // 不可编辑列：z1, z2
+                        const cell = document.createElement('td');
+                        cell.className = 'px-4 py-3 bg-gray-50/50 text-center';
+                        
+                        const valueSpan = document.createElement('span');
+                        valueSpan.className = 'block w-full px-3 py-2 rounded-md text-center';
+                        valueSpan.textContent = formatNumber(row[colKey]);
+                        cell.appendChild(valueSpan);
+                        
+                        tr.appendChild(cell);
+                    } else if (colKey === 'j') {
+                        // j列（可编辑，允许负数）
+                        const jCell = document.createElement('td');
+                        jCell.className = 'px-4 py-3 text-center';
+                        
+                        const jInput = document.createElement('input');
+                        jInput.type = 'number';
+                        jInput.value = row.j || '';
+                        jInput.className = 'w-full px-3 py-2 rounded-md input-focus no-spin hover-border border-0 text-center input-text-center';
+                        jInput.dataset.row = row.originalIndex;
+                        jInput.dataset.col = 'j';
+                        jInput.step = '1';
+                        
+                        // 禁止负号输入
+                        jInput.addEventListener('keydown', function(e) {
+                            const allowedKeys = [
+                                '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+                                'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'
+                            ];
+                            
+                            if (e.key === '-' && this.value === '') {
+                                return;
+                            }
+                            
+                            if (!allowedKeys.includes(e.key) && !(e.ctrlKey || e.metaKey)) {
+                                e.preventDefault();
+                            }
+                        });
+                        
+                        // 处理焦点事件
+                        jInput.addEventListener('focus', () => {
+                            hasFocusedCell = true;
+                            clearUpdateTimer();
+                        });
+                        
+                        // 处理失焦事件
+                        jInput.addEventListener('blur', () => {
+                            hasFocusedCell = false;
+                            startUpdateTimer();
+                            // 立即保存当前输入的数据
+                            startAutoSave();
+                        });
+                        
+                        // 鼠标离开单元格时取消聚焦
+                        jInput.addEventListener('mouseleave', () => {
+                            jInput.blur();
+                        });
+                        
+                        jCell.appendChild(jInput);
+                        tr.appendChild(jCell);
+                    } else if (colKey === 'z' || colKey === 'r') {
+                        // 不可编辑列：z, r
+                        const cell = document.createElement('td');
+                        cell.className = 'px-4 py-3 bg-gray-50/50 text-center';
+                        
+                        const valueSpan = document.createElement('span');
+                        valueSpan.className = 'block w-full px-3 py-2 rounded-md text-center';
+                        valueSpan.textContent = colKey === 'r' 
+                            ? row[colKey] || '-' 
+                            : formatNumber(row[colKey]);
+                        cell.appendChild(valueSpan);
+                        
+                        tr.appendChild(cell);
+                    } else {
+                        // 可编辑列
+                        const cell = document.createElement('td');
+                        cell.className = 'px-4 py-3 text-center';
+                        
+                        const input = document.createElement('input');
+                        input.type = 'number';
+                        input.value = row[colKey] || '';
+                        input.className = 'w-full px-3 py-2 rounded-md input-focus no-spin hover-border border-0 text-center input-text-center';
+                        input.dataset.row = row.originalIndex;
+                        input.dataset.col = colKey;
+                        input.step = '1';
+                        input.min = '1';
+                        
+                        // 禁止负号输入
+                        input.addEventListener('keydown', function(e) {
+                            const allowedKeys = [
+                                '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+                                'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'
+                            ];
+                            
+                            if (!allowedKeys.includes(e.key) && !(e.ctrlKey || e.metaKey)) {
+                                e.preventDefault();
+                            }
+                        });
+                        
+                        // 处理焦点事件
+                        input.addEventListener('focus', () => {
+                            hasFocusedCell = true;
+                            clearUpdateTimer();
+                        });
+                        
+                        // 处理失焦事件
+                        input.addEventListener('blur', () => {
+                            hasFocusedCell = false;
+                            startUpdateTimer();
+                            // 立即保存当前输入的数据
+                            startAutoSave();
+                        });
+                        
+                        // 鼠标离开单元格时取消聚焦
+                        input.addEventListener('mouseleave', () => {
+                            input.blur();
+                        });
+                        
+                        cell.appendChild(input);
+                        tr.appendChild(cell);
+                    }
+                });
+                
+                fragment.appendChild(tr);
+            });
+            
+            // 清空旧内容并添加新内容
+            tbody.innerHTML = '';
+            tbody.appendChild(fragment);
+        }
+        
+        // 开始更新计时器
+        function startUpdateTimer() {
+            clearUpdateTimer();
+            updateTimer = setTimeout(() => {
+                if (!hasFocusedCell) {
+                    updateAllCalculations();
+                }
+            }, 1000);
+        }
+        
+        // 清除更新计时器
+        function clearUpdateTimer() {
+            if (updateTimer) {
+                clearTimeout(updateTimer);
+                updateTimer = null;
+            }
+        }
+        
+        // 更新所有计算列
+        function updateAllCalculations() {
+            // 收集用户输入
+            collectUserInput();
+            
+            // 获取可编辑列（除了固定列）
+            const editableColumns = colOrder.filter(col => 
+                !['空', 'z1', 'z2', 'j', 'z', 'r'].includes(col)
+            );
+            
+            totalEditableColumns = editableColumns.length;
+            
+            // 更新Z1、Z2、Z
+            for (let i = 0; i < totalRows; i++) {
+                // z1 = 可编辑列的和
+                // 如果值没有填写，按照(总行数-1)计算，总行数包括表头
+                const totalRowsWithHeader = totalRows + 1;
+                const defaultValue = totalRowsWithHeader - 1;
+                
+                const sum = editableColumns.reduce((acc, key) => {
+                    const value = tableData[i][key];
+                    // 如果值为空字符串、null、undefined 或 NaN，使用默认值
+                    if (value === '' || value === null || value === undefined || isNaN(value)) {
+                        return acc + defaultValue;
+                    }
+                    return acc + (parseInt(value) || 0);
+                }, 0);
+                
+                tableData[i].z1 = sum;
+                
+                // z2 = (总行数-1) * (总列数-6) - z1
+                // 总行数包含表头，所以是 totalRows + 1
+                // 总列数 = 可编辑列数 + 6（标签列 + z1 + z2 + j + z + r）
+                const totalColumns = editableColumns.length + 6;
+                tableData[i].z2 = (totalRowsWithHeader - 1) * (totalColumns - 6) - sum;
+                
+                // z = z2 + j
+                tableData[i].z = tableData[i].z2 + (parseInt(tableData[i].j) || 0);
+            }
+            
+            // 更新排名
+            const zValues = tableData.map(row => row.z || 0);
+            const sortedZ = [...zValues].sort((a, b) => b - a);
+            
+            tableData.forEach((row, index) => {
+                row.r = sortedZ.indexOf(row.z) + 1 || '-';
+            });
+            
+            // 更新UI显示
+            updateUI();
+            
+            // 显示更新指示器
+            showUpdateIndicator();
+            
+            // 触发自动保存
+            startAutoSave();
+            
+            // 检查排行顺序，如果不符合则显示排行更新提示
+            setTimeout(() => {
+                if (!checkRankingOrder() && !needsRankingUpdate) {
+                    showRankingUpdatePrompt();
+                }
+            }, 100);
+        }
+        
+        // 更新UI显示
+        function updateUI() {
+            // 遍历tableData数组，确保按正确的顺序更新UI
+            tableData.forEach((rowData, dataIndex) => {
+                const originalIndex = rowData.originalIndex;
+                
+                // 在DOM中找到对应的行
+                const row = tbody.querySelector(`tr[data-original-index="${originalIndex}"]`);
+                if (!row) return;
+                
+                // 更新Z1
+                const z1Cell = row.querySelector(`td:nth-child(${colOrder.indexOf('z1') + 1}) span`);
+                if (z1Cell) z1Cell.textContent = formatNumber(tableData[dataIndex].z1);
+                
+                // 更新Z2
+                const z2Cell = row.querySelector(`td:nth-child(${colOrder.indexOf('z2') + 1}) span`);
+                if (z2Cell) z2Cell.textContent = formatNumber(tableData[dataIndex].z2);
+                
+                // 更新Z
+                const zCell = row.querySelector(`td:nth-child(${colOrder.indexOf('z') + 1}) span`);
+                if (zCell) zCell.textContent = formatNumber(tableData[dataIndex].z);
+                
+                // 更新R
+                const rCell = row.querySelector(`td:nth-child(${colOrder.indexOf('r') + 1}) span`);
+                if (rCell) rCell.textContent = tableData[dataIndex].r;
+            });
+        }
+        
+        // 显示更新指示器
+        function showUpdateIndicator() {
+            updateIndicator.classList.remove('opacity-0');
+            updateIndicator.classList.add('opacity-100');
+            
+            setTimeout(() => {
+                updateIndicator.classList.remove('opacity-100');
+                updateIndicator.classList.add('opacity-0');
+            }, 2000);
+        }
+        
+        // 格式化数字显示
+        function formatNumber(num) {
+            if (num === 0) return '0';
+            if (!num && num !== 0) return '';
+            return Math.round(num).toString();
+        }
+        
+        // 收集用户输入
+        function collectUserInput() {
+            // 获取可编辑列（除了固定列）
+            const editableColumns = colOrder.filter(col => 
+                !['空', 'z1', 'z2', 'j', 'z', 'r'].includes(col)
+            );
+            
+            // 遍历tableData数组，确保按正确的顺序收集数据
+            tableData.forEach((rowData, dataIndex) => {
+                const originalIndex = rowData.originalIndex;
+                
+                // 在DOM中找到对应的行
+                const row = tbody.querySelector(`tr[data-original-index="${originalIndex}"]`);
+                if (!row) return;
+                
+                // 收集可编辑列数据
+                editableColumns.forEach((colKey) => {
+                    const input = row.querySelector(`td:nth-child(${colOrder.indexOf(colKey) + 1}) input`);
+                    if (input) {
+                        let value = input.value.trim();
+                        tableData[dataIndex][colKey] = value === '' ? '' : parseInt(value);
+                    }
+                });
+                
+                // 收集j列数据
+                const jInput = row.querySelector(`td:nth-child(${colOrder.indexOf('j') + 1}) input`);
+                if (jInput) {
+                    let value = jInput.value.trim();
+                    tableData[dataIndex].j = value === '' ? '' : parseInt(value);
+                }
+            });
+        }
+        
+        // 渲染表头
+        function renderTableHeader() {
+            const thead = document.querySelector('thead tr');
+            thead.innerHTML = '';
+            
+            // 根据colOrder生成表头
+            colOrder.forEach(colKey => {
+                const colHeader = document.createElement('th');
+                colHeader.className = 'px-4 py-3 text-center font-semibold text-dark w-1/12';
+                colHeader.textContent = colKey;
+                thead.appendChild(colHeader);
+            });
+        }
+        
+        // 初始化表格
+        document.addEventListener('DOMContentLoaded', async () => {
+            // 检查访问协议
+            checkHttpProtocol();
+            
+            // 尝试加载保存的数据
+            const dataLoaded = await loadDataFromFile();
+            
+            // 如果没有加载到数据，使用默认数据
+            if (!dataLoaded) {
+                // 使用默认列顺序
+                colOrder = ["空", "y", "t", "x", "b", "s", "q", "z1", "z2", "j", "z", "r"];
+                initializeTableData();
+                
+                // 创建一个空行作为示例
+                const emptyRow = {
+                    originalIndex: 0,
+                    空: "示例行",
+                    y: '',
+                    t: '',
+                    x: '',
+                    b: '',
+                    s: '',
+                    q: '',
+                    z1: 0,
+                    z2: 0,
+                    j: '',
+                    z: 0,
+                    r: 0
+                };
+                
+                tableData.push(emptyRow);
+                totalRows = 1;
+                totalEditableColumns = 6;
+            }
+            
+            // 渲染表头
+            renderTableHeader();
+            
+            // 渲染表格
+            renderTable();
+            
+            // 如果加载了数据，需要重新计算
+            if (dataLoaded) {
+                updateAllCalculations();
+            }
+            
+            // 监听整个表格的鼠标离开事件
+            tbody.addEventListener('mouseleave', () => {
+                // 延迟执行，确保不会在鼠标从一个单元格移动到另一个单元格时触发
+                setTimeout(() => {
+                    if (!hasFocusedCell) {
+                        startUpdateTimer();
+                    }
+                }, 100);
+            });
+            
+            // 添加排行更新按钮事件监听器
+            confirmRankingUpdateBtn.addEventListener('click', executeRankingUpdate);
+            cancelRankingUpdateBtn.addEventListener('click', hideRankingUpdatePrompt);
+            
+            // 页面加载时检查排行顺序
+            setTimeout(() => {
+                if (!checkRankingOrder() && !needsRankingUpdate) {
+                    showRankingUpdatePrompt();
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>    
