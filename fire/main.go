@@ -6,7 +6,10 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
+	"os/signal"
+	"sync"
+	"syscall"
+	"time"
 )
 
 type tableConfig struct {
@@ -16,7 +19,19 @@ type tableConfig struct {
 
 const dataFile = "fire.json"
 
+var cache = struct {
+	sync.Mutex
+	data  []byte
+	dirty bool
+}{}
+
 func main() {
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
+	defer signal.Stop(stop)
+
+	go flushCacheLoop()
+
 	http.HandleFunc("/api/data", dataHandler)
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/" {
@@ -26,8 +41,22 @@ func main() {
 		http.FileServer(http.Dir(".")).ServeHTTP(w, r)
 	})
 
+	srv := &http.Server{Addr: ":8001"}
+	go func() {
+		<-stop
+		if err := flushCache(); err != nil {
+			log.Printf("flush cache on exit failed: %v", err)
+		}
+		_ = srv.Close()
+	}()
+
 	log.Println("server started at http://localhost:8001/fire.html")
-	log.Fatal(http.ListenAndServe(":8001", nil))
+	if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+		log.Fatal(err)
+	}
+	if err := flushCache(); err != nil {
+		log.Printf("final flush failed: %v", err)
+	}
 }
 
 func dataHandler(w http.ResponseWriter, r *http.Request) {
@@ -43,7 +72,7 @@ func dataHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func readData(w http.ResponseWriter) {
-	data, err := os.ReadFile(dataFile)
+	data, err := getCachedData()
 	if err != nil {
 		http.Error(w, "failed to read data", http.StatusInternalServerError)
 		return
@@ -75,57 +104,65 @@ func writeData(w http.ResponseWriter, r *http.Request) {
 	}
 	data = append(data, '\n')
 
-	if err := atomicWrite(dataFile, data, 0644); err != nil {
-		http.Error(w, "failed to save data", http.StatusInternalServerError)
-		return
-	}
+	setCachedData(data)
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	_, _ = w.Write([]byte(`{"ok":true}`))
 }
 
-func atomicWrite(path string, data []byte, perm os.FileMode) error {
-	dir := filepath.Dir(path)
-	tmp, err := os.CreateTemp(dir, ".fire-*.json")
-	if err != nil {
-		return err
-	}
-	tmpName := tmp.Name()
-
-	cleanup := true
-	defer func() {
-		if cleanup {
-			_ = os.Remove(tmpName)
+func flushCacheLoop() {
+	for {
+		time.Sleep(time.Minute)
+		if err := flushCache(); err != nil {
+			log.Printf("flush cache failed: %v", err)
 		}
-	}()
-
-	if _, err := tmp.Write(data); err != nil {
-		_ = tmp.Close()
-		return err
 	}
-	if err := tmp.Chmod(perm); err != nil {
-		_ = tmp.Close()
-		return err
-	}
-	if err := tmp.Close(); err != nil {
-		return err
-	}
-	if err := os.Rename(tmpName, path); err != nil {
-		return err
-	}
-
-	cleanup = false
-	return syncDir(dir)
 }
 
-func syncDir(dir string) error {
-	f, err := os.Open(dir)
+func getCachedData() ([]byte, error) {
+	cache.Lock()
+	defer cache.Unlock()
+
+	if cache.data != nil {
+		return append([]byte(nil), cache.data...), nil
+	}
+
+	data, err := os.ReadFile(dataFile)
 	if err != nil {
+		return nil, err
+	}
+	cache.data = append([]byte(nil), data...)
+	return append([]byte(nil), data...), nil
+}
+
+func setCachedData(data []byte) {
+	cache.Lock()
+	defer cache.Unlock()
+
+	cache.data = append([]byte(nil), data...)
+	cache.dirty = true
+}
+
+func flushCache() error {
+	cache.Lock()
+	defer cache.Unlock()
+
+	if !cache.dirty || cache.data == nil {
 		return nil
 	}
-	defer f.Close()
-	if err := f.Sync(); err != nil && !errors.Is(err, os.ErrInvalid) {
+	if err := saveData(dataFile, cache.data, 0644); err != nil {
 		return err
 	}
+	cache.dirty = false
 	return nil
+}
+
+func saveData(path string, data []byte, perm os.FileMode) error {
+	err := os.WriteFile(path, data, perm)
+	if err != nil {
+		log.Printf("failed to write data to %s: %v", path, err)
+	} else {
+		log.Printf("saved data to %s success", path)
+	}
+	return err
 }
