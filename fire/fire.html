@@ -407,20 +407,21 @@
     function calculateAll() {
       const x = tableHeader.length;
       const rowCount = tableData.length;
-      const totalIndex = x - 5;
-      const remainingIndex = x - 4;
-      const bonusIndex = x - 3;
-      const scoreIndex = x - 2;
-      const rankIndex = x - 1;
+      const totalIndex = x - 6;     // z1
+      const remainingIndex = x - 5; // z2
+      const bonusIndex = x - 4;     // h
+      const extraIndex = x - 3;     // e
+      const scoreIndex = x - 2;     // z
+      const rankIndex = x - 1;      // r
 
       tableData.forEach(row => {
         let sum = 0;
-        for (let colIndex = 1; colIndex <= x - 6; colIndex += 1) {
+        for (let colIndex = 1; colIndex <= x - 7; colIndex += 1) {
           sum += getCountedValue(row[colIndex], rowCount);
         }
         row[totalIndex] = sum;
-        row[remainingIndex] = (x - 6) * rowCount - sum;
-        row[scoreIndex] = row[remainingIndex] + toNumber(row[bonusIndex]);
+        row[remainingIndex] = (x - 7) * rowCount - sum;
+        row[scoreIndex] = row[remainingIndex] + toNumber(row[bonusIndex]) + toNumber(row[extraIndex]);
         row[rankIndex] = 0;
       });
 
@@ -481,7 +482,7 @@
 
     function isEditableColumn(colIndex) {
       const x = tableHeader.length;
-      return (colIndex >= 1 && colIndex <= x - 6) || colIndex === x - 3;
+      return (colIndex >= 1 && colIndex <= x - 7) || colIndex === x - 4 || colIndex === x - 3;
     }
 
     function getDisplayValue(value, colIndex) {
